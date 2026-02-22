@@ -1,0 +1,50 @@
+{
+  "matrixCode": "806",
+  "courseCode": "236",
+  "courseName": "Bacharelado em Sistemas de Informação",
+  "versionName": "Matriz 806",
+  "totals": {
+    "mandatoryCHT": 1875,
+    "optionalCHT": 630,
+    "electiveCHT": 225,
+    "complementaryCHT": 180,
+    "internshipCHT": 360,
+    "tccCHT": 60,
+    "extensionCHT": 0
+  },
+  "disciplines": [
+    { "code": "CSD20", "name": "Introdução à Lógica para Computação", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 54, "chext": 0, "prerequisites": [] },
+    { "code": "CSF13", "name": "Fundamentos de Programação 1", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 108, "chext": 0, "prerequisites": [] },
+    { "code": "CSG10", "name": "Fundamentos de Sistemas de Informação", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 72, "chext": 0, "prerequisites": [] },
+    { "code": "CSX10", "name": "Prolegômenos ao Computar", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 72, "chext": 0, "prerequisites": [] },
+    { "code": "MA70E", "name": "Tópicos Matemáticos", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 108, "chext": 0, "prerequisites": [] },
+    { "code": "MA71B", "name": "Geometria Analítica e Álgebra Linear", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 108, "chext": 0, "prerequisites": [] },
+
+    { "code": "CSE20", "name": "Técnicas de Programação", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 72, "chext": 0, "prerequisites": ["CSF13"] },
+    { "code": "CSF20", "name": "Estruturas de Dados 1", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 54, "chext": 0, "prerequisites": ["CSF13"] },
+    { "code": "CSD21", "name": "Matemática Discreta", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 3, "cht": 54, "chext": 0, "prerequisites": ["CSD20"] },
+    { "code": "CSF30", "name": "Estruturas de Dados 2", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 3, "cht": 54, "chext": 0, "prerequisites": ["CSF20"] },
+    { "code": "CSW20", "name": "Arquitetura e Organização de Computadores", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 72, "chext": 0, "prerequisites": ["CSD20", "CSF20"] },
+
+    { "code": "CSA30", "name": "Projeto e Análise de Algoritmos", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 54, "chext": 0, "prerequisites": ["CSD21", "CSF30"] },
+    { "code": "CSB30", "name": "Introdução a Banco de Dados", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 72, "chext": 0, "prerequisites": ["CSD21", "CSE20", "CSF30"] },
+    { "code": "CSG20", "name": "Análise e Projeto de Sistemas", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 54, "chext": 0, "prerequisites": ["CSG10"] },
+    { "code": "CSO30", "name": "Sistemas Operacionais", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 5, "cht": 72, "chext": 0, "prerequisites": ["CSW20"] },
+    { "code": "CSR30", "name": "Redes de Computadores", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 5, "cht": 54, "chext": 0, "prerequisites": ["CSW20"] },
+    { "code": "CSE30", "name": "Engenharia de Software", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 5, "cht": 72, "chext": 0, "prerequisites": ["CSE20", "CSG20"] },
+
+    { "code": "CSX20", "name": "Trabalho de Integração 1", "category": "MANDATORY", "subcategory": "Integração", "recommendedPeriod": 4, "cht": 54, "chext": 0, "prerequisites": ["CSG10"] },
+    { "code": "CSX30", "name": "Trabalho de Integração 2", "category": "MANDATORY", "subcategory": "Integração", "recommendedPeriod": 6, "cht": 54, "chext": 0, "prerequisites": ["CSX20"] },
+    { "code": "CSX40", "name": "Trabalho de Conclusão de Curso 1", "category": "TCC", "subcategory": "TCC", "recommendedPeriod": 7, "cht": 36, "chext": 0, "prerequisites": ["CSX30"] },
+    { "code": "CSX41", "name": "Trabalho de Conclusão de Curso 2", "category": "TCC", "subcategory": "TCC", "recommendedPeriod": 8, "cht": 36, "chext": 0, "prerequisites": ["CSX40"] },
+
+    { "code": "ES70G", "name": "Sociologia", "category": "OPTIONAL", "subcategory": "Segundo Estrato", "recommendedPeriod": 3, "cht": 54, "chext": 0, "prerequisites": [] },
+    { "code": "ES70B", "name": "Psicologia Aplicada ao Trabalho", "category": "OPTIONAL", "subcategory": "Segundo Estrato", "recommendedPeriod": 5, "cht": 36, "chext": 0, "prerequisites": [] },
+    { "code": "ES70A", "name": "Filosofia da Ciência e da Tecnologia", "category": "OPTIONAL", "subcategory": "Segundo Estrato", "recommendedPeriod": 5, "cht": 54, "chext": 0, "prerequisites": [] },
+
+    { "code": "CSI30", "name": "Sistemas Inteligentes", "category": "TRACK", "subcategory": "Trilha", "track": "Inteligência Artificial", "recommendedPeriod": 3, "cht": 54, "chext": 0, "prerequisites": ["CSA30"] },
+    { "code": "CSV30", "name": "Processamento Digital de Imagens", "category": "TRACK", "subcategory": "Trilha", "track": "Processamento Gráfico", "recommendedPeriod": 3, "cht": 72, "chext": 0, "prerequisites": ["CSF30", "MA71B"] },
+    { "code": "CSM30", "name": "Desenvolvimento Integrado de Sistemas", "category": "TRACK", "subcategory": "Trilha", "track": "Desenvolvimento Baseado em Plataformas", "recommendedPeriod": 3, "cht": 54, "chext": 0, "prerequisites": ["CSB30", "CSG20"] },
+    { "code": "CSB59", "name": "Processamento de Linguagem Natural", "category": "TRACK", "subcategory": "Trilha", "track": "Banco de Dados", "recommendedPeriod": 4, "cht": 54, "chext": 0, "prerequisites": ["CSB30"] }
+  ]
+}

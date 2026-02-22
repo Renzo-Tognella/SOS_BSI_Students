@@ -1,0 +1,44 @@
+{
+  "name": "savestudents-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev-safe.cjs",
+    "dev:fresh": "node scripts/dev-safe.cjs",
+    "dev:clean-next": "node -e \"const cp=require('child_process');let running=false;try{running=/\\bnext\\s+dev\\b/.test(cp.execSync('ps -ax -o command',{encoding:'utf8'}));}catch(_){}if(running){console.error('Existe um next dev em execução. Encerre-o antes de limpar .next.');process.exit(1);}const fs=require('fs');try{fs.rmSync('.next',{recursive:true,force:true});}catch(_){}\"",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.21",
+    "chart.js": "^4.5.1",
+    "framer-motion": "^12.34.3",
+    "lucide-react": "^0.575.0",
+    "next": "^15.5.12",
+    "pdf-lib": "^1.17.1",
+    "pdf-parse": "^2.4.5",
+    "puppeteer": "^24.37.5",
+    "react": "19.2.3",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "19.2.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/pdf-parse": "^1.1.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.0.18",
+    "eslint": "^9",
+    "eslint-config-next": "^15.5.12",
+    "jsdom": "^28.1.0",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^4.0.18"
+  }
+}

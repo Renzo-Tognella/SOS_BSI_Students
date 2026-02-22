@@ -1,0 +1,75 @@
+{
+  "matrixCode": "981",
+  "courseCode": "236",
+  "courseName": "Bacharelado em Sistemas de Informação",
+  "versionName": "Matriz 3 de Sistemas de Informação",
+  "totals": {
+    "mandatoryCHT": 2005,
+    "optionalCHT": 840,
+    "electiveCHT": 105,
+    "complementaryCHT": 90,
+    "internshipCHT": 400,
+    "tccCHT": 60,
+    "extensionCHT": 330
+  },
+  "disciplines": [
+    { "code": "ICSD20", "name": "Introdução à Lógica Para Computação", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 45, "chext": 0, "prerequisites": [] },
+    { "code": "ICSF13", "name": "Fundamentos de Programação 1", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 90, "chext": 0, "prerequisites": [] },
+    { "code": "ICSG10", "name": "Fundamentos de Sistemas de Informação", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 60, "chext": 0, "prerequisites": [] },
+    { "code": "ICSX10", "name": "Introdução ao Computar", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 60, "chext": 0, "prerequisites": [] },
+    { "code": "MAT7GA", "name": "Geometria Analítica", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 60, "chext": 0, "prerequisites": [] },
+
+    { "code": "GEE7A1", "name": "Fundamentos de Administração", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 45, "chext": 0, "prerequisites": [] },
+    { "code": "ICSE20", "name": "Técnicas de Programação", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 60, "chext": 0, "prerequisites": ["ICSF13"] },
+    { "code": "ICSF20", "name": "Estruturas de Dados 1", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 45, "chext": 0, "prerequisites": ["ICSF13"] },
+    { "code": "MAT7AL", "name": "Álgebra Linear", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 60, "chext": 0, "prerequisites": ["MAT7GA"] },
+    { "code": "MAT7C1", "name": "Cálculo Diferencial e Integral 1", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 90, "chext": 0, "prerequisites": [] },
+    { "code": "ICSX50", "name": "Atividades Complementares", "category": "COMPLEMENTARY", "subcategory": "Atividades Complementares", "recommendedPeriod": 2, "cht": 90, "chext": 0, "prerequisites": [] },
+
+    { "code": "EST70C", "name": "Introdução à Estatística", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 3, "cht": 60, "chext": 0, "prerequisites": [] },
+    { "code": "FCH7SA", "name": "Sociologia", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 3, "cht": 45, "chext": 0, "prerequisites": [] },
+    { "code": "ICSD21", "name": "Matemática Discreta", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 3, "cht": 45, "chext": 0, "prerequisites": ["ICSD20"] },
+    { "code": "ICSF30", "name": "Estruturas de Dados 2", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 3, "cht": 45, "chext": 0, "prerequisites": ["ICSF20"] },
+    { "code": "ICSW20", "name": "Arquitetura em Organização de Computadores", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 3, "cht": 60, "chext": 0, "prerequisites": ["ICSD20", "ICSF20"] },
+
+    { "code": "GEE7E1", "name": "Fundamentos de Empreendedorismo", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 30, "chext": 0, "prerequisites": [] },
+    { "code": "ICSA30", "name": "Projeto e Análise de Algoritmos", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 45, "chext": 0, "prerequisites": ["ICSD21", "ICSF30"] },
+    { "code": "ICSB30", "name": "Introdução a Banco de Dados", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 60, "chext": 0, "prerequisites": ["ICSD21", "ICSE20", "ICSF30"] },
+    { "code": "ICSG20", "name": "Análise e Projeto de Sistemas", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 45, "chext": 0, "prerequisites": ["ICSG10"] },
+    { "code": "ICSO30", "name": "Sistemas Operacionais", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 60, "chext": 0, "prerequisites": ["ICSW20"] },
+    { "code": "ICSX20", "name": "Trabalho de Integração 1", "category": "MANDATORY", "subcategory": "Integração", "recommendedPeriod": 4, "cht": 60, "chext": 60, "prerequisites": ["ICSG10"] },
+
+    { "code": "FCH7PA", "name": "Psicologia do Trabalho", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 5, "cht": 30, "chext": 0, "prerequisites": [] },
+    { "code": "ICSE30", "name": "Engenharia de Software", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 5, "cht": 60, "chext": 0, "prerequisites": ["ICSE20", "ICSG20"] },
+    { "code": "ICSR30", "name": "Redes de Computadores", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 5, "cht": 45, "chext": 0, "prerequisites": ["ICSW20"] },
+    { "code": "ICSX51", "name": "Estágio 1", "category": "INTERNSHIP", "subcategory": "Estágio", "recommendedPeriod": 5, "cht": 200, "chext": 0, "prerequisites": [] },
+
+    { "code": "FCH7FA", "name": "Filosofia da Ciência e da Tecnologia", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 6, "cht": 45, "chext": 0, "prerequisites": [] },
+    { "code": "ICSS30", "name": "Sistemas Distribuídos", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 6, "cht": 60, "chext": 0, "prerequisites": ["ICSO30", "ICSR30"] },
+    { "code": "ICSX30", "name": "Trabalho de Integração 2", "category": "MANDATORY", "subcategory": "Integração", "recommendedPeriod": 6, "cht": 45, "chext": 0, "prerequisites": ["ICSX20"] },
+    { "code": "ICSX52", "name": "Estágio 2", "category": "INTERNSHIP", "subcategory": "Estágio", "recommendedPeriod": 6, "cht": 200, "chext": 0, "prerequisites": ["ICSX51"] },
+
+    { "code": "ICSX40", "name": "Trabalho de Conclusão 1", "category": "TCC", "subcategory": "TCC", "recommendedPeriod": 7, "cht": 30, "chext": 0, "prerequisites": ["ICSX30"] },
+    { "code": "ICSX41", "name": "Trabalho de Conclusão 2", "category": "TCC", "subcategory": "TCC", "recommendedPeriod": 8, "cht": 30, "chext": 0, "prerequisites": ["ICSX40"] },
+
+    { "code": "COE70A", "name": "Comunicação Oral e Escrita", "category": "OPTIONAL", "subcategory": "Ciclo de Humanidades", "recommendedPeriod": 3, "cht": 30, "chext": 0, "prerequisites": [] },
+    { "code": "FCH7FB", "name": "Fundamentos da Ética", "category": "OPTIONAL", "subcategory": "Ciclo de Humanidades", "recommendedPeriod": 3, "cht": 45, "chext": 0, "prerequisites": [] },
+    { "code": "FCH7HA", "name": "História da Técnica e da Tecnologia", "category": "OPTIONAL", "subcategory": "Segundo Estrato", "recommendedPeriod": 3, "cht": 45, "chext": 0, "prerequisites": [] },
+    { "code": "FCH7HB", "name": "História Geral da Economia", "category": "OPTIONAL", "subcategory": "Ciclo de Humanidades", "recommendedPeriod": 3, "cht": 45, "chext": 0, "prerequisites": [] },
+    { "code": "QBI7CA", "name": "Ciências do Ambiente", "category": "OPTIONAL", "subcategory": "Ciclo de Humanidades", "recommendedPeriod": 3, "cht": 30, "chext": 0, "prerequisites": [] },
+
+    { "code": "ICSI30", "name": "Sistemas Inteligentes", "category": "OPTIONAL", "subcategory": "Segundo Estrato", "track": "Inteligência Artificial", "recommendedPeriod": 3, "cht": 45, "chext": 0, "prerequisites": ["ICSA30"] },
+    { "code": "ICSV30", "name": "Processamento Digital de Imagens", "category": "OPTIONAL", "subcategory": "Segundo Estrato", "track": "Processamento Gráfico", "recommendedPeriod": 3, "cht": 60, "chext": 0, "prerequisites": ["ICSF30", "MAT7AL", "MAT7GA"] },
+
+    { "code": "ICSB59", "name": "Processamento de Linguagem Natural", "category": "TRACK", "subcategory": "Trilha", "track": "Banco de Dados", "recommendedPeriod": 4, "cht": 45, "chext": 0, "prerequisites": ["ICSB30"] },
+    { "code": "ICSM49", "name": "Padrões Web", "category": "TRACK", "subcategory": "Trilha", "track": "Desenvolvimento Baseado em Plataformas", "recommendedPeriod": 4, "cht": 60, "chext": 0, "prerequisites": ["ICSE30"] },
+    { "code": "ICSB41", "name": "Banco de Dados 2", "category": "TRACK", "subcategory": "Trilha", "track": "Banco de Dados", "recommendedPeriod": 4, "cht": 60, "chext": 0, "prerequisites": ["ICSB30"] },
+    { "code": "ICSB56", "name": "Ciência de Dados", "category": "TRACK", "subcategory": "Trilha", "track": "Banco de Dados", "recommendedPeriod": 4, "cht": 60, "chext": 0, "prerequisites": ["EST70C", "ICSB30"] },
+    { "code": "ICSB61", "name": "Big Data", "category": "TRACK", "subcategory": "Trilha", "track": "Banco de Dados", "recommendedPeriod": 4, "cht": 60, "chext": 0, "prerequisites": ["ICSB30", "ICSE20"] },
+    { "code": "ICSA31", "name": "Teoria da Computação", "category": "OPTIONAL", "subcategory": "Segundo Estrato", "track": "Algoritmos e Complexidade", "recommendedPeriod": 3, "cht": 45, "chext": 0, "prerequisites": ["ICSA30"] },
+    { "code": "ICSH31", "name": "Introdução à Interação Humano-Computador", "category": "OPTIONAL", "subcategory": "Segundo Estrato", "track": "Interação Humano-Computador", "recommendedPeriod": 3, "cht": 45, "chext": 0, "prerequisites": ["GEE7A1", "ICSE20", "ICSX10"] },
+    { "code": "ICSA48", "name": "Teoria dos Grafos", "category": "TRACK", "subcategory": "Trilha", "track": "Algoritmos e Complexidade", "recommendedPeriod": 4, "cht": 60, "chext": 0, "prerequisites": ["ICSA30"] },
+    { "code": "ICSE40", "name": "Engenharia de Software 2", "category": "TRACK", "subcategory": "Trilha", "track": "Engenharia de Software", "recommendedPeriod": 4, "cht": 45, "chext": 0, "prerequisites": ["ICSE30"] },
+    { "code": "ICSM31", "name": "Desenvolvimento Integrado de Sistemas", "category": "OPTIONAL", "subcategory": "Segundo Estrato", "track": "Desenvolvimento Baseado em Plataformas", "recommendedPeriod": 3, "cht": 45, "chext": 0, "prerequisites": ["ICSB30", "ICSG20"] }
+  ]
+}
