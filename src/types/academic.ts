@@ -180,6 +180,22 @@ export interface MatrixCatalogDiscipline {
   optGroup?: string | null;
 }
 
+export interface DisciplineLookupItem {
+  code: string;
+  name: string;
+  category: DisciplineCategory;
+  subcategory?: string;
+  track?: string;
+  matrixCode: MatrixCode;
+  courseCode: string;
+  courseAbbr: string;
+  catalogOnly?: boolean;
+}
+
+export interface DisciplineLookupResponse {
+  items: DisciplineLookupItem[];
+}
+
 export interface EquivalenceRule {
   fromCode: string;
   toCodes: string[];

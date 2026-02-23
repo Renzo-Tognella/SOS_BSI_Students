@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Bar, Line } from "react-chartjs-2";
 import {
@@ -19,6 +19,7 @@ import {
 import type {
   AssistantChatResponse,
   AssistantPlanPatch,
+  DisciplineLookupResponse,
   GraduationForecastAudit,
   GradeOptionsResponse,
   ManualCorrelationInput,
@@ -64,8 +65,10 @@ import {
   buildGraduationForecast,
   buildGraduationForecastAudit,
   estimateChsFromCht,
+  FORECAST_INTERNSHIP_NOTE,
   FORECAST_METHODOLOGY_NOTE
 } from "@/lib/domain/graduation-forecast";
+import { disciplineNamesLikelyMatch, normalizeDisciplineNameForComparison } from "@/lib/utils/academic";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Tooltip, Legend);
 
@@ -167,6 +170,67 @@ function prettyHorario(code: string): { day: string; shift: string } {
   };
 }
 
+function isElectiveLikeAttempt(attempt: ParsedTranscript["attempts"][number]): boolean {
+  if (attempt.sourceSection === "elective") {
+    return true;
+  }
+
+  const code = attempt.code.trim().toUpperCase();
+  const name = (attempt.name ?? "").toLowerCase();
+  return code.startsWith("ELE") || code.startsWith("ELV") || name.includes("eletiv");
+}
+
+function formatYearSemester(year?: number | null, semester?: number | null): string {
+  const normalizedYear = typeof year === "number" && Number.isFinite(year) ? year : null;
+  const normalizedSemester = typeof semester === "number" && Number.isFinite(semester) ? semester : null;
+
+  if (normalizedYear && normalizedSemester) {
+    return `${normalizedYear}-${normalizedSemester}`;
+  }
+  if (normalizedYear) {
+    return String(normalizedYear);
+  }
+  if (normalizedSemester) {
+    return `Sem ${normalizedSemester}`;
+  }
+  return "-";
+}
+
+function extractRawElectiveSnippets(rawText: string, maxItems = 16): string[] {
+  const lines = rawText
+    .split(/\r?\n/)
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+
+  if (lines.length === 0) {
+    return [];
+  }
+
+  const keywords = /(eletiv|optativ|resumo eletiva|carga horaria total|carga horária total)/i;
+  const snippets: string[] = [];
+  const seen = new Set<string>();
+
+  for (let index = 0; index < lines.length; index += 1) {
+    if (!keywords.test(lines[index])) {
+      continue;
+    }
+
+    const start = Math.max(0, index - 1);
+    const end = Math.min(lines.length - 1, index + 1);
+    const snippet = lines.slice(start, end + 1).join(" | ");
+    if (seen.has(snippet)) {
+      continue;
+    }
+    seen.add(snippet);
+    snippets.push(snippet);
+    if (snippets.length >= maxItems) {
+      break;
+    }
+  }
+
+  return snippets;
+}
+
 async function readErrorMessage(response: Response, fallback: string): Promise<string> {
   const contentType = response.headers.get("content-type") ?? "";
 
@@ -203,6 +267,66 @@ function normalizeManualTargetCode(value: string): string {
     .replace(/[^A-Z0-9]/g, "");
 }
 
+function extractTargetCodeFromLookupValue(value: string): string {
+  const trimmed = value.trim().toUpperCase();
+  if (!trimmed) {
+    return "";
+  }
+
+  const prefixMatch = trimmed.match(/^([A-Z0-9]+)\s*[-|]/);
+  if (prefixMatch?.[1]) {
+    return normalizeManualTargetCode(prefixMatch[1]);
+  }
+
+  const embeddedCodeMatch = trimmed.match(/[A-Z]{2,}\d{2,}[A-Z0-9]*/);
+  if (embeddedCodeMatch?.[0]) {
+    return normalizeManualTargetCode(embeddedCodeMatch[0]);
+  }
+
+  if (/^[A-Z]{2,}\d{2,}[A-Z0-9]*$/.test(trimmed)) {
+    return normalizeManualTargetCode(trimmed);
+  }
+
+  return "";
+}
+
+function buildManualMappingsFromCorrelations(manualCorrelations: Record<string, string>): ManualCorrelationInput[] {
+  return Object.entries(manualCorrelations).flatMap(([sourceCode, targetCode]) => {
+    const normalizedTargetCode = extractTargetCodeFromLookupValue(targetCode);
+    if (!normalizedTargetCode) {
+      return [];
+    }
+    return [{ sourceCode, targetCode: normalizedTargetCode }];
+  });
+}
+
+const CORRELATION_CATEGORY_LABEL: Record<PendingDiscipline["category"], string> = {
+  MANDATORY: "Obrigatórias",
+  OPTIONAL: "Optativas",
+  TRACK: "Trilha",
+  ELECTIVE: "Eletivas",
+  COMPLEMENTARY: "Complementares",
+  INTERNSHIP: "Estágio",
+  TCC: "TCC",
+  UNKNOWN: "Outras"
+};
+
+type CorrelationCategory = PendingDiscipline["category"];
+
+interface CorrelationLookupOption {
+  key: string;
+  code: string;
+  name: string;
+  category: CorrelationCategory;
+  categoryLabel: string;
+  matrixCode: MatrixCode;
+  courseCode: string;
+  courseAbbr: string;
+  catalogOnly: boolean;
+  lookupValue: string;
+  searchText: string;
+}
+
 function ensureRoadmapShape(roadmap: RoadmapResult): RoadmapResult {
   return {
     ...roadmap,
@@ -211,10 +335,157 @@ function ensureRoadmapShape(roadmap: RoadmapResult): RoadmapResult {
   };
 }
 
+function looksLikeLegacyUnusedSnapshot(roadmap: RoadmapResult): boolean {
+  const rows = roadmap.unusedDisciplines.filter((item) => item.code.toUpperCase() !== "ELETIVAS");
+  if (rows.length === 0) {
+    return false;
+  }
+
+  const suspicious = rows.filter((item) => {
+    const trimmedName = (item.name ?? "").trim();
+    const looksNumericName = /^\d+$/.test(trimmedName);
+    const hasNumericRelated = (item.relatedSubjects ?? []).some((subject) => /-\s*\d+\s*$/i.test(subject.trim()));
+    return item.cht === 0 || looksNumericName || hasNumericRelated;
+  });
+
+  return suspicious.length >= 3;
+}
+
+function inferCourseAbbreviation(courseName?: string | null, courseCode?: string | null): string {
+  const normalized = (courseName ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  if (normalized.includes("sistemas de informacao")) {
+    return "BSI";
+  }
+  if (normalized.includes("engenharia de software")) {
+    return "ES";
+  }
+  const cleanCode = (courseCode ?? "").trim();
+  return cleanCode ? `C${cleanCode}` : "N/D";
+}
+
+function buildCorrelationLookupValue(option: {
+  code: string;
+  name: string;
+  courseAbbr: string;
+  matrixCode: MatrixCode;
+  categoryLabel: string;
+}): string {
+  return `${option.code} - ${option.name} [${option.courseAbbr} | Matriz ${option.matrixCode} | ${option.categoryLabel}]`;
+}
+
 const SYNTHETIC_ELECTIVE_PENDING_PATTERN = /^ELVP\d{3}C\d{3}$/i;
+const UNKNOWN_TRACK_LABEL = "Trilha não identificada";
 
 function isSyntheticElectivePendingCode(code: string): boolean {
   return SYNTHETIC_ELECTIVE_PENDING_PATTERN.test(code.trim().toUpperCase());
+}
+
+function normalizeTrackLabel(value?: string | null): string {
+  const normalized = (value ?? "").trim().replace(/\s+/g, " ");
+  return normalized || UNKNOWN_TRACK_LABEL;
+}
+
+function arraysEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  return a.every((value, index) => value === b[index]);
+}
+
+function buildTrackLabelByCode(roadmap: RoadmapResult): Map<string, string> {
+  const map = new Map<string, string>();
+
+  for (const node of roadmap.prereqGraph.nodes) {
+    if (node.category !== "TRACK") {
+      continue;
+    }
+    const code = node.code.trim().toUpperCase();
+    if (!code) {
+      continue;
+    }
+    map.set(code, normalizeTrackLabel(node.track ?? node.subcategory));
+  }
+
+  return map;
+}
+
+function resolvePendingTrackLabel(item: PendingDiscipline, trackLabelByCode: Map<string, string>): string {
+  return trackLabelByCode.get(item.code.trim().toUpperCase()) ?? normalizeTrackLabel(item.subcategory);
+}
+
+interface PlannerTrackOption {
+  key: string;
+  label: string;
+  totalNodes: number;
+  doneNodes: number;
+  initiated: boolean;
+  pendingTotal: number;
+  pendingAvailable: number;
+  pendingBlocked: number;
+  pendingCht: number;
+}
+
+function getPlannerTrackOptions(roadmap: RoadmapResult): PlannerTrackOption[] {
+  const trackLabelByCode = buildTrackLabelByCode(roadmap);
+  const options = new Map<string, PlannerTrackOption>();
+
+  const ensureOption = (key: string): PlannerTrackOption => {
+    const existing = options.get(key);
+    if (existing) {
+      return existing;
+    }
+
+    const created: PlannerTrackOption = {
+      key,
+      label: key,
+      totalNodes: 0,
+      doneNodes: 0,
+      initiated: false,
+      pendingTotal: 0,
+      pendingAvailable: 0,
+      pendingBlocked: 0,
+      pendingCht: 0
+    };
+    options.set(key, created);
+    return created;
+  };
+
+  for (const node of roadmap.prereqGraph.nodes) {
+    if (!node.track) {
+      continue;
+    }
+
+    const key = normalizeTrackLabel(node.track);
+    const current = ensureOption(key);
+    current.totalNodes += 1;
+    if (node.status === "DONE") {
+      current.doneNodes += 1;
+      current.initiated = true;
+    }
+  }
+
+  for (const discipline of roadmap.pending) {
+    if (discipline.category !== "TRACK") {
+      continue;
+    }
+
+    const key = resolvePendingTrackLabel(discipline, trackLabelByCode);
+    const current = ensureOption(key);
+
+    current.pendingTotal += 1;
+    current.pendingCht += Math.max(discipline.cht, 0);
+    if (discipline.status === "AVAILABLE") {
+      current.pendingAvailable += 1;
+    } else {
+      current.pendingBlocked += 1;
+    }
+  }
+
+  return [...options.values()].sort((a, b) => a.label.localeCompare(b.label));
 }
 
 function normalizePlannerPendingWithoutChext(item: PendingDiscipline): PendingDiscipline | null {
@@ -231,15 +502,29 @@ function normalizePlannerPendingWithoutChext(item: PendingDiscipline): PendingDi
   };
 }
 
-function getPlannerPendingList(roadmap: RoadmapResult, gradeOptions?: GradeOptionsResponse | null): PendingDiscipline[] {
-  const syntheticPendings = roadmap.pending.filter((item) => isSyntheticElectivePendingCode(item.code));
+function getPlannerPendingList(
+  roadmap: RoadmapResult,
+  gradeOptions?: GradeOptionsResponse | null,
+  selectedTrackKeys: string[] = []
+): PendingDiscipline[] {
+  const selectedTracks = new Set(selectedTrackKeys.map((key) => normalizeTrackLabel(key)));
+  const trackLabelByCode = buildTrackLabelByCode(roadmap);
+  const pendingByScope = roadmap.pending.filter((item) => {
+    if (item.category !== "TRACK" || selectedTracks.size === 0) {
+      return true;
+    }
+    const trackKey = resolvePendingTrackLabel(item, trackLabelByCode);
+    return selectedTracks.has(trackKey);
+  });
+
+  const syntheticPendings = pendingByScope.filter((item) => isSyntheticElectivePendingCode(item.code));
   if (syntheticPendings.length === 0) {
-    return roadmap.pending
+    return pendingByScope
       .map((item) => normalizePlannerPendingWithoutChext(item))
       .filter((item): item is PendingDiscipline => Boolean(item));
   }
 
-  const nonSynthetic = roadmap.pending.filter((item) => !isSyntheticElectivePendingCode(item.code));
+  const nonSynthetic = pendingByScope.filter((item) => !isSyntheticElectivePendingCode(item.code));
   const requiredElectiveCht = syntheticPendings.reduce((sum, item) => sum + item.cht, 0);
   const electiveCandidatesFromCatalog = (roadmap.electiveOptions ?? [])
     .filter((item) => item.status !== "DONE")
@@ -261,7 +546,7 @@ function getPlannerPendingList(roadmap: RoadmapResult, gradeOptions?: GradeOptio
       : electiveCandidatesFromOffer;
 
   if (electiveCandidates.length === 0) {
-    return roadmap.pending;
+    return pendingByScope;
   }
 
   const chosenElectives: PendingDiscipline[] = [];
@@ -316,9 +601,16 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
   const [gradeOptions, setGradeOptions] = useState<GradeOptionsResponse | null>(null);
   const [activeMatrix, setActiveMatrix] = useState<MatrixCode | "">("");
   const [maxChsPerPeriod, setMaxChsPerPeriod] = useState<number>(18);
+  const [selectedPlannerTracks, setSelectedPlannerTracks] = useState<string[]>([]);
   const [selectedPlanPeriod, setSelectedPlanPeriod] = useState<number>(1);
   const [manualPlan, setManualPlan] = useState<Record<number, string[]>>({});
   const [manualCorrelations, setManualCorrelations] = useState<Record<string, string>>({});
+  const [unusedConvalidationSourceCode, setUnusedConvalidationSourceCode] = useState("");
+  const [unusedConvalidationMode, setUnusedConvalidationMode] = useState<"lookup" | "category">("lookup");
+  const [unusedConvalidationCategory, setUnusedConvalidationCategory] = useState<CorrelationCategory>("MANDATORY");
+  const [unusedConvalidationTargetInput, setUnusedConvalidationTargetInput] = useState("");
+  const [globalDisciplineLookupOptions, setGlobalDisciplineLookupOptions] = useState<CorrelationLookupOption[]>([]);
+  const [legacySnapshotMigrated, setLegacySnapshotMigrated] = useState(false);
   const [assistantInput, setAssistantInput] = useState("");
   const [assistantWidgetOpen, setAssistantWidgetOpen] = useState(false);
   const [assistantMessages, setAssistantMessages] = useState<AssistantMessage[]>([
@@ -326,7 +618,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       id: "assistant-welcome",
       role: "assistant",
       text:
-        "Sou seu assistente de planejamento. Posso montar sua grade com restrições de horário, estimar quando você se forma por CHS e sugerir disciplinas da trilha de IA.",
+        "Sou seu assistente de planejamento BSI/UTFPR. Uso seu roadmap + histórico + GradeNaHora (semestre mais recente disponível) e respeito as trilhas selecionadas no Planejamento para sugerir grade com restrições reais.",
       createdAt: new Date().toISOString()
     }
   ]);
@@ -347,6 +639,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
         gradeOptions?: GradeOptionsResponse | null;
         activeMatrix?: MatrixCode | "";
         maxChsPerPeriod?: number;
+        selectedPlannerTracks?: string[];
         selectedPlanPeriod?: number;
         manualPlan?: Record<number, string[]>;
         manualCorrelations?: Record<string, string>;
@@ -359,6 +652,13 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       if (saved.activeMatrix) setActiveMatrix(saved.activeMatrix);
       if (typeof saved.maxChsPerPeriod === "number" && Number.isFinite(saved.maxChsPerPeriod)) {
         setMaxChsPerPeriod(saved.maxChsPerPeriod);
+      }
+      if (Array.isArray(saved.selectedPlannerTracks)) {
+        setSelectedPlannerTracks(
+          saved.selectedPlannerTracks
+            .map((track) => normalizeTrackLabel(track))
+            .filter((track, index, array) => array.indexOf(track) === index)
+        );
       }
       if (typeof saved.selectedPlanPeriod === "number" && Number.isFinite(saved.selectedPlanPeriod)) {
         setSelectedPlanPeriod(saved.selectedPlanPeriod);
@@ -380,6 +680,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       gradeOptions,
       activeMatrix,
       maxChsPerPeriod,
+      selectedPlannerTracks,
       selectedPlanPeriod,
       manualPlan,
       manualCorrelations,
@@ -397,11 +698,87 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     gradeOptions,
     activeMatrix,
     maxChsPerPeriod,
+    selectedPlannerTracks,
     selectedPlanPeriod,
     manualPlan,
     manualCorrelations,
     assistantMessages
   ]);
+
+  useEffect(() => {
+    setLegacySnapshotMigrated(false);
+  }, [parsedTranscript?.generatedAt, activeMatrix]);
+
+  useEffect(() => {
+    setUnusedConvalidationTargetInput("");
+  }, [unusedConvalidationMode, unusedConvalidationCategory, unusedConvalidationSourceCode]);
+
+  useEffect(() => {
+    let canceled = false;
+
+    const loadDisciplineLookup = async (): Promise<void> => {
+      try {
+        const response = await fetch("/api/roadmap/lookup-disciplines");
+        if (!response.ok) {
+          throw new Error(await readErrorMessage(response, "Falha ao carregar lookup global de disciplinas."));
+        }
+        const payload = (await response.json()) as DisciplineLookupResponse;
+
+        if (canceled) {
+          return;
+        }
+
+        const mapped = payload.items
+          .map((item) => {
+            const code = item.code.trim().toUpperCase();
+            if (!code) {
+              return null;
+            }
+
+            const category = item.category ?? "UNKNOWN";
+            const categoryLabel = CORRELATION_CATEGORY_LABEL[category] ?? CORRELATION_CATEGORY_LABEL.UNKNOWN;
+            const courseAbbr = item.courseAbbr?.trim() || inferCourseAbbreviation(null, item.courseCode);
+            const searchText = normalizeDisciplineNameForComparison(
+              `${code} ${item.name} ${courseAbbr} ${item.matrixCode} ${categoryLabel}`
+            );
+
+            return {
+              key: `${item.matrixCode}:${code}`,
+              code,
+              name: item.name,
+              category,
+              categoryLabel,
+              matrixCode: item.matrixCode,
+              courseCode: item.courseCode,
+              courseAbbr,
+              catalogOnly: Boolean(item.catalogOnly),
+              lookupValue: buildCorrelationLookupValue({
+                code,
+                name: item.name,
+                courseAbbr,
+                matrixCode: item.matrixCode,
+                categoryLabel
+              }),
+              searchText
+            } satisfies CorrelationLookupOption;
+          })
+          .filter((item): item is CorrelationLookupOption => Boolean(item))
+          .sort((a, b) => a.name.localeCompare(b.name) || a.code.localeCompare(b.code) || a.matrixCode.localeCompare(b.matrixCode));
+
+        setGlobalDisciplineLookupOptions(mapped);
+      } catch {
+        if (!canceled) {
+          setGlobalDisciplineLookupOptions([]);
+        }
+      }
+    };
+
+    void loadDisciplineLookup();
+
+    return () => {
+      canceled = true;
+    };
+  }, []);
 
   const isSectionVisible = (section: RoadmapSectionKey | "review-manual"): boolean => {
     if (section === "review-manual") {
@@ -409,6 +786,40 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     }
     return currentSection === section;
   };
+
+  const plannerTrackOptions = useMemo(() => {
+    if (!roadmap) {
+      return [] as PlannerTrackOption[];
+    }
+    return getPlannerTrackOptions(roadmap);
+  }, [roadmap]);
+
+  useEffect(() => {
+    if (!roadmap) {
+      if (selectedPlannerTracks.length > 0) {
+        setSelectedPlannerTracks([]);
+      }
+      return;
+    }
+
+    if (plannerTrackOptions.length === 0) {
+      if (selectedPlannerTracks.length > 0) {
+        setSelectedPlannerTracks([]);
+      }
+      return;
+    }
+
+    const validTrackKeys = new Set(plannerTrackOptions.map((item) => item.key));
+    const sanitizedCurrent = selectedPlannerTracks.filter((track) => validTrackKeys.has(track));
+    const fallbackInitiated = plannerTrackOptions.filter((item) => item.initiated).map((item) => item.key);
+    const fallbackAll = plannerTrackOptions.map((item) => item.key);
+    const fallbackDefault = fallbackInitiated.length > 0 ? fallbackInitiated : fallbackAll;
+    const nextSelection = sanitizedCurrent.length > 0 ? sanitizedCurrent : fallbackDefault;
+
+    if (!arraysEqual(selectedPlannerTracks, nextSelection)) {
+      setSelectedPlannerTracks(nextSelection);
+    }
+  }, [plannerTrackOptions, roadmap, selectedPlannerTracks]);
 
   const parseMutation = useMutation({
     mutationFn: async (file: File) => {
@@ -512,6 +923,14 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     }
   });
 
+  const selectedPlannerTrackLabels = useMemo(() => {
+    if (plannerTrackOptions.length === 0) {
+      return [] as string[];
+    }
+    const selected = new Set(selectedPlannerTracks);
+    return plannerTrackOptions.filter((item) => selected.has(item.key)).map((item) => item.label);
+  }, [plannerTrackOptions, selectedPlannerTracks]);
+
   const assistantMutation = useMutation({
     mutationFn: async (message: string) => {
       const response = await fetch("/api/assistant/chat", {
@@ -523,6 +942,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
           roadmap,
           parsedTranscript,
           gradeOptions,
+          selectedTrackLabels: selectedPlannerTrackLabels,
           selectedPeriodIndex: selectedPlanPeriod,
           maxChsPerPeriod
         })
@@ -536,14 +956,37 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     }
   });
 
-  async function runCalculation(
+  const runCalculation = useCallback(async (
     transcript: ParsedTranscript,
     matrixCode?: MatrixCode,
     manualMappings?: ManualCorrelationInput[]
-  ): Promise<void> {
+  ): Promise<void> => {
     const roadmapResult = await calculateMutation.mutateAsync({ transcript, matrixCode, manualMappings });
     setRoadmap(roadmapResult);
-  }
+  }, [calculateMutation]);
+
+  useEffect(() => {
+    if (!roadmap || !parsedTranscript || !activeMatrix || legacySnapshotMigrated || calculateMutation.isPending) {
+      return;
+    }
+    if (!looksLikeLegacyUnusedSnapshot(roadmap)) {
+      return;
+    }
+
+    setLegacySnapshotMigrated(true);
+    const manualMappings = buildManualMappingsFromCorrelations(manualCorrelations);
+    void runCalculation(parsedTranscript, activeMatrix, manualMappings).catch((error) => {
+      setErrorMessage((error as Error).message);
+    });
+  }, [
+    activeMatrix,
+    calculateMutation.isPending,
+    legacySnapshotMigrated,
+    manualCorrelations,
+    parsedTranscript,
+    roadmap,
+    runCalculation
+  ]);
 
   async function handleParseAndCalculate(): Promise<void> {
     if (!selectedFile) {
@@ -574,13 +1017,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     try {
       setErrorMessage(null);
       setActiveMatrix(matrixCode);
-      await runCalculation(parsedTranscript, matrixCode, Object.entries(manualCorrelations).flatMap(([sourceCode, targetCode]) => {
-        const normalizedTargetCode = normalizeManualTargetCode(targetCode);
-        if (!normalizedTargetCode) {
-          return [];
-        }
-        return [{ sourceCode, targetCode: normalizedTargetCode }];
-      }));
+      await runCalculation(parsedTranscript, matrixCode, buildManualMappingsFromCorrelations(manualCorrelations));
       setGradeOptions(null);
     } catch (error) {
       setErrorMessage((error as Error).message);
@@ -592,13 +1029,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       return;
     }
 
-    const mappings: ManualCorrelationInput[] = Object.entries(manualCorrelations).flatMap(([sourceCode, targetCode]) => {
-      const normalizedTargetCode = normalizeManualTargetCode(targetCode);
-      if (!normalizedTargetCode) {
-        return [];
-      }
-      return [{ sourceCode, targetCode: normalizedTargetCode }];
-    });
+    const mappings: ManualCorrelationInput[] = buildManualMappingsFromCorrelations(manualCorrelations);
 
     if (mappings.length === 0) {
       setErrorMessage("Preencha ao menos um código de destino para aplicar a correlação manual.");
@@ -614,6 +1045,90 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     }
   }
 
+  async function handleConvalidateUnusedDiscipline(): Promise<void> {
+    if (!roadmap || !parsedTranscript) {
+      return;
+    }
+
+    const matrixToUse = (activeMatrix || roadmap.matrixCode) as MatrixCode;
+    const source = unusedConvalidationSourceOptions.find((item) => item.code === unusedConvalidationSourceCode);
+    if (!source) {
+      setErrorMessage("Selecione uma disciplina não utilizada para convalidar.");
+      return;
+    }
+
+    let targetCode = extractTargetCodeFromLookupValue(unusedConvalidationTargetInput);
+    if (!targetCode && unusedConvalidationMode === "category") {
+      const automaticCandidates = convalidationLookupOptions.filter((item) => {
+        if (item.category !== unusedConvalidationCategory) {
+          return false;
+        }
+        if (item.matrixCode !== matrixToUse) {
+          return false;
+        }
+        return disciplineNamesLikelyMatch(source.name, item.name);
+      });
+
+      if (automaticCandidates.length === 1) {
+        targetCode = automaticCandidates[0].code;
+      } else if (automaticCandidates.length > 1) {
+        setErrorMessage("Mais de uma disciplina encontrada na categoria. Selecione o código exato no campo lookup.");
+        return;
+      }
+    }
+
+    if (!targetCode) {
+      setErrorMessage("Informe um código de destino ou selecione uma opção no lookup.");
+      return;
+    }
+
+    const targetCandidates = convalidationLookupOptions.filter((item) => item.code === targetCode);
+    if (targetCandidates.length === 0) {
+      setErrorMessage("Código de destino não encontrado no lookup.");
+      return;
+    }
+
+    const activeMatrixCandidates = targetCandidates.filter((item) => item.matrixCode === matrixToUse);
+    if (activeMatrixCandidates.length === 0) {
+      const availableIn = [...new Set(targetCandidates.map((item) => `matriz ${item.matrixCode} (${item.courseAbbr})`))].join(", ");
+      setErrorMessage(
+        `Código ${targetCode} encontrado em ${availableIn}, mas não existe na matriz ativa ${matrixToUse}. Troque a matriz ativa ou escolha um código da matriz ${matrixToUse}.`
+      );
+      return;
+    }
+
+    const normalizedLookupInput = unusedConvalidationTargetInput.trim().toUpperCase();
+    const explicitTarget =
+      normalizedLookupInput.length > 0
+        ? activeMatrixCandidates.find(
+            (item) => item.lookupValue.toUpperCase() === normalizedLookupInput || `${item.code} - ${item.name}`.toUpperCase() === normalizedLookupInput
+          )
+        : null;
+    const target = explicitTarget ?? activeMatrixCandidates[0];
+
+    if (unusedConvalidationMode === "category" && target.category !== unusedConvalidationCategory) {
+      setErrorMessage("A disciplina selecionada não pertence à categoria escolhida para convalidação.");
+      return;
+    }
+
+    const nextManualCorrelations = {
+      ...manualCorrelations,
+      [source.code]: target.code
+    };
+
+    try {
+      setErrorMessage(null);
+      setManualCorrelations(nextManualCorrelations);
+      setUnusedConvalidationTargetInput(target.lookupValue);
+      setGradeOptions(null);
+      await runCalculation(parsedTranscript, matrixToUse, buildManualMappingsFromCorrelations(nextManualCorrelations));
+      setUnusedConvalidationSourceCode("");
+      setUnusedConvalidationTargetInput("");
+    } catch (error) {
+      setErrorMessage((error as Error).message);
+    }
+  }
+
   async function handleLoadGrade(): Promise<void> {
     if (!roadmap || !activeMatrix) {
       return;
@@ -621,7 +1136,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
 
     try {
       setErrorMessage(null);
-      const pendingCodes = getPlannerPendingList(roadmap, gradeOptions).map((item) => item.code);
+      const pendingCodes = getPlannerPendingList(roadmap, gradeOptions, selectedPlannerTracks).map((item) => item.code);
       const result = await gradeMutation.mutateAsync({
         matrixCode: activeMatrix,
         pending: pendingCodes,
@@ -638,6 +1153,38 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     } catch (error) {
       setErrorMessage((error as Error).message);
     }
+  }
+
+  function applyPlannerTrackSelection(nextTracks: string[]): void {
+    const normalized = nextTracks
+      .map((track) => normalizeTrackLabel(track))
+      .filter((track, index, array) => array.indexOf(track) === index);
+    const fallbackInitiated = plannerTrackOptions.filter((track) => track.initiated).map((track) => track.key);
+    const fallbackAll = plannerTrackOptions.map((track) => track.key);
+    const fallbackDefault = fallbackInitiated.length > 0 ? fallbackInitiated : fallbackAll;
+    const resolved = normalized.length > 0 ? normalized : fallbackDefault;
+
+    if (arraysEqual(selectedPlannerTracks, resolved)) {
+      return;
+    }
+
+    setSelectedPlannerTracks(resolved);
+    setGradeOptions(null);
+    setManualPlan({});
+    setSelectedPlanPeriod(1);
+  }
+
+  function togglePlannerTrack(trackKey: string): void {
+    if (selectedPlannerTracks.includes(trackKey) && selectedPlannerTracks.length === 1) {
+      return;
+    }
+
+    if (selectedPlannerTracks.includes(trackKey)) {
+      applyPlannerTrackSelection(selectedPlannerTracks.filter((item) => item !== trackKey));
+      return;
+    }
+
+    applyPlannerTrackSelection([...selectedPlannerTracks, trackKey]);
   }
 
   function moveCodeToPeriod(code: string, targetPeriod: number | null): void {
@@ -780,20 +1327,135 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     );
   }, [roadmap]);
 
-  const manualCorrelationTargetOptions = useMemo(() => {
+  const correlationLookupOptions = useMemo(() => {
     if (!roadmap) {
-      return [];
+      return [] as CorrelationLookupOption[];
     }
 
     const syntheticPattern = /^ELV[PD]\d{3}C\d{3}$/;
-    return roadmap.pending
-      .filter((discipline) => !syntheticPattern.test(discipline.code))
-      .map((discipline) => ({
-        code: discipline.code,
-        label: `${discipline.code} - ${discipline.name}`
-      }))
-      .sort((a, b) => a.code.localeCompare(b.code));
+    const fallbackMatrixCode = (activeMatrix || roadmap.matrixCode) as MatrixCode;
+    const fallbackCourseCode = parsedTranscript?.student.courseCode?.trim() || "236";
+    const fallbackCourseAbbr = inferCourseAbbreviation(parsedTranscript?.student.courseName, fallbackCourseCode);
+    const byCode = new Map<string, CorrelationLookupOption>();
+
+    for (const node of roadmap.prereqGraph.nodes) {
+      const code = node.code.trim().toUpperCase();
+      if (!code || syntheticPattern.test(code)) {
+        continue;
+      }
+
+      byCode.set(code, {
+        key: `${fallbackMatrixCode}:${code}`,
+        code,
+        name: node.name,
+        category: node.category,
+        categoryLabel: CORRELATION_CATEGORY_LABEL[node.category] ?? CORRELATION_CATEGORY_LABEL.UNKNOWN,
+        matrixCode: fallbackMatrixCode,
+        courseCode: fallbackCourseCode,
+        courseAbbr: fallbackCourseAbbr,
+        catalogOnly: false,
+        lookupValue: buildCorrelationLookupValue({
+          code,
+          name: node.name,
+          courseAbbr: fallbackCourseAbbr,
+          matrixCode: fallbackMatrixCode,
+          categoryLabel: CORRELATION_CATEGORY_LABEL[node.category] ?? CORRELATION_CATEGORY_LABEL.UNKNOWN
+        }),
+        searchText: normalizeDisciplineNameForComparison(
+          `${code} ${node.name} ${fallbackCourseAbbr} ${fallbackMatrixCode} ${
+            CORRELATION_CATEGORY_LABEL[node.category] ?? CORRELATION_CATEGORY_LABEL.UNKNOWN
+          }`
+        )
+      });
+    }
+
+    for (const option of roadmap.electiveOptions ?? []) {
+      const code = option.code.trim().toUpperCase();
+      if (!code || syntheticPattern.test(code) || byCode.has(code)) {
+        continue;
+      }
+
+      byCode.set(code, {
+        key: `${fallbackMatrixCode}:${code}`,
+        code,
+        name: option.name,
+        category: "ELECTIVE",
+        categoryLabel: CORRELATION_CATEGORY_LABEL.ELECTIVE,
+        matrixCode: fallbackMatrixCode,
+        courseCode: fallbackCourseCode,
+        courseAbbr: fallbackCourseAbbr,
+        catalogOnly: false,
+        lookupValue: buildCorrelationLookupValue({
+          code,
+          name: option.name,
+          courseAbbr: fallbackCourseAbbr,
+          matrixCode: fallbackMatrixCode,
+          categoryLabel: CORRELATION_CATEGORY_LABEL.ELECTIVE
+        }),
+        searchText: normalizeDisciplineNameForComparison(
+          `${code} ${option.name} ${fallbackCourseAbbr} ${fallbackMatrixCode} ${CORRELATION_CATEGORY_LABEL.ELECTIVE}`
+        )
+      });
+    }
+
+    return [...byCode.values()].sort((a, b) => a.name.localeCompare(b.name) || a.code.localeCompare(b.code));
+  }, [activeMatrix, parsedTranscript?.student.courseCode, parsedTranscript?.student.courseName, roadmap]);
+
+  const manualCorrelationTargetOptions = useMemo(
+    () =>
+      correlationLookupOptions.map((item) => ({
+        code: item.code,
+        label: `${item.code} - ${item.name}`
+      })),
+    [correlationLookupOptions]
+  );
+
+  const convalidationLookupOptions = useMemo(() => {
+    if (globalDisciplineLookupOptions.length > 0) {
+      return globalDisciplineLookupOptions;
+    }
+    return correlationLookupOptions;
+  }, [correlationLookupOptions, globalDisciplineLookupOptions]);
+
+  const unusedConvalidationSourceOptions = useMemo(() => {
+    if (!roadmap) {
+      return [];
+    }
+    return roadmap.unusedDisciplines.filter((item) => item.code.toUpperCase() !== "ELETIVAS");
   }, [roadmap]);
+
+  const selectedUnusedConvalidationSource = useMemo(
+    () => unusedConvalidationSourceOptions.find((item) => item.code === unusedConvalidationSourceCode) ?? null,
+    [unusedConvalidationSourceCode, unusedConvalidationSourceOptions]
+  );
+
+  const unusedConvalidationTargetOptions = useMemo(() => {
+    const scoped =
+      unusedConvalidationMode === "category"
+        ? convalidationLookupOptions.filter((item) => item.category === unusedConvalidationCategory)
+        : convalidationLookupOptions;
+
+    const normalizedQuery = normalizeDisciplineNameForComparison(unusedConvalidationTargetInput);
+    const normalizedCodeQuery = normalizeManualTargetCode(unusedConvalidationTargetInput);
+
+    const filtered =
+      normalizedQuery.length === 0
+        ? scoped
+        : scoped.filter((item) => item.searchText.includes(normalizedQuery) || (normalizedCodeQuery.length >= 2 && item.code.includes(normalizedCodeQuery)));
+
+    const ranked = [...filtered].sort((a, b) => {
+      if (normalizedQuery.length > 0) {
+        const aStarts = a.searchText.startsWith(normalizedQuery) || (normalizedCodeQuery.length >= 2 && a.code.startsWith(normalizedCodeQuery));
+        const bStarts = b.searchText.startsWith(normalizedQuery) || (normalizedCodeQuery.length >= 2 && b.code.startsWith(normalizedCodeQuery));
+        if (aStarts !== bStarts) {
+          return aStarts ? -1 : 1;
+        }
+      }
+      return a.name.localeCompare(b.name) || a.code.localeCompare(b.code) || a.matrixCode.localeCompare(b.matrixCode);
+    });
+
+    return ranked.slice(0, 300);
+  }, [convalidationLookupOptions, unusedConvalidationCategory, unusedConvalidationMode, unusedConvalidationTargetInput]);
 
   const sectorTables = useMemo(() => {
     if (!roadmap) {
@@ -1001,27 +1663,27 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       return { totalCht: 0, totalEstimatedChs: 0 };
     }
 
-    const plannerPending = getPlannerPendingList(roadmap, gradeOptions);
+    const plannerPending = getPlannerPendingList(roadmap, gradeOptions, selectedPlannerTracks);
     const totalCht = plannerPending.reduce((sum, item) => sum + item.cht, 0);
     return {
       totalCht,
       totalEstimatedChs: plannerPending.reduce((sum, item) => sum + estimateChsFromCht(item.cht), 0)
     };
-  }, [gradeOptions, roadmap]);
+  }, [gradeOptions, roadmap, selectedPlannerTracks]);
 
   const plannerPendingCount = useMemo(() => {
     if (!roadmap) {
       return 0;
     }
-    return getPlannerPendingList(roadmap, gradeOptions).length;
-  }, [gradeOptions, roadmap]);
+    return getPlannerPendingList(roadmap, gradeOptions, selectedPlannerTracks).length;
+  }, [gradeOptions, roadmap, selectedPlannerTracks]);
 
   const manualPlannerData = useMemo(() => {
     if (!roadmap) {
       return null;
     }
 
-    const plannerPending = getPlannerPendingList(roadmap, gradeOptions);
+    const plannerPending = getPlannerPendingList(roadmap, gradeOptions, selectedPlannerTracks);
     const pendingByCode = new Map(plannerPending.map((discipline) => [discipline.code, discipline]));
     const creditsByCode = new Map((gradeOptions?.availableByDiscipline ?? []).map((discipline) => [discipline.code, discipline.credits]));
     const slots = new Map(
@@ -1071,7 +1733,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     });
 
     return { periods, unassigned };
-  }, [gradeOptions, manualPlan, roadmap]);
+  }, [gradeOptions, manualPlan, roadmap, selectedPlannerTracks]);
 
   const selectedManualPeriod = useMemo(() => {
     if (!manualPlannerData) {
@@ -1079,6 +1741,79 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     }
     return manualPlannerData.periods.find((period) => period.periodIndex === selectedPlanPeriod) ?? manualPlannerData.periods[0] ?? null;
   }, [manualPlannerData, selectedPlanPeriod]);
+
+  const electiveSummaryBreakdown = useMemo(() => {
+    const row = parsedTranscript?.summary.find((item) => item.key.toLowerCase().includes("eletiv"));
+    if (!row) {
+      return null;
+    }
+
+    const taken = Math.max(row.taken ?? 0, 0);
+    const validated = Math.max(row.approvedOrValidated ?? 0, 0);
+    const missing = Math.max(taken - validated, 0);
+
+    return {
+      taken,
+      validated,
+      missing
+    };
+  }, [parsedTranscript]);
+
+  const electiveEvidenceAttempts = useMemo(() => {
+    if (!parsedTranscript) {
+      return [] as ParsedTranscript["attempts"];
+    }
+
+    const seen = new Set<string>();
+    return parsedTranscript.attempts
+      .filter((attempt) => attempt.status === "APPROVED")
+      .filter((attempt) => isElectiveLikeAttempt(attempt))
+      .filter((attempt) => {
+        const code = attempt.code.trim().toUpperCase();
+        const key = `${code}-${attempt.year ?? 0}-${attempt.semester ?? 0}-${attempt.classCode ?? ""}-${attempt.cht}`;
+        if (seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      })
+      .sort((a, b) => {
+        const yearDiff = (b.year ?? 0) - (a.year ?? 0);
+        if (yearDiff !== 0) {
+          return yearDiff;
+        }
+        return (b.semester ?? 0) - (a.semester ?? 0);
+      });
+  }, [parsedTranscript]);
+
+  const electiveRawSnippets = useMemo(() => {
+    if (!parsedTranscript?.rawText) {
+      return [] as string[];
+    }
+    return extractRawElectiveSnippets(parsedTranscript.rawText);
+  }, [parsedTranscript]);
+
+  const unusedElectiveAggregate = useMemo(() => {
+    if (!roadmap) {
+      return null;
+    }
+    return roadmap.unusedDisciplines.find((item) => item.code.toUpperCase() === "ELETIVAS") ?? null;
+  }, [roadmap]);
+
+  const unmatchedElectiveAttempts = useMemo(() => {
+    if (!roadmap) {
+      return [];
+    }
+    return roadmap.unmatchedApprovedAttempts
+      .filter((item) => item.sourceSection === "elective")
+      .sort((a, b) => {
+        const yearDiff = (b.year ?? 0) - (a.year ?? 0);
+        if (yearDiff !== 0) {
+          return yearDiff;
+        }
+        return (b.semester ?? 0) - (a.semester ?? 0);
+      });
+  }, [roadmap]);
 
   useEffect(() => {
     const onJson = () => {
@@ -1514,7 +2249,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
               {progressChartData ? <Bar data={progressChartData} options={chartOptions} /> : null}
             </div>
             <p className="mt-2 text-[11px] text-slate-500">
-              Gráficos de progresso consideram apenas CHT de disciplinas. CHEXT não é contabilizado aqui.
+              Gráficos de progresso consideram apenas CHT de disciplinas. CHEXT e Estágio não são contabilizados aqui.
             </p>
 
             <div className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3">
@@ -1534,7 +2269,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
                       </strong>
                     </p>
                     <p className="text-[11px] text-slate-500">
-                      Regra: disciplinas com status <strong>APPROVED</strong> entram no CHS histórico.
+                      Regra: disciplinas com status <strong>APPROVED</strong> entram no CHS histórico, exceto Estágio.
                     </p>
                     <p className="text-[11px] text-slate-500">
                       Faltante oficial usado: <strong>{chsPaceProjection.missingCht} CHT</strong>.
@@ -1542,6 +2277,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
                     <p className="text-[11px] text-slate-500">
                       CHEXT faltante (informativo): <strong>{chsPaceProjection.missingChext}h</strong>.
                     </p>
+                    <p className="text-[11px] text-slate-500">{FORECAST_INTERNSHIP_NOTE}</p>
                     <p className="text-[11px] text-slate-500">{FORECAST_METHODOLOGY_NOTE}</p>
                     {chsPaceProjection.missingSource === "roadmap_fallback" ? (
                       <p className="text-[11px] text-amber-400">
@@ -1857,6 +2593,58 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
         {roadmap && activeMatrix ? (
           <>
             <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+              {plannerTrackOptions.length > 0 ? (
+                <div className="mb-3 rounded-lg border border-[var(--border)] bg-[#0a1529] p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-300">
+                      Trilhas consideradas na montagem
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        className="rounded-md border border-[var(--border)] px-2 py-1 text-xs text-slate-300 hover:border-[var(--primary)] hover:text-slate-100"
+                        onClick={() =>
+                          applyPlannerTrackSelection(plannerTrackOptions.filter((item) => item.initiated).map((item) => item.key))
+                        }
+                        type="button"
+                      >
+                        Selecionar iniciadas
+                      </button>
+                      <button
+                        className="rounded-md border border-[var(--border)] px-2 py-1 text-xs text-slate-300 hover:border-[var(--primary)] hover:text-slate-100"
+                        onClick={() => applyPlannerTrackSelection(plannerTrackOptions.map((item) => item.key))}
+                        type="button"
+                      >
+                        Selecionar todas
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {plannerTrackOptions.map((track) => {
+                      const selected = selectedPlannerTracks.includes(track.key);
+                      return (
+                        <button
+                          className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                            selected
+                              ? "border-[var(--primary)] bg-[rgba(0,210,106,0.18)] text-[var(--text-primary)]"
+                              : "border-[var(--border)] bg-[#0b1320] text-slate-300 hover:border-[var(--primary)]"
+                          }`}
+                          key={`planner-track-${track.key}`}
+                          onClick={() => togglePlannerTrack(track.key)}
+                          type="button"
+                        >
+                          {track.label} ({track.doneNodes}/{track.totalNodes} feitas • {track.pendingAvailable}/{track.pendingTotal} pend.)
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <p className="mt-2 text-xs text-slate-400">
+                    A IA e o botão de geração usam apenas as trilhas selecionadas. Você pode ajustar manualmente os cards depois.
+                  </p>
+                </div>
+              ) : null}
+
               <div className="grid gap-3 md:grid-cols-[220px_1fr_auto] md:items-end">
                 <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
                   CHS alvo por período
@@ -1877,6 +2665,11 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
                   <p>
                     Carga pendente estimada: <strong>{pendingTotals.totalEstimatedChs} CHS</strong> ({pendingTotals.totalCht} CHT)
                   </p>
+                  {selectedPlannerTrackLabels.length > 0 ? (
+                    <p className="text-xs text-slate-400">
+                      Trilhas ativas: <strong>{selectedPlannerTrackLabels.join(", ")}</strong>
+                    </p>
+                  ) : null}
                   <p className="text-xs text-slate-400">
                     Filtro aplicado: CHEXT foi removido da carga usada na montagem de grade.
                   </p>
@@ -2166,35 +2959,274 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
         {!roadmap ? <p className="text-sm text-slate-400">Sem dados para exibir.</p> : null}
 
         {roadmap ? (
-          <div className="mt-3 overflow-x-auto">
-            <table className="table-base">
-              <thead>
-                <tr>
-                  <th>Código</th>
-                  <th>Disciplina</th>
-                  <th>CHT</th>
-                  <th>Matérias relacionadas</th>
-                  <th>Motivo</th>
-                </tr>
-              </thead>
-              <tbody>
-                {roadmap.unusedDisciplines.length === 0 ? (
+          <div className="mt-3 space-y-4">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+              <h3 className="text-sm font-bold text-slate-100">Convalidar Disciplina Não Utilizada</h3>
+              <p className="mt-1 text-xs text-slate-400">
+                Selecione uma disciplina da lista e informe a disciplina de destino na matriz ativa. O lookup busca por código e nome e
+                mostra curso abreviado + matriz de cada opção. Após aplicar, a disciplina sai de “Não Utilizadas”.
+              </p>
+
+              <datalist id="unused-convalidation-target-lookup">
+                {unusedConvalidationTargetOptions.map((item) => (
+                  <option
+                    key={`unused-target-${item.key}`}
+                    label={`${item.name} | ${item.code} | ${item.courseAbbr} | Matriz ${item.matrixCode} | ${item.categoryLabel}`}
+                    value={item.lookupValue}
+                  />
+                ))}
+              </datalist>
+
+              <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold uppercase tracking-wide text-slate-400" htmlFor="unused-source-select">
+                    Origem (não utilizada)
+                  </label>
+                  <select
+                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm"
+                    id="unused-source-select"
+                    onChange={(event) => setUnusedConvalidationSourceCode(event.target.value)}
+                    value={unusedConvalidationSourceCode}
+                  >
+                    <option value="">Selecione...</option>
+                    {unusedConvalidationSourceOptions.map((item) => (
+                      <option key={`unused-source-${item.code}`} value={item.code}>
+                        {item.code} - {item.name} ({item.cht} CHT)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold uppercase tracking-wide text-slate-400" htmlFor="unused-mode-select">
+                    Estratégia
+                  </label>
+                  <select
+                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm"
+                    id="unused-mode-select"
+                    onChange={(event) => setUnusedConvalidationMode(event.target.value === "category" ? "category" : "lookup")}
+                    value={unusedConvalidationMode}
+                  >
+                    <option value="lookup">Convalidar por código (lookup)</option>
+                    <option value="category">Convalidar por categoria + lookup</option>
+                  </select>
+                </div>
+
+                {unusedConvalidationMode === "category" ? (
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold uppercase tracking-wide text-slate-400" htmlFor="unused-category-select">
+                      Categoria de destino
+                    </label>
+                    <select
+                      className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm"
+                      id="unused-category-select"
+                      onChange={(event) => setUnusedConvalidationCategory(event.target.value as CorrelationCategory)}
+                      value={unusedConvalidationCategory}
+                    >
+                      {(Object.keys(CORRELATION_CATEGORY_LABEL) as CorrelationCategory[]).map((category) => (
+                        <option key={`unused-category-${category}`} value={category}>
+                          {CORRELATION_CATEGORY_LABEL[category]}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : null}
+
+                <div className="space-y-1 md:col-span-2 xl:col-span-1">
+                  <label className="text-xs font-semibold uppercase tracking-wide text-slate-400" htmlFor="unused-target-lookup-input">
+                    Destino (código + nome)
+                  </label>
+                  <input
+                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm"
+                    id="unused-target-lookup-input"
+                    list="unused-convalidation-target-lookup"
+                    onChange={(event) => setUnusedConvalidationTargetInput(event.target.value)}
+                    placeholder="Ex: ICSS30 - Sistemas Distribuídos [BSI | Matriz 981 | Obrigatórias]"
+                    value={unusedConvalidationTargetInput}
+                  />
+                </div>
+              </div>
+
+              {selectedUnusedConvalidationSource ? (
+                <p className="mt-2 text-xs text-slate-400">
+                  Origem selecionada:{" "}
+                  <strong>
+                    {selectedUnusedConvalidationSource.code} - {selectedUnusedConvalidationSource.name}
+                  </strong>{" "}
+                  ({selectedUnusedConvalidationSource.cht} CHT)
+                </p>
+              ) : null}
+
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs text-slate-400">
+                  O código de destino pode ser digitado manualmente ou escolhido no lookup enquanto você digita.
+                  {globalDisciplineLookupOptions.length > 0
+                    ? " Lookup global carregado com todas as matérias cadastradas (matrizes 806 e 981)."
+                    : " Lookup global indisponível no momento; exibindo fallback da matriz ativa."}
+                </p>
+                <button
+                  className="rounded-lg bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={calculateMutation.isPending || !unusedConvalidationSourceCode}
+                  onClick={() => void handleConvalidateUnusedDiscipline()}
+                  type="button"
+                >
+                  {calculateMutation.isPending ? "Convalidando..." : "Convalidar e Recalcular"}
+                </button>
+              </div>
+            </div>
+
+            {unusedElectiveAggregate || electiveSummaryBreakdown ? (
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+                <h3 className="text-sm font-bold text-slate-100">Transparência da Carga Eletiva Não Validada</h3>
+                <p className="mt-1 text-xs text-slate-300">
+                  {electiveSummaryBreakdown
+                    ? `${electiveSummaryBreakdown.taken} CHT = eletivas cursadas no histórico; ${electiveSummaryBreakdown.validated} CHT = eletivas validadas; saldo sem validação = ${electiveSummaryBreakdown.missing} CHT.`
+                    : "Não foi possível montar o detalhamento de eletivas a partir do resumo do histórico."}
+                </p>
+                {unusedElectiveAggregate ? (
+                  <p className="mt-1 text-xs text-slate-400">
+                    Valor exibido em “Disciplinas Não Utilizadas” para ELETIVAS: <strong>{unusedElectiveAggregate.cht} CHT</strong>.
+                  </p>
+                ) : null}
+
+                <div className="mt-3 overflow-x-auto">
+                  <table className="table-base">
+                    <thead>
+                      <tr>
+                        <th>Código</th>
+                        <th>Disciplina no Histórico</th>
+                        <th>CHT</th>
+                        <th>Ano/Semestre</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {electiveEvidenceAttempts.length === 0 ? (
+                        <tr>
+                          <td colSpan={4}>
+                            O parser não conseguiu identificar individualmente as eletivas aprovadas que compõem essa carga.
+                          </td>
+                        </tr>
+                      ) : (
+                        electiveEvidenceAttempts.map((attempt, index) => (
+                          <tr key={`unused-evidence-${attempt.code}-${attempt.year ?? 0}-${attempt.semester ?? 0}-${index}`}>
+                            <td>{attempt.code}</td>
+                            <td>{attempt.name || attempt.code}</td>
+                            <td>{attempt.cht}</td>
+                            <td>{formatYearSemester(attempt.year, attempt.semester)}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {electiveEvidenceAttempts.length === 0 ? (
+                  <div className="mt-3 rounded-lg border border-[var(--border)] bg-[#0b1320] p-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-300">
+                      Texto bruto do histórico (sem parse)
+                    </p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      Trechos extraídos diretamente do PDF para auditoria manual da carga eletiva.
+                    </p>
+                    {electiveRawSnippets.length === 0 ? (
+                      <p className="mt-2 text-xs text-slate-500">
+                        Não encontrei linhas contendo “eletiva/optativa” no texto bruto extraído.
+                      </p>
+                    ) : (
+                      <ul className="mt-2 space-y-1.5">
+                        {electiveRawSnippets.map((snippet, index) => (
+                          <li
+                            className="rounded border border-[var(--border)] bg-[#09101b] px-2 py-1.5 text-xs text-slate-300"
+                            key={`raw-elective-snippet-${index}`}
+                          >
+                            {snippet}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ) : null}
+
+                {unmatchedElectiveAttempts.length > 0 ? (
+                  <div className="mt-3 overflow-x-auto">
+                    <table className="table-base">
+                      <thead>
+                        <tr>
+                          <th>Disciplina aprovada sem correlação</th>
+                          <th>CHT</th>
+                          <th>Ano/Semestre</th>
+                          <th>Sugestões de correlação</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {unmatchedElectiveAttempts.slice(0, 12).map((item) => (
+                          <tr key={`unused-unmatched-${item.sourceCode}-${item.year ?? 0}-${item.semester ?? 0}`}>
+                            <td>
+                              {item.sourceCode} - {item.sourceName}
+                            </td>
+                            <td>{item.cht}</td>
+                            <td>{formatYearSemester(item.year, item.semester)}</td>
+                            <td>
+                              {item.suggestedTargets.length > 0
+                                ? item.suggestedTargets.map((target) => `${target.code} (${target.strategy})`).join(", ")
+                                : "Sem sugestão automática"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            <div className="overflow-x-auto">
+              <table className="table-base">
+                <thead>
                   <tr>
-                    <td colSpan={5}>Nenhuma disciplina não utilizada.</td>
+                    <th>Código</th>
+                    <th>Disciplina</th>
+                    <th>CHT</th>
+                    <th>Matérias relacionadas</th>
+                    <th>Motivo</th>
+                    <th>Ações</th>
                   </tr>
-                ) : (
-                  roadmap.unusedDisciplines.map((item, index) => (
-                    <tr key={`${item.code}-${index}`}>
-                      <td>{item.code}</td>
-                      <td>{item.name}</td>
-                      <td>{item.cht}</td>
-                      <td>{item.relatedSubjects?.join(", ") || `${item.code} - ${item.name}`}</td>
-                      <td>{item.reason}</td>
+                </thead>
+                <tbody>
+                  {roadmap.unusedDisciplines.length === 0 ? (
+                    <tr>
+                      <td colSpan={6}>Nenhuma disciplina não utilizada.</td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    roadmap.unusedDisciplines.map((item, index) => (
+                      <tr key={`${item.code}-${index}`}>
+                        <td>{item.code}</td>
+                        <td>{item.name}</td>
+                        <td>{item.cht}</td>
+                        <td>{item.relatedSubjects?.join(", ") || `${item.code} - ${item.name}`}</td>
+                        <td>{item.reason}</td>
+                        <td>
+                          {item.code.toUpperCase() === "ELETIVAS" ? (
+                            <span className="text-xs text-slate-500">Convalidar no bloco de eletivas</span>
+                          ) : (
+                            <button
+                              className="rounded-md border border-[var(--border)] px-2 py-1 text-xs text-slate-200 hover:bg-[var(--surface-soft)]"
+                              onClick={() => {
+                                setUnusedConvalidationSourceCode(item.code);
+                                setUnusedConvalidationTargetInput("");
+                              }}
+                              type="button"
+                            >
+                              Usar como origem
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : null}
       </UnusedSection>

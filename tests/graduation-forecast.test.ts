@@ -81,4 +81,38 @@ describe("graduation forecast", () => {
     expect(forecast?.missingChs).toBe(Math.ceil(expectedFallbackCht / 15));
     expect(forecast?.missingChext).toBe(0);
   });
+
+  it("does not include internship attempts in historical CHS pace", () => {
+    const baseForecast = buildGraduationForecast({ parsedTranscript: parsed, roadmap });
+    expect(baseForecast).not.toBeNull();
+
+    const parsedWithInternship: ParsedTranscript = {
+      ...parsed,
+      attempts: [
+        ...parsed.attempts,
+        {
+          sourceSection: "mandatory",
+          code: "EST999",
+          name: "Estágio Supervisionado",
+          cht: 300,
+          chext: 0,
+          chs: 20,
+          average: 10,
+          frequency: 100,
+          semester: 2,
+          year: 2024,
+          status: "APPROVED",
+          statusText: "Aprovado Por Nota/Frequência",
+          rawBlock: "dummy"
+        }
+      ]
+    };
+
+    const forecastWithInternship = buildGraduationForecast({
+      parsedTranscript: parsedWithInternship,
+      roadmap
+    });
+    expect(forecastWithInternship).not.toBeNull();
+    expect(forecastWithInternship?.historyBySemester).toEqual(baseForecast?.historyBySemester);
+  });
 });

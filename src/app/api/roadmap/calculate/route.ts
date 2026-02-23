@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { calculateRoadmap } from "@/lib/domain/matriz-engine";
+import { parseHistoricoText } from "@/lib/parser/historico-parser";
 import type { ManualCorrelationInput, MatrixCode, ParsedTranscript } from "@/types/academic";
 
 export const runtime = "nodejs";
@@ -38,9 +39,13 @@ export async function POST(request: Request) {
     }
 
     const { parsedTranscript, matrixCode, manualMappings } = parsedInput.data;
+    const transcriptForCalculation =
+      typeof parsedTranscript.rawText === "string" && parsedTranscript.rawText.trim().length > 0
+        ? parseHistoricoText(parsedTranscript.rawText)
+        : parsedTranscript;
 
     const roadmap = await calculateRoadmap(
-      parsedTranscript,
+      transcriptForCalculation,
       matrixCode as MatrixCode | undefined,
       manualMappings as ManualCorrelationInput[] | undefined
     );

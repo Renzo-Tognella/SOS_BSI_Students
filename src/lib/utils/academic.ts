@@ -65,16 +65,52 @@ const DISCIPLINE_NAME_STOPWORDS = new Set([
   "nos"
 ]);
 
+const ROMAN_NUMERAL_TO_ARABIC: Record<string, string> = {
+  i: "1",
+  ii: "2",
+  iii: "3",
+  iv: "4",
+  v: "5",
+  vi: "6",
+  vii: "7",
+  viii: "8",
+  ix: "9",
+  x: "10"
+};
+
+function isLikelyDisciplineCodeToken(token: string): boolean {
+  return /^[a-z]{2,}\d{2,}[a-z0-9]*$/.test(token);
+}
+
+function normalizeLevelToken(token: string): string | null {
+  if (/^\d+$/.test(token)) {
+    return token;
+  }
+  return ROMAN_NUMERAL_TO_ARABIC[token] ?? null;
+}
+
 export function tokenizeDisciplineName(value: string): string[] {
   return normalizeDisciplineName(value)
     .split(" ")
     .map((token) => token.trim())
-    .filter((token) => token.length > 1 && !DISCIPLINE_NAME_STOPWORDS.has(token));
+    .filter((token) => {
+      if (!token || DISCIPLINE_NAME_STOPWORDS.has(token) || isLikelyDisciplineCodeToken(token)) {
+        return false;
+      }
+      if (normalizeLevelToken(token)) {
+        return true;
+      }
+      return token.length > 1;
+    });
+}
+
+export function normalizeDisciplineNameForComparison(value: string): string {
+  return tokenizeDisciplineName(value).join(" ");
 }
 
 export function disciplineNamesLikelyMatch(nameA: string, nameB: string): boolean {
-  const normalizedA = normalizeDisciplineName(nameA);
-  const normalizedB = normalizeDisciplineName(nameB);
+  const normalizedA = normalizeDisciplineNameForComparison(nameA);
+  const normalizedB = normalizeDisciplineNameForComparison(nameB);
   if (!normalizedA || !normalizedB) {
     return false;
   }
@@ -90,10 +126,19 @@ export function disciplineNamesLikelyMatch(nameA: string, nameB: string): boolea
     }
   }
 
-  const tokensA = new Set(tokenizeDisciplineName(nameA));
-  const tokensB = new Set(tokenizeDisciplineName(nameB));
+  const tokensA = new Set(normalizedA.split(" ").filter(Boolean));
+  const tokensB = new Set(normalizedB.split(" ").filter(Boolean));
   if (tokensA.size === 0 || tokensB.size === 0) {
     return false;
+  }
+
+  const levelsA = new Set([...tokensA].map((token) => normalizeLevelToken(token)).filter((token): token is string => Boolean(token)));
+  const levelsB = new Set([...tokensB].map((token) => normalizeLevelToken(token)).filter((token): token is string => Boolean(token)));
+  if (levelsA.size > 0 && levelsB.size > 0) {
+    const hasCommonLevel = [...levelsA].some((level) => levelsB.has(level));
+    if (!hasCommonLevel) {
+      return false;
+    }
   }
 
   let common = 0;
@@ -104,6 +149,9 @@ export function disciplineNamesLikelyMatch(nameA: string, nameB: string): boolea
   }
 
   const base = Math.min(tokensA.size, tokensB.size);
+  if (base === 1) {
+    return common === 1;
+  }
   return common >= 2 && common / base >= 0.6;
 }
 
@@ -137,6 +185,17 @@ export function normalizeStatus(
   const frequency = metrics?.frequency ?? null;
   const hasValidGradeAndFrequency =
     average !== null && Number.isFinite(average) && average >= 5 && (frequency === null || frequency >= 75 || frequency === 0);
+  const hasLeakContext =
+    plain.includes("doutorado") ||
+    plain.includes("mestrado") ||
+    plain.includes("fechamento de turmas") ||
+    plain.includes("disciplina(s) equivalente(s)");
+
+  // PDFs antigos podem vazar "reprovado/cancelado" de linha vizinha no bloco atual.
+  // Quando média/frequência são claramente de aprovação, preserva APPROVED.
+  if ((hasFailedKeyword || hasCanceledKeyword) && !hasConvalidationKeyword && hasValidGradeAndFrequency && hasLeakContext) {
+    return "APPROVED";
+  }
 
   // Em lançamentos reais de convalidação, aprovação pode vir sem texto perfeito de situação.
   if (hasConvalidationKeyword && (hasApprovalSignal || hasValidGradeAndFrequency)) {

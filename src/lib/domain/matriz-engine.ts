@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { loadMatrixCatalogByCode } from "@/lib/domain/matrix-catalog";
 import { buildPrereqGraph } from "@/lib/domain/prereq-graph";
-import { disciplineNamesLikelyMatch, normalizeDisciplineCode, normalizeDisciplineName } from "@/lib/utils/academic";
+import { disciplineNamesLikelyMatch, normalizeDisciplineCode, normalizeDisciplineNameForComparison } from "@/lib/utils/academic";
 import type {
   CorrelationSuggestion,
   CurriculumMatrix,
@@ -160,8 +160,8 @@ function chooseNameMatchCandidate(
     return undefined;
   }
 
-  const sourceNormalized = normalizeDisciplineName(sourceName);
-  const exact = available.find((discipline) => normalizeDisciplineName(discipline.name) === sourceNormalized);
+  const sourceNormalized = normalizeDisciplineNameForComparison(sourceName);
+  const exact = available.find((discipline) => normalizeDisciplineNameForComparison(discipline.name) === sourceNormalized);
   if (exact) {
     return exact;
   }
@@ -179,7 +179,10 @@ function applyNameFallbackMatches(params: {
 
   const matrixByNormalizedName = new Map<string, CurriculumMatrix["disciplines"]>();
   for (const discipline of matrix.disciplines) {
-    const normalizedName = normalizeDisciplineName(discipline.name);
+    const normalizedName = normalizeDisciplineNameForComparison(discipline.name);
+    if (!normalizedName) {
+      continue;
+    }
     const current = matrixByNormalizedName.get(normalizedName) ?? [];
     current.push(discipline);
     matrixByNormalizedName.set(normalizedName, current);
@@ -208,7 +211,7 @@ function applyNameFallbackMatches(params: {
       continue;
     }
 
-    const directCandidates = matrixByNormalizedName.get(normalizeDisciplineName(attemptName)) ?? [];
+    const directCandidates = matrixByNormalizedName.get(normalizeDisciplineNameForComparison(attemptName)) ?? [];
     let candidate = chooseNameMatchCandidate(directCandidates, completedCodes, attemptName);
 
     if (!candidate) {
@@ -260,7 +263,7 @@ function applyManualCorrelationMatches(params: {
       mappingBySourceCode.set(sourceCode, targetCode);
     }
 
-    const sourceName = normalizeDisciplineName(mapping.sourceName ?? "");
+    const sourceName = normalizeDisciplineNameForComparison(mapping.sourceName ?? "");
     if (sourceName) {
       mappingBySourceName.set(sourceName, targetCode);
     }
@@ -285,7 +288,7 @@ function applyManualCorrelationMatches(params: {
     }
 
     const sourceName = attempt.name?.trim() ?? sourceCode;
-    const normalizedName = normalizeDisciplineName(sourceName);
+    const normalizedName = normalizeDisciplineNameForComparison(sourceName);
     const targetCode = mappingBySourceCode.get(sourceCode) ?? (normalizedName ? mappingBySourceName.get(normalizedName) : undefined);
     if (!targetCode) {
       continue;

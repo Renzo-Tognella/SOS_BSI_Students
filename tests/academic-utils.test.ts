@@ -1,12 +1,20 @@
 import { describe, expect, it } from "vitest";
 
-import { disciplineNamesLikelyMatch, isAdministrativeAcademicCredit, normalizeStatus } from "@/lib/utils/academic";
+import { disciplineNamesLikelyMatch, isAdministrativeAcademicCredit, normalizeDisciplineNameForComparison, normalizeStatus } from "@/lib/utils/academic";
 
 describe("academic utils", () => {
   it("matches discipline names by normalized tokens", () => {
     expect(disciplineNamesLikelyMatch("Teorias Organizacionais", "Teorias Organizacionais")).toBe(true);
     expect(disciplineNamesLikelyMatch("Trabalho de Integração 2", "Trabalho De Integracao 2")).toBe(true);
+    expect(disciplineNamesLikelyMatch("A Introdução à Lógica para Computação", "introducao logica computacao")).toBe(true);
+    expect(disciplineNamesLikelyMatch("CSE40 Engenharia de Software 2", "Engenharia de software II")).toBe(true);
+    expect(disciplineNamesLikelyMatch("Estruturas de Dados 1", "Estruturas de Dados 2")).toBe(false);
     expect(disciplineNamesLikelyMatch("Sistemas Distribuídos", "Banco de Dados")).toBe(false);
+  });
+
+  it("normalizes names for comparison using relevant tokens only", () => {
+    expect(normalizeDisciplineNameForComparison("A Introdução à Lógica para Computação")).toBe("introducao logica computacao");
+    expect(normalizeDisciplineNameForComparison("CSE40 Engenharia de Software 2")).toBe("engenharia software 2");
   });
 
   it("infers approved status when status text is incomplete but grade/frequency are valid", () => {

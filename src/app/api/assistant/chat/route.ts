@@ -10,7 +10,8 @@ import type {
   ParsedTranscript,
   RoadmapResult
 } from "@/types/academic";
-import { FORECAST_CHEXT_NOTE, resolveMissingWorkload } from "@/lib/domain/graduation-forecast";
+import { FORECAST_CHEXT_NOTE, FORECAST_INTERNSHIP_NOTE, resolveMissingWorkload } from "@/lib/domain/graduation-forecast";
+import { buildGradeNaHoraUrl } from "@/lib/integrations/gradenahora-client";
 
 export const runtime = "nodejs";
 
@@ -20,6 +21,7 @@ const requestSchema = z.object({
   roadmap: z.any().optional(),
   parsedTranscript: z.any().optional(),
   gradeOptions: z.any().optional(),
+  selectedTrackLabels: z.array(z.string().min(1)).max(20).optional(),
   selectedPeriodIndex: z.number().int().min(1).max(20).optional(),
   maxChsPerPeriod: z.number().int().min(1).max(40).optional()
 });
@@ -44,10 +46,126 @@ const aiAnalysisSchema = z.object({
 type AiIntent = z.infer<typeof aiAnalysisSchema>["intent"];
 type AiProvider = "openrouter" | "gemini" | "rule-based";
 
+const GRADENAHORA_UTFPR_URL = "https://gradenahora.com.br/utfpr";
+const UTFPR_BSI_CURITIBA_URL =
+  "https://www.utfpr.edu.br/cursos/coordenacoes/graduacao/curitiba/ct-bacharelado-em-sistemas-de-informacao";
+const UTFPR_BSI_CURITIBA_MATRIX_URL =
+  "https://www.utfpr.edu.br/cursos/coordenacoes/graduacao/curitiba/ct-bacharelado-em-sistemas-de-informacao/matriz-e-docentes";
+const UTFPR_MATRICULA_2026_1_URL =
+  "https://www.utfpr.edu.br/noticias/ultima-noticias/veteranos-ja-tem-datas-definidas-para-matricula-de-2026-1";
+const UTFPR_CURITIBA_CALENDAR_2026_URL = "https://cloud.utfpr.edu.br/index.php/s/zH2XruJe77qcMzd";
+const UTFPR_CURITIBA_SPECIAL_DATES_2026_URL = "https://cloud.utfpr.edu.br/index.php/s/S4Xq8cdNFnWL9oX";
+const DEFAULT_BSI_CURITIBA_CAMPUS = "01";
+const DEFAULT_BSI_CURITIBA_COURSE = "236";
+
 interface AiAnalysisResult {
   intent: AiIntent;
   constraints?: AssistantScheduleConstraint;
   providerUsed: Exclude<AiProvider, "rule-based">;
+}
+
+function selectedTracksNote(selectedTrackLabels?: string[]): string {
+  if (!selectedTrackLabels || selectedTrackLabels.length === 0) {
+    return "";
+  }
+  return ` Trilhas selecionadas no planejamento: ${selectedTrackLabels.join(", ")}.`;
+}
+
+function buildOfficialSourcesBlock(gradeOptions?: GradeOptionsResponse): string {
+  const lines = [
+    "Fontes oficiais e dados para conferência:",
+    `- UTFPR BSI Curitiba (curso): ${UTFPR_BSI_CURITIBA_URL}`,
+    `- UTFPR BSI Curitiba (matriz e docentes): ${UTFPR_BSI_CURITIBA_MATRIX_URL}`,
+    `- UTFPR matrícula 2026.1 (veteranos): ${UTFPR_MATRICULA_2026_1_URL}`,
+    `- UTFPR calendário Curitiba 2026: ${UTFPR_CURITIBA_CALENDAR_2026_URL}`,
+    `- UTFPR datas especiais Curitiba 2026: ${UTFPR_CURITIBA_SPECIAL_DATES_2026_URL}`,
+    `- GradeNaHora UTFPR (base): ${GRADENAHORA_UTFPR_URL}`
+  ];
+
+  if (gradeOptions) {
+    const gradeSemesterUrl = buildGradeNaHoraUrl(gradeOptions.semesterUsed, gradeOptions.campus, gradeOptions.course);
+    lines.push(`- GradeNaHora usado no app (${gradeOptions.semesterUsed}): ${gradeSemesterUrl}`);
+  } else {
+    const sampleUrl = buildGradeNaHoraUrl("2026-1", DEFAULT_BSI_CURITIBA_CAMPUS, DEFAULT_BSI_CURITIBA_COURSE);
+    lines.push(`- GradeNaHora BSI/Curitiba (exemplo): ${sampleUrl}`);
+  }
+
+  lines.push(
+    "Regra operacional: sempre buscar matérias de BSI no semestre mais recente disponível do GradeNaHora; se houver 404, recuar semestre a semestre automaticamente."
+  );
+
+  return lines.join("\n");
+}
+
+function summarizePendingByPeriod(roadmap: RoadmapResult): string {
+  const byPeriod = new Map<number, { count: number; cht: number }>();
+  let withoutPeriodCount = 0;
+  let withoutPeriodCht = 0;
+
+  for (const discipline of roadmap.pending) {
+    if (typeof discipline.recommendedPeriod === "number" && Number.isFinite(discipline.recommendedPeriod)) {
+      const key = Math.max(1, Math.floor(discipline.recommendedPeriod));
+      const current = byPeriod.get(key) ?? { count: 0, cht: 0 };
+      current.count += 1;
+      current.cht += Math.max(discipline.cht ?? 0, 0);
+      byPeriod.set(key, current);
+      continue;
+    }
+
+    withoutPeriodCount += 1;
+    withoutPeriodCht += Math.max(discipline.cht ?? 0, 0);
+  }
+
+  const sorted = [...byPeriod.entries()].sort((a, b) => a[0] - b[0]);
+  const parts = sorted.map(([period, values]) => `P${period}: ${values.count} disciplina(s), ${values.cht} CHT`);
+  if (withoutPeriodCount > 0) {
+    parts.push(`Sem período recomendado: ${withoutPeriodCount} disciplina(s), ${withoutPeriodCht} CHT`);
+  }
+
+  return parts.length > 0 ? parts.join(" | ") : "Sem pendências mapeadas por período.";
+}
+
+function answerAssistantRoleAndData(params: {
+  roadmap: RoadmapResult;
+  parsedTranscript?: ParsedTranscript;
+  gradeOptions?: GradeOptionsResponse;
+  matrixCode: MatrixCode;
+  selectedTrackLabels?: string[];
+}): AssistantChatResponse {
+  const { roadmap, parsedTranscript, gradeOptions, matrixCode, selectedTrackLabels } = params;
+  const missing = resolveMissingWorkload({
+    parsedTranscript,
+    roadmap
+  });
+
+  const availablePending = roadmap.pending.filter((discipline) => discipline.status === "AVAILABLE").length;
+  const blockedPending = roadmap.pending.filter((discipline) => discipline.status === "BLOCKED").length;
+  const pendingByPeriod = summarizePendingByPeriod(roadmap);
+  const semesterInfo = gradeOptions ? gradeOptions.semesterUsed : "não carregado";
+
+  return {
+    detectedIntent: "GENERAL_HELP",
+    answer: [
+      "Papel do assistente no SaveStudents:",
+      "1) Traduzir seu pedido para restrições objetivas de grade (CHS alvo, turnos, limite de tardes e semestre alvo).",
+      "2) Sugerir combinação de turmas com menor conflito, sem inventar disciplina fora da oferta real.",
+      "3) Mostrar projeção de formatura por CHS com base oficial do histórico (CHEXT e Estágio fora da projeção).",
+      "4) Explicar claramente o que falta, por período, para você conseguir se planejar.",
+      "",
+      "Dados internos usados agora:",
+      `- Matriz ativa: ${matrixCode}`,
+      `- Pendências totais: ${roadmap.pending.length} (liberadas: ${availablePending}, bloqueadas: ${blockedPending})`,
+      `- Faltante oficial: ${missing.missingCht} CHT (${missing.missingChs} CHS)`,
+      `- CHEXT pendente (informativo): ${missing.missingChext}h`,
+      `- Resumo de faltantes por período: ${pendingByPeriod}`,
+      `- Trilhas selecionadas: ${selectedTrackLabels && selectedTrackLabels.length > 0 ? selectedTrackLabels.join(", ") : "todas as trilhas pendentes"}`,
+      `- Oferta de turmas carregada: ${semesterInfo}`,
+      "",
+      buildOfficialSourcesBlock(gradeOptions),
+      "",
+      `Obs.: ${FORECAST_CHEXT_NOTE} ${FORECAST_INTERNSHIP_NOTE}`
+    ].join("\n")
+  };
 }
 
 function extractJsonObject(input: string): string | null {
@@ -499,7 +617,7 @@ function estimateGraduationAnswer(params: {
       `Com ${targetChs} CHS/semestre e faltando ~${missingChs} CHS (${missingCht} CHT), a projeção é de ${Math.max(requiredSemesters, 0)} semestre(s). ` +
       `Partindo de ${baseSemester}, conclusão estimada em ${endSemester}.` +
       `${(constraints.offSemesters ?? 0) > 0 ? ` Já considerei ${constraints.offSemesters} semestre(s) off.` : ""}` +
-      `${chextDetails} Obs.: ${FORECAST_CHEXT_NOTE}`
+      `${chextDetails} Obs.: ${FORECAST_CHEXT_NOTE} ${FORECAST_INTERNSHIP_NOTE}`
   };
 }
 
@@ -532,14 +650,18 @@ function answerIaTrack(roadmap: RoadmapResult): AssistantChatResponse {
   };
 }
 
-function answerAvailableDisciplines(gradeOptions?: GradeOptionsResponse): AssistantChatResponse {
+function answerAvailableDisciplines(gradeOptions?: GradeOptionsResponse, selectedTrackLabels?: string[]): AssistantChatResponse {
   if (!gradeOptions) {
     return {
       detectedIntent: "AVAILABLE_DISCIPLINES",
-      answer: "Para listar disciplinas/turmas disponíveis, primeiro clique em 'Gerar Plano de Formatura' na página de Grade."
+      answer:
+        "Para listar disciplinas/turmas disponíveis, primeiro clique em 'Gerar Plano de Formatura' na página de Grade.\n\n" +
+        buildOfficialSourcesBlock(undefined) +
+        selectedTracksNote(selectedTrackLabels)
     };
   }
 
+  const gradeSemesterUrl = buildGradeNaHoraUrl(gradeOptions.semesterUsed, gradeOptions.campus, gradeOptions.course);
   const preview = gradeOptions.availableByDiscipline
     .slice(0, 15)
     .map((item) => `${item.code} (${item.turmas.length} turma(s))`)
@@ -547,7 +669,11 @@ function answerAvailableDisciplines(gradeOptions?: GradeOptionsResponse): Assist
 
   return {
     detectedIntent: "AVAILABLE_DISCIPLINES",
-    answer: `No semestre ${gradeOptions.semesterUsed}, encontrei ${gradeOptions.availableByDiscipline.length} disciplina(s) com turma: ${preview}.`
+    answer:
+      `No semestre ${gradeOptions.semesterUsed}, encontrei ${gradeOptions.availableByDiscipline.length} disciplina(s) com turma: ${preview}.\n` +
+      `Fonte da oferta usada: ${gradeSemesterUrl}.\n` +
+      "Regra aplicada: usar o semestre mais recente disponível para BSI (fallback automático para semestres anteriores se necessário)." +
+      selectedTracksNote(selectedTrackLabels)
   };
 }
 
@@ -559,8 +685,9 @@ function answerSchedulePlan(params: {
   periodIndex: number;
   fallbackChs: number;
   overrideConstraints?: AssistantScheduleConstraint;
+  selectedTrackLabels?: string[];
 }): AssistantChatResponse {
-  const { roadmap, parsedTranscript, gradeOptions, message, periodIndex, fallbackChs, overrideConstraints } = params;
+  const { roadmap, parsedTranscript, gradeOptions, message, periodIndex, fallbackChs, overrideConstraints, selectedTrackLabels } = params;
   const parsedConstraints = parseConstraints(message, fallbackChs);
   const constraints = mergeConstraints(parsedConstraints, overrideConstraints);
 
@@ -569,7 +696,9 @@ function answerSchedulePlan(params: {
       detectedIntent: "PLAN_SCHEDULE",
       detectedConstraints: constraints,
       answer:
-        "Consigo montar a grade com IA, mas preciso da oferta do GradeNaHora carregada. Vá na página Grade e clique em 'Gerar Plano de Formatura', depois tente de novo."
+        "Consigo montar a grade com IA, mas preciso da oferta do GradeNaHora carregada. Vá na página Grade e clique em 'Gerar Plano de Formatura', depois tente de novo.\n\n" +
+        buildOfficialSourcesBlock(undefined) +
+        selectedTracksNote(selectedTrackLabels)
     };
   }
 
@@ -597,7 +726,9 @@ function answerSchedulePlan(params: {
     answer:
       `Plano sugerido para o período ${planPatch.periodIndex}: ${planPatch.achievedChs} CHS (${classesSummary}). ` +
       `Meta: ${planPatch.targetChs} CHS. Saldo acadêmico atual restante: ~${missingChs} CHS. ` +
-      "Clique em 'Aplicar plano sugerido' para atualizar a distribuição desse período."
+      "Clique em 'Aplicar plano sugerido' para atualizar a distribuição desse período.\n\n" +
+      buildOfficialSourcesBlock(gradeOptions) +
+      selectedTracksNote(selectedTrackLabels)
   };
 }
 
@@ -608,6 +739,7 @@ export async function POST(request: Request) {
     const roadmap = body.roadmap as RoadmapResult | undefined;
     const parsedTranscript = body.parsedTranscript as ParsedTranscript | undefined;
     const gradeOptions = body.gradeOptions as GradeOptionsResponse | undefined;
+    const selectedTrackLabels = body.selectedTrackLabels;
     const matrixCode = (body.matrixCode ?? roadmap?.matrixCode ?? "981") as MatrixCode;
     const selectedPeriodIndex = body.selectedPeriodIndex ?? 1;
     const fallbackChs = body.maxChsPerPeriod ?? gradeOptions?.graduationPlan.targetChsPerPeriod ?? 18;
@@ -630,6 +762,8 @@ export async function POST(request: Request) {
     const asksSchedule =
       /montar grade|organizar grade|sugerir grade|melhor(es)? mat[eé]rias|trabalh|hor[aá]rio|periodo/.test(lower);
     const asksAvailable = /mat[eé]rias dispon[ií]veis|turmas dispon[ií]veis|o que posso pegar/.test(lower);
+    const asksRoleAndSources =
+      /papel|como voc[eê] funciona|como a ia funciona|fontes|links oficiais|dados que voc[eê] usa|dados usados/.test(lower);
 
     const intentFromAi = aiAnalysis?.intent;
     const asksTrackIaFinal = intentFromAi ? intentFromAi === "TRACK_IA" : asksTrackIa;
@@ -637,7 +771,15 @@ export async function POST(request: Request) {
     const asksGraduationFinal = intentFromAi ? intentFromAi === "GRADUATION_ESTIMATE" : asksGraduation;
     const asksAvailableFinal = intentFromAi ? intentFromAi === "AVAILABLE_DISCIPLINES" : asksAvailable;
 
-    if (asksTrackIaFinal) {
+    if (asksRoleAndSources) {
+      response = answerAssistantRoleAndData({
+        roadmap,
+        parsedTranscript,
+        gradeOptions,
+        matrixCode,
+        selectedTrackLabels
+      });
+    } else if (asksTrackIaFinal) {
       response = answerIaTrack(roadmap);
     } else if (asksScheduleFinal) {
       const periodFromMessage = lower.match(/per[ií]odo\s*(\d{1,2})/);
@@ -649,7 +791,8 @@ export async function POST(request: Request) {
         message,
         periodIndex,
         fallbackChs,
-        overrideConstraints: aiAnalysis?.constraints
+        overrideConstraints: aiAnalysis?.constraints,
+        selectedTrackLabels
       });
     } else if (asksGraduationFinal) {
       response = estimateGraduationAnswer({
@@ -661,13 +804,15 @@ export async function POST(request: Request) {
         overrideConstraints: aiAnalysis?.constraints
       });
     } else if (asksAvailableFinal) {
-      response = answerAvailableDisciplines(gradeOptions);
+      response = answerAvailableDisciplines(gradeOptions, selectedTrackLabels);
     } else {
       response = {
         detectedIntent: "GENERAL_HELP",
         answer:
-          `Sou seu assistente de planejamento (${matrixCode}). Posso: ` +
-          "1) montar grade com restrições de horário; 2) estimar formatura por CHS/off; 3) listar disciplinas da trilha IA liberadas."
+          `Sou seu assistente de planejamento (${matrixCode}). Meu papel é transformar suas restrições reais em um plano executável, sempre usando oferta oficial do GradeNaHora e referência institucional da UTFPR.\n\n` +
+          "Posso: 1) montar grade com restrições de horário; 2) estimar formatura por CHS/off; 3) listar disciplinas da trilha IA liberadas; 4) explicar faltantes por período.\n\n" +
+          buildOfficialSourcesBlock(gradeOptions) +
+          selectedTracksNote(selectedTrackLabels)
       };
     }
 

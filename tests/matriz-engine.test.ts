@@ -78,6 +78,43 @@ describe("matriz engine", () => {
     expect(roadmap.alerts.some((alert) => alert.includes("Fallback por nome aplicado"))).toBe(true);
   });
 
+  it("maps approved discipline by name when code changes across matrices", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "999998",
+        fullName: "Teste Código Diferente Mesmo Nome"
+      },
+      detectedMatrixCode: "806",
+      matrixLabel: "Matriz 806",
+      attempts: [
+        {
+          sourceSection: "mandatory",
+          code: "ICSD20",
+          name: "Introdução à Lógica para Computação",
+          cht: 54,
+          chext: 0,
+          status: "APPROVED",
+          statusText: "Aprovado Por Nota/Frequência",
+          rawBlock: "dummy"
+        }
+      ],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "806");
+    expect(roadmap.pending.some((discipline) => discipline.code === "CSD20")).toBe(false);
+    expect(roadmap.unusedDisciplines.some((discipline) => discipline.code === "ICSD20")).toBe(false);
+    expect(roadmap.alerts.some((alert) => alert.includes("ICSD20->CSD20"))).toBe(true);
+  });
+
   it("applies approved convalidation markers from raw transcript text", async () => {
     const parsed: ParsedTranscript = {
       parserVersion: "test",

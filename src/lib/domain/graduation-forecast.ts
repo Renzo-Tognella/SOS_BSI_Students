@@ -6,13 +6,25 @@ import type {
   ParsedTranscript,
   RoadmapResult
 } from "@/types/academic";
+import { normalizeDisciplineName } from "@/lib/utils/academic";
 
 const DEFAULT_AVERAGE_CHS = 12;
 const DEFAULT_MAX_PROJECTED_SEMESTERS = 20;
 
 export const FORECAST_METHODOLOGY_NOTE =
-  "Estimativa considera apenas CHT de disciplinas (obrigatórias/optativas/eletivas). CHEXT não foi incluído nesta projeção.";
+  "Estimativa considera apenas CHT de disciplinas (obrigatórias/optativas/eletivas). CHEXT e Estágio não foram incluídos nesta projeção.";
 export const FORECAST_CHEXT_NOTE = "CHEXT não foi incluído nesta estimativa de semestres.";
+export const FORECAST_INTERNSHIP_NOTE = "Estágio não foi incluído nesta estimativa de semestres.";
+
+function isInternshipAttempt(attempt: ParsedTranscript["attempts"][number]): boolean {
+  const normalizedName = normalizeDisciplineName(attempt.name ?? "");
+  if (normalizedName.includes("estagio")) {
+    return true;
+  }
+
+  const normalizedStatus = normalizeDisciplineName(attempt.statusText ?? "");
+  return normalizedStatus.includes("estagio");
+}
 
 export function estimateChsFromCht(cht: number): number {
   return Math.max(1, Math.round(cht / 15));
@@ -99,6 +111,9 @@ function buildApprovedChsBySemester(parsedTranscript: ParsedTranscript): Array<{
 
   for (const attempt of parsedTranscript.attempts) {
     if (attempt.status !== "APPROVED") {
+      continue;
+    }
+    if (isInternshipAttempt(attempt)) {
       continue;
     }
     if (!attempt.year || !attempt.semester) {

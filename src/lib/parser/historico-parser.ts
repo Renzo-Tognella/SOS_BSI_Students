@@ -77,13 +77,16 @@ function parseAttemptBlocks(sectionText: string, sourceSection: TranscriptSectio
     const periodInMatrix = parseIntSafe(headMatch[1]);
     const code = normalizeDisciplineCode(headMatch[2]);
 
-    const tailMatch = rowLine.match(/(\d+)\s+(\d+)\s+(\d+)\s+([0-9*,]+)\s+([0-9*,]+)\s+([12])\s+(\d{4})(?:\s+(.*))?$/);
+    const tailMatch = rowLine.match(
+      /(\d+)\s+(\d+)\s+(\d+)(?:\s+(\d+))?\s+([0-9*,]+)\s+([0-9*,]+)\s+([12])\s+(\d{4})(?:\s+(.*))?$/
+    );
     if (!tailMatch) {
       unparsed.push(blockLines.join("\n"));
       continue;
     }
 
-    const [fullTail, chsRaw, chtRaw, chextRaw, avgRaw, freqRaw, semRaw, yearRaw, statusTailRaw] = tailMatch;
+    const [, chsRaw, chtRaw, chextRaw, , avgRaw, freqRaw, semRaw, yearRaw, statusTailRaw] = tailMatch;
+    const fullTail = rowLine.slice(rowLine.length - tailMatch[0].length);
     const prefix = rowLine.slice(0, rowLine.length - fullTail.length).trim();
 
     const prefixWithoutPeriodCode = prefix.replace(/^\d+\s+[A-Z0-9]{4,8}\s*/, "").trim();
