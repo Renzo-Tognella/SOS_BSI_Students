@@ -13,6 +13,7 @@ import type {
   TranscriptAttempt,
   TranscriptSection
 } from "@/types/academic";
+import { isSupportedMatrixCode } from "@/lib/domain/matrix-metadata";
 import {
   normalizeDisciplineCode,
   normalizeStatus,
@@ -241,9 +242,7 @@ function parseHeader(headerText: string): {
   }
 
   const matrixMatch = headerText.match(/Matriz:\s*(\d+)\s*-\s*([^\n]+)/i);
-  const matrixCode = (matrixMatch?.[1] === "806" || matrixMatch?.[1] === "981"
-    ? matrixMatch[1]
-    : undefined) as MatrixCode | undefined;
+  const matrixCode = isSupportedMatrixCode(matrixMatch?.[1]) ? (matrixMatch[1] as MatrixCode) : undefined;
 
   return {
     student,

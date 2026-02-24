@@ -26,6 +26,36 @@ describe("matriz engine", () => {
     expect((roadmap.electiveOptions ?? []).some((discipline) => discipline.code === "ELEW40")).toBe(true);
   });
 
+  it("computes roadmap for matrix 962 without failing mandatory pending flow", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "212001",
+        fullName: "Aluno Engenharia Computação",
+        courseCode: "212",
+        courseName: "Engenharia de Computação"
+      },
+      detectedMatrixCode: "962",
+      matrixLabel: "Matriz 962",
+      attempts: [],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "962");
+    const mandatoryBucket = roadmap.progress.find((bucket) => bucket.key === "mandatory");
+
+    expect(roadmap.matrixCode).toBe("962");
+    expect(mandatoryBucket?.requiredCHT).toBe(2805);
+    expect(roadmap.pending.some((discipline) => discipline.category === "MANDATORY")).toBe(true);
+  });
+
   it("keeps only approved attempt as completed", async () => {
     const parsed = parseHistoricoText(raw);
     const roadmap = await calculateRoadmap(parsed, "981");

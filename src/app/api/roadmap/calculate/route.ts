@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { calculateRoadmap } from "@/lib/domain/matriz-engine";
+import { MATRIX_CODE_VALUES } from "@/lib/domain/matrix-metadata";
 import { parseHistoricoText } from "@/lib/parser/historico-parser";
 import type { ManualCorrelationInput, MatrixCode, ParsedTranscript } from "@/types/academic";
 
 export const runtime = "nodejs";
 
-const matrixCodeSchema = z.enum(["806", "981"] as const);
+const matrixCodeSchema = z.enum(MATRIX_CODE_VALUES);
 
 const requestSchema = z.object({
   parsedTranscript: z.custom<ParsedTranscript>((value) => typeof value === "object" && value !== null, "parsedTranscript inválido"),

@@ -1,30 +1,31 @@
 import { NextResponse } from "next/server";
 
+import { inferCourseAbbreviation, MATRIX_CODE_VALUES } from "@/lib/domain/matrix-metadata";
 import { loadCurriculumMatrix } from "@/lib/domain/matriz-engine";
 import type { DisciplineLookupItem, MatrixCode } from "@/types/academic";
 
 export const runtime = "nodejs";
 
-const SUPPORTED_MATRICES: MatrixCode[] = ["806", "981"];
-
-function inferCourseAbbreviation(courseName: string, courseCode: string): string {
-  const normalized = courseName
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-
-  if (normalized.includes("sistemas de informacao")) {
-    return "BSI";
-  }
-  if (normalized.includes("engenharia de software")) {
-    return "ES";
-  }
-  return `C${courseCode}`;
-}
+const SUPPORTED_MATRICES: MatrixCode[] = [...MATRIX_CODE_VALUES];
 
 export async function GET() {
   try {
-    const matrices = await Promise.all(SUPPORTED_MATRICES.map((matrixCode) => loadCurriculumMatrix(matrixCode)));
+    const matrices = [];
+    const warnings: string[] = [];
+
+    for (const matrixCode of SUPPORTED_MATRICES) {
+      try {
+        const matrix = await loadCurriculumMatrix(matrixCode);
+        matrices.push(matrix);
+      } catch (error) {
+        warnings.push(`Matriz ${matrixCode} indisponível: ${(error as Error).message}`);
+      }
+    }
+
+    if (matrices.length === 0) {
+      throw new Error("Nenhuma matriz curricular pôde ser carregada.");
+    }
+
     const output: DisciplineLookupItem[] = [];
     const seen = new Set<string>();
 
@@ -57,7 +58,7 @@ export async function GET() {
     }
 
     output.sort((a, b) => a.name.localeCompare(b.name) || a.code.localeCompare(b.code) || a.matrixCode.localeCompare(b.matrixCode));
-    return NextResponse.json({ items: output });
+    return NextResponse.json(warnings.length > 0 ? { items: output, warnings } : { items: output });
   } catch (error) {
     return NextResponse.json(
       {

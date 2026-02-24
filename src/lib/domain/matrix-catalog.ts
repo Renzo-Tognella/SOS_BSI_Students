@@ -1,13 +1,37 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { readEmbeddedJson } from "@/lib/domain/embedded-data";
 import { normalizeDisciplineCode } from "@/lib/utils/academic";
 import type { CurriculumMatrix, MatrixCatalogDiscipline, MatrixCode } from "@/types/academic";
 
 async function readJsonFromRoot<T>(relativePath: string): Promise<T> {
-  const absolute = path.join(process.cwd(), relativePath);
-  const payload = await readFile(absolute, "utf8");
-  return JSON.parse(payload) as T;
+  const normalizedPath = relativePath.replace(/\\/g, "/").replace(/^\.?\//, "");
+  const rootsToTry = [process.cwd(), path.join(process.cwd(), ".next", "server"), path.join(process.cwd(), ".next", "standalone")];
+
+  let lastNotFoundError: unknown;
+  for (const root of rootsToTry) {
+    const absolute = path.join(root, normalizedPath);
+    try {
+      const payload = await readFile(absolute, "utf8");
+      return JSON.parse(payload) as T;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+        throw error;
+      }
+      lastNotFoundError = error;
+    }
+  }
+
+  const embedded = readEmbeddedJson<T>(normalizedPath);
+  if (embedded) {
+    return embedded;
+  }
+
+  throw (
+    lastNotFoundError ??
+    new Error(`Arquivo JSON não encontrado para leitura: ${normalizedPath}`)
+  );
 }
 
 async function readOptionalJsonFromRoot<T>(relativePath: string): Promise<T | null> {

@@ -42,4 +42,17 @@ describe("historico parser", () => {
     expect(parsed.summary.some((row) => row.key.includes("Obrigatórias"))).toBe(true);
     expect(parsed.extensionSummary.some((row) => row.key.includes("geral"))).toBe(true);
   });
+
+  it("recognizes matrix 962 from transcript header", () => {
+    const minimalHeader = [
+      "Aluno: 999999 - Aluno Teste Identidade",
+      "Curso: 212 - Engenharia de Computação Período: 1",
+      "Ingresso: 2024/1 Data da colação",
+      "Matriz: 962 - Matriz Curricular",
+      "Disciplinas Obrigatórias"
+    ].join("\n");
+
+    const parsed = parseHistoricoText(minimalHeader);
+    expect(parsed.detectedMatrixCode).toBe("962");
+  });
 });

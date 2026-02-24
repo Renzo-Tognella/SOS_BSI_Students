@@ -68,6 +68,16 @@ import {
   buildGraduationForecastAudit,
   estimateChsFromCht
 } from "@/lib/domain/graduation-forecast";
+import {
+  getMatrixMetadata,
+  getOptionalPoolModules,
+  inferCourseAbbreviation,
+  inferMatrixCodeFromCourseCode,
+  isSupportedMatrixCode,
+  MATRIX_CODE_VALUES,
+  resolveCampusCodeForMatrix,
+  resolveCourseCodeForMatrix
+} from "@/lib/domain/matrix-metadata";
 import { disciplineNamesLikelyMatch, normalizeDisciplineNameForComparison } from "@/lib/utils/academic";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Tooltip, Legend);
@@ -111,19 +121,6 @@ const sectorDefinitions = [
   { category: "TCC", label: "TCC" }
 ] as const;
 
-const optionalModuleDefinitions = [
-  { key: "second", label: "Segundo Estrato", requiredCHT: 360 },
-  { key: "tracks", label: "Terceiro Estrato - Trilhas em Computação", requiredCHT: 345 },
-  { key: "humanities", label: "Optativas do Ciclo de Humanidades", requiredCHT: 135 }
-] as const;
-
-const OPTIONAL_NON_TRACK_REQUIRED_CHT = optionalModuleDefinitions
-  .filter((moduleDefinition) => moduleDefinition.key !== "tracks")
-  .reduce((sum, moduleDefinition) => sum + moduleDefinition.requiredCHT, 0);
-
-const TRACK_REQUIRED_CHT =
-  optionalModuleDefinitions.find((moduleDefinition) => moduleDefinition.key === "tracks")?.requiredCHT ?? 345;
-
 const periodCategoryDefinitions = [
   { key: "MANDATORY", label: "Obrigatórias", color: "#6a7cff" },
   { key: "OPTIONAL", label: "Optativas", color: "#22d3ee" },
@@ -134,6 +131,8 @@ const periodCategoryDefinitions = [
   { key: "TCC", label: "TCC", color: "#facc15" },
   { key: "UNKNOWN", label: "Outras", color: "#94a3b8" }
 ] as const;
+
+const SUPPORTED_MATRICES_LABEL = MATRIX_CODE_VALUES.join(", ");
 
 function statusVariant(status: string): "done" | "available" | "blocked" | "failed" | "neutral" {
   if (status === "DONE" || status === "APPROVED") return "done";
@@ -421,22 +420,6 @@ function looksLikeLegacyUnusedSnapshot(roadmap: RoadmapResult): boolean {
   });
 
   return suspicious.length >= 3;
-}
-
-function inferCourseAbbreviation(courseName?: string | null, courseCode?: string | null): string {
-  const normalized = (courseName ?? "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-
-  if (normalized.includes("sistemas de informacao")) {
-    return "BSI";
-  }
-  if (normalized.includes("engenharia de software")) {
-    return "ES";
-  }
-  const cleanCode = (courseCode ?? "").trim();
-  return cleanCode ? `C${cleanCode}` : "N/D";
 }
 
 function buildCorrelationLookupValue(option: {
@@ -754,13 +737,69 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       id: "assistant-welcome",
       role: "assistant",
       text:
-        "Sou seu assistente de planejamento BSI/UTFPR. Uso seu roadmap + histórico + GradeNaHora (semestre mais recente disponível) e respeito as trilhas selecionadas no Planejamento para sugerir grade com restrições reais.",
+        "Sou seu assistente de planejamento UTFPR. Uso seu roadmap + histórico + GradeNaHora (semestre mais recente disponível) e respeito as trilhas selecionadas no Planejamento para sugerir grade com restrições reais.",
       createdAt: new Date().toISOString()
     }
   ]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { uiState, toggleFocusMode, setFocusedSubject, openAchievementToast, closeAchievementToast } =
     useRoadmapWorkspaceState();
+
+  const effectiveMatrixCode = useMemo<MatrixCode>(() => {
+    if (isSupportedMatrixCode(activeMatrix)) {
+      return activeMatrix;
+    }
+    if (isSupportedMatrixCode(roadmap?.matrixCode)) {
+      return roadmap.matrixCode;
+    }
+
+    const inferredByTranscriptCourse = inferMatrixCodeFromCourseCode(parsedTranscript?.student.courseCode);
+    if (inferredByTranscriptCourse) {
+      return inferredByTranscriptCourse;
+    }
+
+    const inferredByRoadmapCourse = inferMatrixCodeFromCourseCode(roadmap?.student.courseCode);
+    return inferredByRoadmapCourse ?? "981";
+  }, [activeMatrix, parsedTranscript?.student.courseCode, roadmap?.matrixCode, roadmap?.student.courseCode]);
+
+  const optionalModuleDefinitions = useMemo(() => getOptionalPoolModules(effectiveMatrixCode), [effectiveMatrixCode]);
+
+  const optionalNonTrackRequiredCHT = useMemo(
+    () =>
+      optionalModuleDefinitions
+        .filter((moduleDefinition) => moduleDefinition.key !== "tracks")
+        .reduce((sum, moduleDefinition) => sum + moduleDefinition.requiredCHT, 0),
+    [optionalModuleDefinitions]
+  );
+
+  const trackRequiredCHT = useMemo(
+    () => optionalModuleDefinitions.find((moduleDefinition) => moduleDefinition.key === "tracks")?.requiredCHT ?? 0,
+    [optionalModuleDefinitions]
+  );
+
+  const optionalPoolTotalRequiredCHT = useMemo(
+    () => optionalModuleDefinitions.reduce((sum, moduleDefinition) => sum + moduleDefinition.requiredCHT, 0),
+    [optionalModuleDefinitions]
+  );
+
+  const optionalPoolBreakdownLabel = useMemo(
+    () => optionalModuleDefinitions.map((moduleDefinition) => moduleDefinition.requiredCHT).join(" + "),
+    [optionalModuleDefinitions]
+  );
+
+  const optionalNonTrackLabel = useMemo(
+    () =>
+      optionalModuleDefinitions
+        .filter((moduleDefinition) => moduleDefinition.key !== "tracks")
+        .map((moduleDefinition) => moduleDefinition.label)
+        .join(" + "),
+    [optionalModuleDefinitions]
+  );
+
+  const trackModuleLabel = useMemo(
+    () => optionalModuleDefinitions.find((moduleDefinition) => moduleDefinition.key === "tracks")?.label ?? "Trilhas",
+    [optionalModuleDefinitions]
+  );
 
   useEffect(() => {
     try {
@@ -793,7 +832,9 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       if (saved.parsedTranscript) setParsedTranscript(saved.parsedTranscript);
       if (saved.roadmap) setRoadmap(ensureRoadmapShape(saved.roadmap));
       if (saved.gradeOptions) setGradeOptions(saved.gradeOptions);
-      if (saved.activeMatrix) setActiveMatrix(saved.activeMatrix);
+      if (saved.activeMatrix === "" || isSupportedMatrixCode(saved.activeMatrix)) {
+        setActiveMatrix(saved.activeMatrix);
+      }
       if (typeof saved.maxChsPerPeriod === "number" && Number.isFinite(saved.maxChsPerPeriod)) {
         setMaxChsPerPeriod(saved.maxChsPerPeriod);
       }
@@ -1045,8 +1086,8 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     }) => {
       const query = new URLSearchParams({
         matrix: matrixCode,
-        course: parsedTranscript?.student.courseCode ?? "236",
-        campus: "01",
+        course: resolveCourseCodeForMatrix(matrixCode, parsedTranscript?.student.courseCode),
+        campus: resolveCampusCodeForMatrix(matrixCode),
         pending: pending.join(","),
         maxChs: String(maxChs)
       });
@@ -1185,7 +1226,10 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       setUnusedConvalidationNotice(null);
       setUnusedConvalidationError(null);
 
-      const matrix = parsed.detectedMatrixCode ?? "981";
+      const matrix =
+        (parsed.detectedMatrixCode && isSupportedMatrixCode(parsed.detectedMatrixCode) ? parsed.detectedMatrixCode : null) ??
+        inferMatrixCodeFromCourseCode(parsed.student.courseCode) ??
+        "981";
       setActiveMatrix(matrix);
       await runCalculation(parsed, matrix);
     } catch (error) {
@@ -1736,8 +1780,8 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     ];
     const optionalFromNodesValidatedRaw = sumNodeCht(optionalCategories, true);
     const optionalRequiredCHT =
-      (enabledCalculationCategorySet.has("OPTIONAL") ? OPTIONAL_NON_TRACK_REQUIRED_CHT : 0) +
-      (enabledCalculationCategorySet.has("TRACK") ? TRACK_REQUIRED_CHT : 0);
+      (enabledCalculationCategorySet.has("OPTIONAL") ? optionalNonTrackRequiredCHT : 0) +
+      (enabledCalculationCategorySet.has("TRACK") ? trackRequiredCHT : 0);
     const optionalFromNodesValidated = Math.min(optionalFromNodesValidatedRaw, optionalRequiredCHT);
     const optional: RoadmapResult["progress"][number] =
       optionalAndTrackEnabled && !optionalAndTrackFullyEnabled
@@ -1761,7 +1805,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     const extension = getOrZeroBucket("extension", "Extensão", enabledCalculationCategorySet.has("EXTENSION"));
 
     return [mandatory, optional, elective, complementary, internship, tcc, extension];
-  }, [enabledCalculationCategorySet, roadmap]);
+  }, [enabledCalculationCategorySet, optionalNonTrackRequiredCHT, roadmap, trackRequiredCHT]);
   const chartProgressBuckets = useMemo(() => calculationProgressBuckets, [calculationProgressBuckets]);
 
   const progressChartData = useMemo<ChartData<"bar"> | null>(() => {
@@ -1809,8 +1853,8 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     }
 
     const syntheticPattern = /^ELV[PD]\d{3}C\d{3}$/;
-    const fallbackMatrixCode = (activeMatrix || roadmap.matrixCode) as MatrixCode;
-    const fallbackCourseCode = parsedTranscript?.student.courseCode?.trim() || "236";
+    const fallbackMatrixCode = effectiveMatrixCode;
+    const fallbackCourseCode = resolveCourseCodeForMatrix(fallbackMatrixCode, parsedTranscript?.student.courseCode);
     const fallbackCourseAbbr = inferCourseAbbreviation(parsedTranscript?.student.courseName, fallbackCourseCode);
     const byCode = new Map<string, CorrelationLookupOption>();
 
@@ -1875,7 +1919,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     }
 
     return [...byCode.values()].sort((a, b) => a.name.localeCompare(b.name) || a.code.localeCompare(b.code));
-  }, [activeMatrix, parsedTranscript?.student.courseCode, parsedTranscript?.student.courseName, roadmap]);
+  }, [effectiveMatrixCode, parsedTranscript?.student.courseCode, parsedTranscript?.student.courseName, roadmap]);
 
   const manualCorrelationTargetOptions = useMemo(
     () =>
@@ -2183,7 +2227,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
         missingCount: missingRows.length
       };
     });
-  }, [roadmap]);
+  }, [optionalModuleDefinitions, roadmap]);
 
   const totalMissingCHT = useMemo(() => {
     if (chartProgressBuckets.length === 0) {
@@ -2273,8 +2317,8 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     });
 
     const creditPoolRequirements: Array<{ category: CorrelationCategory; requiredCHT: number }> = [
-      { category: "OPTIONAL", requiredCHT: OPTIONAL_NON_TRACK_REQUIRED_CHT },
-      { category: "TRACK", requiredCHT: TRACK_REQUIRED_CHT }
+      { category: "OPTIONAL", requiredCHT: optionalNonTrackRequiredCHT },
+      { category: "TRACK", requiredCHT: trackRequiredCHT }
     ];
 
     for (const pool of creditPoolRequirements) {
@@ -2333,7 +2377,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     );
 
     return { periods, categories };
-  }, [roadmapForCalculationView]);
+  }, [optionalNonTrackRequiredCHT, roadmapForCalculationView, trackRequiredCHT]);
 
   const plannerPendingDisciplines = useMemo(() => {
     if (!roadmap) {
@@ -2734,8 +2778,14 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
             }}
           >
             <option value="">Matriz automática</option>
-            <option value="981">Matriz 981</option>
-            <option value="806">Matriz 806</option>
+            {MATRIX_CODE_VALUES.map((matrixCode) => {
+              const metadata = getMatrixMetadata(matrixCode);
+              return (
+                <option key={matrixCode} value={matrixCode}>
+                  Matriz {matrixCode} ({metadata.courseAbbreviation})
+                </option>
+              );
+            })}
           </select>
 
           <button
@@ -3132,8 +3182,8 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
             {periodRoadmapData ? (
               <div className="mt-5">
                 <p className="mb-2 text-xs text-slate-500">
-                  Optativas por período usam carga oficial do PPC: 495h (segundo estrato + humanidades) e 345h (trilhas). O catálogo completo de
-                  opções não é somado como carga exigida.
+                  Optativas por período usam carga oficial do PPC: {optionalNonTrackRequiredCHT}h ({optionalNonTrackLabel}) e{" "}
+                  {trackRequiredCHT}h ({trackModuleLabel}). O catálogo completo de opções não é somado como carga exigida.
                 </p>
                 <PeriodRoadmapMegaChart categories={periodRoadmapData.categories} periods={periodRoadmapData.periods} />
               </div>
@@ -3212,7 +3262,9 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
 
             {enabledCalculationCategorySet.has("OPTIONAL") || enabledCalculationCategorySet.has("TRACK") ? (
               <div className="mt-6 space-y-4">
-                <h3 className="text-base font-bold text-slate-100">Optativas por Submódulo (360 + 345 + 135 = 840h)</h3>
+                <h3 className="text-base font-bold text-slate-100">
+                  Optativas por Submódulo ({optionalPoolBreakdownLabel} = {optionalPoolTotalRequiredCHT}h)
+                </h3>
 
                 {optionalModuleTables.map((module) => (
                   <article className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3" key={module.key}>
@@ -3869,7 +3921,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
                 <p className="text-xs text-slate-400">
                   A convalidação agora é feita diretamente na tabela abaixo: cada linha tem sugestão, lookup e botão próprio.
                   {globalDisciplineLookupOptions.length > 0
-                    ? " Lookup global carregado com todas as matérias cadastradas (matrizes 806 e 981)."
+                    ? ` Lookup global carregado com todas as matérias cadastradas (matrizes ${SUPPORTED_MATRICES_LABEL}).`
                     : " Lookup global indisponível no momento; exibindo fallback da matriz ativa."}
                 </p>
                 <button

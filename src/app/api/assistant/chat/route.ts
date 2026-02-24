@@ -9,6 +9,14 @@ import type {
   ParsedTranscript,
   RoadmapResult
 } from "@/types/academic";
+import {
+  getMatrixMetadata,
+  inferMatrixCodeFromCourseCode,
+  isSupportedMatrixCode,
+  MATRIX_CODE_VALUES,
+  resolveCampusCodeForMatrix,
+  resolveCourseCodeForMatrix
+} from "@/lib/domain/matrix-metadata";
 import { buildAssistantScheduleProposals } from "@/lib/domain/assistant-schedule-engine";
 import { FORECAST_CHEXT_NOTE, FORECAST_INTERNSHIP_NOTE, resolveMissingWorkload } from "@/lib/domain/graduation-forecast";
 import { buildGradeNaHoraUrl } from "@/lib/integrations/gradenahora-client";
@@ -17,7 +25,7 @@ export const runtime = "nodejs";
 
 const requestSchema = z.object({
   message: z.string().min(1),
-  matrixCode: z.enum(["806", "981"]).optional(),
+  matrixCode: z.enum(MATRIX_CODE_VALUES).optional(),
   roadmap: z.any().optional(),
   parsedTranscript: z.any().optional(),
   gradeOptions: z.any().optional(),
@@ -50,16 +58,10 @@ type AiIntent = z.infer<typeof aiAnalysisSchema>["intent"];
 type AiProvider = "openrouter" | "gemini" | "rule-based";
 
 const GRADENAHORA_UTFPR_URL = "https://gradenahora.com.br/utfpr";
-const UTFPR_BSI_CURITIBA_URL =
-  "https://www.utfpr.edu.br/cursos/coordenacoes/graduacao/curitiba/ct-bacharelado-em-sistemas-de-informacao";
-const UTFPR_BSI_CURITIBA_MATRIX_URL =
-  "https://www.utfpr.edu.br/cursos/coordenacoes/graduacao/curitiba/ct-bacharelado-em-sistemas-de-informacao/matriz-e-docentes";
 const UTFPR_MATRICULA_2026_1_URL =
   "https://www.utfpr.edu.br/noticias/ultima-noticias/veteranos-ja-tem-datas-definidas-para-matricula-de-2026-1";
 const UTFPR_CURITIBA_CALENDAR_2026_URL = "https://cloud.utfpr.edu.br/index.php/s/zH2XruJe77qcMzd";
 const UTFPR_CURITIBA_SPECIAL_DATES_2026_URL = "https://cloud.utfpr.edu.br/index.php/s/S4Xq8cdNFnWL9oX";
-const DEFAULT_BSI_CURITIBA_CAMPUS = "01";
-const DEFAULT_BSI_CURITIBA_COURSE = "236";
 
 interface AiAnalysisResult {
   intent: AiIntent;
@@ -74,11 +76,15 @@ function selectedTracksNote(selectedTrackLabels?: string[]): string {
   return ` Trilhas selecionadas no planejamento: ${selectedTrackLabels.join(", ")}.`;
 }
 
-function buildOfficialSourcesBlock(gradeOptions?: GradeOptionsResponse): string {
+function buildOfficialSourcesBlock(matrixCode: MatrixCode, gradeOptions?: GradeOptionsResponse): string {
+  const metadata = getMatrixMetadata(matrixCode);
+  const defaultCampus = resolveCampusCodeForMatrix(matrixCode);
+  const defaultCourse = resolveCourseCodeForMatrix(matrixCode);
+
   const lines = [
     "Fontes oficiais e dados para conferência:",
-    `- UTFPR BSI Curitiba (curso): ${UTFPR_BSI_CURITIBA_URL}`,
-    `- UTFPR BSI Curitiba (matriz e docentes): ${UTFPR_BSI_CURITIBA_MATRIX_URL}`,
+    `- UTFPR ${metadata.courseAbbreviation} Curitiba (curso): ${metadata.officialSources.courseUrl}`,
+    `- UTFPR ${metadata.courseAbbreviation} Curitiba (matriz e docentes): ${metadata.officialSources.matrixUrl}`,
     `- UTFPR matrícula 2026.1 (veteranos): ${UTFPR_MATRICULA_2026_1_URL}`,
     `- UTFPR calendário Curitiba 2026: ${UTFPR_CURITIBA_CALENDAR_2026_URL}`,
     `- UTFPR datas especiais Curitiba 2026: ${UTFPR_CURITIBA_SPECIAL_DATES_2026_URL}`,
@@ -89,12 +95,12 @@ function buildOfficialSourcesBlock(gradeOptions?: GradeOptionsResponse): string 
     const gradeSemesterUrl = buildGradeNaHoraUrl(gradeOptions.semesterUsed, gradeOptions.campus, gradeOptions.course);
     lines.push(`- GradeNaHora usado no app (${gradeOptions.semesterUsed}): ${gradeSemesterUrl}`);
   } else {
-    const sampleUrl = buildGradeNaHoraUrl("2026-1", DEFAULT_BSI_CURITIBA_CAMPUS, DEFAULT_BSI_CURITIBA_COURSE);
-    lines.push(`- GradeNaHora BSI/Curitiba (exemplo): ${sampleUrl}`);
+    const sampleUrl = buildGradeNaHoraUrl("2026-1", defaultCampus, defaultCourse);
+    lines.push(`- GradeNaHora ${metadata.courseAbbreviation}/Curitiba (exemplo): ${sampleUrl}`);
   }
 
   lines.push(
-    "Regra operacional: sempre buscar matérias de BSI no semestre mais recente disponível do GradeNaHora; se houver 404, recuar semestre a semestre automaticamente."
+    `Regra operacional: sempre buscar matérias da matriz ativa (${matrixCode}) no semestre mais recente disponível do GradeNaHora; se houver 404, recuar semestre a semestre automaticamente.`
   );
 
   return lines.join("\n");
@@ -164,7 +170,7 @@ function answerAssistantRoleAndData(params: {
       `- Trilhas selecionadas: ${selectedTrackLabels && selectedTrackLabels.length > 0 ? selectedTrackLabels.join(", ") : "todas as trilhas pendentes"}`,
       `- Oferta de turmas carregada: ${semesterInfo}`,
       "",
-      buildOfficialSourcesBlock(gradeOptions),
+      buildOfficialSourcesBlock(matrixCode, gradeOptions),
       "",
       `Obs.: ${FORECAST_CHEXT_NOTE} ${FORECAST_INTERNSHIP_NOTE}`
     ].join("\n")
@@ -787,13 +793,17 @@ function answerIaTrack(roadmap: RoadmapResult): AssistantChatResponse {
   };
 }
 
-function answerAvailableDisciplines(gradeOptions?: GradeOptionsResponse, selectedTrackLabels?: string[]): AssistantChatResponse {
+function answerAvailableDisciplines(
+  matrixCode: MatrixCode,
+  gradeOptions?: GradeOptionsResponse,
+  selectedTrackLabels?: string[]
+): AssistantChatResponse {
   if (!gradeOptions) {
     return {
       detectedIntent: "AVAILABLE_DISCIPLINES",
       answer:
         "Para listar disciplinas/turmas disponíveis, primeiro clique em 'Gerar Plano de Formatura' na página de Grade.\n\n" +
-        buildOfficialSourcesBlock(undefined) +
+        buildOfficialSourcesBlock(matrixCode, undefined) +
         selectedTracksNote(selectedTrackLabels)
     };
   }
@@ -809,13 +819,14 @@ function answerAvailableDisciplines(gradeOptions?: GradeOptionsResponse, selecte
     answer:
       `No semestre ${gradeOptions.semesterUsed}, encontrei ${gradeOptions.availableByDiscipline.length} disciplina(s) com turma: ${preview}.\n` +
       `Fonte da oferta usada: ${gradeSemesterUrl}.\n` +
-      "Regra aplicada: usar o semestre mais recente disponível para BSI (fallback automático para semestres anteriores se necessário)." +
+      `Regra aplicada: usar o semestre mais recente disponível para a matriz ${matrixCode} (fallback automático para semestres anteriores se necessário).` +
       selectedTracksNote(selectedTrackLabels)
   };
 }
 
 function answerSchedulePlan(params: {
   roadmap: RoadmapResult;
+  matrixCode: MatrixCode;
   parsedTranscript?: ParsedTranscript;
   gradeOptions?: GradeOptionsResponse;
   message: string;
@@ -823,7 +834,8 @@ function answerSchedulePlan(params: {
   overrideConstraints?: AssistantScheduleConstraint;
   selectedTrackLabels?: string[];
 }): AssistantChatResponse {
-  const { roadmap, parsedTranscript, gradeOptions, message, fallbackChs, overrideConstraints, selectedTrackLabels } = params;
+  const { roadmap, matrixCode, parsedTranscript, gradeOptions, message, fallbackChs, overrideConstraints, selectedTrackLabels } =
+    params;
   const parsedConstraints = parseConstraints(message, fallbackChs);
   const sanitizedOverride = sanitizeAiConstraintsForMessage(message, overrideConstraints);
   const constraints = mergeConstraints(parsedConstraints, sanitizedOverride);
@@ -835,7 +847,7 @@ function answerSchedulePlan(params: {
       detectedConstraints: constraints,
       answer:
         "Consigo montar a grade com IA, mas preciso da oferta do GradeNaHora carregada. Vá na página Grade e clique em 'Gerar Plano de Formatura', depois tente de novo.\n\n" +
-        buildOfficialSourcesBlock(undefined) +
+        buildOfficialSourcesBlock(matrixCode, undefined) +
         selectedTracksNote(selectedTrackLabels),
       autoApplied: false
     };
@@ -924,7 +936,7 @@ function answerSchedulePlan(params: {
       `Propostas:\n${proposalSummary}\n\n` +
       "Use o botão 'Aplicar proposta' em uma das opções para atualizar o período.\n\n" +
       `Prévia da oferta do semestre:\n${formatProposalSummary(gradeOptions, 3)}\n\n` +
-      buildOfficialSourcesBlock(gradeOptions) +
+      buildOfficialSourcesBlock(matrixCode, gradeOptions) +
       selectedTracksNote(selectedTrackLabels)
   };
 }
@@ -937,7 +949,11 @@ export async function POST(request: Request) {
     const parsedTranscript = body.parsedTranscript as ParsedTranscript | undefined;
     const gradeOptions = body.gradeOptions as GradeOptionsResponse | undefined;
     const selectedTrackLabels = body.selectedTrackLabels;
-    const matrixCode = (body.matrixCode ?? roadmap?.matrixCode ?? "981") as MatrixCode;
+    const matrixCandidate = body.matrixCode ?? roadmap?.matrixCode;
+    const matrixCode =
+      (isSupportedMatrixCode(matrixCandidate) ? matrixCandidate : null) ??
+      inferMatrixCodeFromCourseCode(parsedTranscript?.student.courseCode ?? roadmap?.student.courseCode) ??
+      "981";
     const fallbackChs = body.maxChsPerPeriod ?? gradeOptions?.graduationPlan.targetChsPerPeriod ?? 18;
     const lower = message.toLowerCase();
 
@@ -982,6 +998,7 @@ export async function POST(request: Request) {
     } else if (asksScheduleFinal) {
       response = answerSchedulePlan({
         roadmap,
+        matrixCode,
         parsedTranscript,
         gradeOptions,
         message,
@@ -999,14 +1016,14 @@ export async function POST(request: Request) {
         overrideConstraints: aiAnalysis?.constraints
       });
     } else if (asksAvailableFinal) {
-      response = answerAvailableDisciplines(gradeOptions, selectedTrackLabels);
+      response = answerAvailableDisciplines(matrixCode, gradeOptions, selectedTrackLabels);
     } else {
       response = {
         detectedIntent: "GENERAL_HELP",
         answer:
           `Sou seu assistente de planejamento (${matrixCode}). Meu papel é transformar suas restrições reais em um plano executável, sempre usando oferta oficial do GradeNaHora e referência institucional da UTFPR.\n\n` +
           "Posso: 1) montar grade com restrições de horário; 2) estimar formatura por CHS/off; 3) listar disciplinas da trilha IA liberadas; 4) explicar faltantes por período.\n\n" +
-          buildOfficialSourcesBlock(gradeOptions) +
+          buildOfficialSourcesBlock(matrixCode, gradeOptions) +
           selectedTracksNote(selectedTrackLabels)
       };
     }

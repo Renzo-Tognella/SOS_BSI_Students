@@ -2,49 +2,1978 @@
   "matrixCode": "806",
   "courseCode": "236",
   "courseName": "Bacharelado em Sistemas de Informação",
-  "versionName": "Matriz 806",
+  "versionName": "Matriz 2 de Sistemas de Informação",
   "totals": {
-    "mandatoryCHT": 1875,
-    "optionalCHT": 630,
-    "electiveCHT": 225,
+    "mandatoryCHT": 1455,
+    "optionalCHT": 765,
+    "electiveCHT": 180,
     "complementaryCHT": 180,
-    "internshipCHT": 360,
+    "internshipCHT": 400,
     "tccCHT": 60,
     "extensionCHT": 0
   },
   "disciplines": [
-    { "code": "CSD20", "name": "Introdução à Lógica para Computação", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 54, "chext": 0, "prerequisites": [] },
-    { "code": "CSF13", "name": "Fundamentos de Programação 1", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 108, "chext": 0, "prerequisites": [] },
-    { "code": "CSG10", "name": "Fundamentos de Sistemas de Informação", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 72, "chext": 0, "prerequisites": [] },
-    { "code": "CSX10", "name": "Prolegômenos ao Computar", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 72, "chext": 0, "prerequisites": [] },
-    { "code": "MA70E", "name": "Tópicos Matemáticos", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 1, "cht": 108, "chext": 0, "prerequisites": [] },
-    { "code": "MA71B", "name": "Geometria Analítica e Álgebra Linear", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 108, "chext": 0, "prerequisites": [] },
-
-    { "code": "CSE20", "name": "Técnicas de Programação", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 72, "chext": 0, "prerequisites": ["CSF13"] },
-    { "code": "CSF20", "name": "Estruturas de Dados 1", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 2, "cht": 54, "chext": 0, "prerequisites": ["CSF13"] },
-    { "code": "CSD21", "name": "Matemática Discreta", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 3, "cht": 54, "chext": 0, "prerequisites": ["CSD20"] },
-    { "code": "CSF30", "name": "Estruturas de Dados 2", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 3, "cht": 54, "chext": 0, "prerequisites": ["CSF20"] },
-    { "code": "CSW20", "name": "Arquitetura e Organização de Computadores", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 72, "chext": 0, "prerequisites": ["CSD20", "CSF20"] },
-
-    { "code": "CSA30", "name": "Projeto e Análise de Algoritmos", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 54, "chext": 0, "prerequisites": ["CSD21", "CSF30"] },
-    { "code": "CSB30", "name": "Introdução a Banco de Dados", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 72, "chext": 0, "prerequisites": ["CSD21", "CSE20", "CSF30"] },
-    { "code": "CSG20", "name": "Análise e Projeto de Sistemas", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 4, "cht": 54, "chext": 0, "prerequisites": ["CSG10"] },
-    { "code": "CSO30", "name": "Sistemas Operacionais", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 5, "cht": 72, "chext": 0, "prerequisites": ["CSW20"] },
-    { "code": "CSR30", "name": "Redes de Computadores", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 5, "cht": 54, "chext": 0, "prerequisites": ["CSW20"] },
-    { "code": "CSE30", "name": "Engenharia de Software", "category": "MANDATORY", "subcategory": "Primeiro Estrato", "recommendedPeriod": 5, "cht": 72, "chext": 0, "prerequisites": ["CSE20", "CSG20"] },
-
-    { "code": "CSX20", "name": "Trabalho de Integração 1", "category": "MANDATORY", "subcategory": "Integração", "recommendedPeriod": 4, "cht": 54, "chext": 0, "prerequisites": ["CSG10"] },
-    { "code": "CSX30", "name": "Trabalho de Integração 2", "category": "MANDATORY", "subcategory": "Integração", "recommendedPeriod": 6, "cht": 54, "chext": 0, "prerequisites": ["CSX20"] },
-    { "code": "CSX40", "name": "Trabalho de Conclusão de Curso 1", "category": "TCC", "subcategory": "TCC", "recommendedPeriod": 7, "cht": 36, "chext": 0, "prerequisites": ["CSX30"] },
-    { "code": "CSX41", "name": "Trabalho de Conclusão de Curso 2", "category": "TCC", "subcategory": "TCC", "recommendedPeriod": 8, "cht": 36, "chext": 0, "prerequisites": ["CSX40"] },
-
-    { "code": "ES70G", "name": "Sociologia", "category": "OPTIONAL", "subcategory": "Segundo Estrato", "recommendedPeriod": 3, "cht": 54, "chext": 0, "prerequisites": [] },
-    { "code": "ES70B", "name": "Psicologia Aplicada ao Trabalho", "category": "OPTIONAL", "subcategory": "Segundo Estrato", "recommendedPeriod": 5, "cht": 36, "chext": 0, "prerequisites": [] },
-    { "code": "ES70A", "name": "Filosofia da Ciência e da Tecnologia", "category": "OPTIONAL", "subcategory": "Segundo Estrato", "recommendedPeriod": 5, "cht": 54, "chext": 0, "prerequisites": [] },
-
-    { "code": "CSI30", "name": "Sistemas Inteligentes", "category": "TRACK", "subcategory": "Trilha", "track": "Inteligência Artificial", "recommendedPeriod": 3, "cht": 54, "chext": 0, "prerequisites": ["CSA30"] },
-    { "code": "CSV30", "name": "Processamento Digital de Imagens", "category": "TRACK", "subcategory": "Trilha", "track": "Processamento Gráfico", "recommendedPeriod": 3, "cht": 72, "chext": 0, "prerequisites": ["CSF30", "MA71B"] },
-    { "code": "CSM30", "name": "Desenvolvimento Integrado de Sistemas", "category": "TRACK", "subcategory": "Trilha", "track": "Desenvolvimento Baseado em Plataformas", "recommendedPeriod": 3, "cht": 54, "chext": 0, "prerequisites": ["CSB30", "CSG20"] },
-    { "code": "CSB59", "name": "Processamento de Linguagem Natural", "category": "TRACK", "subcategory": "Trilha", "track": "Banco de Dados", "recommendedPeriod": 4, "cht": 54, "chext": 0, "prerequisites": ["CSB30"] }
+    {
+      "code": "CSF13",
+      "name": "FUNDAMENTOS DE PROGRAMAÇÃO 1",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 1,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSX10",
+      "name": "PROLEGÔMENOS AO COMPUTAR",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 1,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "MA70E",
+      "name": "TÓPICOS MATEMÁTICOS",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 1,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSD20",
+      "name": "INTRODUÇÃO À LÓGICA PARA A COMPUTAÇÃO",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 2,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSE20",
+      "name": "TÉCNICAS DE PROGRAMAÇÃO",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 2,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSF13"
+      ]
+    },
+    {
+      "code": "CSF20",
+      "name": "ESTRUTURA DE DADOS 1",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 2,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSF13"
+      ]
+    },
+    {
+      "code": "CSG10",
+      "name": "FUNDAMENTOS DE SISTEMAS DE INFORMAÇÃO",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 2,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSX50",
+      "name": "ATIVIDADES COMPLEMENTARES",
+      "category": "COMPLEMENTARY",
+      "subcategory": "Atividades Complementares",
+      "recommendedPeriod": 2,
+      "cht": 180,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "MA71B",
+      "name": "GEOMETRIA ANALÍTICA E ÁLGEBRA LINEAR",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 2,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSA31",
+      "name": "TEORIA DA COMPUTAÇÃO",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSA30"
+      ]
+    },
+    {
+      "code": "CSD21",
+      "name": "MATEMÁTICA DISCRETA",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSD20"
+      ]
+    },
+    {
+      "code": "CSE40",
+      "name": "ENGENHARIA DE SOFTWARE 2",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSE30"
+      ]
+    },
+    {
+      "code": "CSF30",
+      "name": "ESTRUTURA DE DADOS 2",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSF20"
+      ]
+    },
+    {
+      "code": "CSG30",
+      "name": "GESTÃO DA INFORMAÇÃO EM SISTEMAS DE INFORMAÇÃO",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSG10",
+        "GE71A"
+      ]
+    },
+    {
+      "code": "CSH30",
+      "name": "INTRODUÇÃO À INTERAÇÃO HUMANO-COMPUTADOR",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSE20",
+        "CSX10",
+        "GE71A"
+      ]
+    },
+    {
+      "code": "CSI30",
+      "name": "SISTEMAS INTELIGENTES",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSA30"
+      ]
+    },
+    {
+      "code": "CSM30",
+      "name": "DESENVOLVIMENTO INTEGRADO DE SISTEMAS",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSB30",
+        "CSG20"
+      ]
+    },
+    {
+      "code": "CSV30",
+      "name": "PROCESSAMENTO DIGITAL DE IMAGENS",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSF30",
+        "MA71B"
+      ]
+    },
+    {
+      "code": "CSW20",
+      "name": "ARQUITETURA E ORGANIZAÇÃO DE COMPUTADORES",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSF20"
+      ]
+    },
+    {
+      "code": "CSW31",
+      "name": "ELETRICIDADE",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "MA70E"
+      ]
+    },
+    {
+      "code": "ES70G",
+      "name": "SOCIOLOGIA",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ES70S",
+      "name": "HISTÓRIA DA TÉCNICA E DA TECNOLOGIA",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "GE71A",
+      "name": "TEORIAS DA ADMINISTRAÇÃO",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "GE73A",
+      "name": "COMPORTAMENTO HUMANO NAS ORGANIZAÇÕES",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ES70G"
+      ]
+    },
+    {
+      "code": "MA70H",
+      "name": "PROBABILIDADE E ESTATÍSTICA",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSA30",
+      "name": "PROJETO E ANÁLISE DE ALGORITMOS",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSD21",
+        "CSF30"
+      ]
+    },
+    {
+      "code": "CSA40",
+      "name": "ALGORITMOS E COMPLEXIDADE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos E Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSA31"
+      ]
+    },
+    {
+      "code": "CSA41",
+      "name": "COMPLEXIDADE COMPUTACIONAL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos E Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSA31"
+      ]
+    },
+    {
+      "code": "CSA42",
+      "name": "TEORIA DOS GRAFOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos E Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSA30"
+      ]
+    },
+    {
+      "code": "CSA43",
+      "name": "COMPUTAÇÃO QUÂNTICA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos E Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSA31"
+      ]
+    },
+    {
+      "code": "CSA44",
+      "name": "INTRODUÇÃO À CRIPTOGRAFIA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos E Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSA30",
+        "MA70E"
+      ]
+    },
+    {
+      "code": "CSA45",
+      "name": "GEOMETRIA COMPUTACIONAL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos E Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSA30",
+        "MA70E"
+      ]
+    },
+    {
+      "code": "CSB30",
+      "name": "INTRODUÇÃO A BANCO DE DADOS CSF30",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSD21",
+        "CSE20",
+        "CSF30"
+      ]
+    },
+    {
+      "code": "CSB40",
+      "name": "BIBLIOTECAS DIGITAIS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco De Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSB30"
+      ]
+    },
+    {
+      "code": "CSB41",
+      "name": "BANCO DE DADOS 2",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco De Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSB30"
+      ]
+    },
+    {
+      "code": "CSB42",
+      "name": "COMPUTAÇÃO BASEADA EM DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco De Dados",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSB30"
+      ]
+    },
+    {
+      "code": "CSB50",
+      "name": "BANCO DE DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco De Dados",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSB30"
+      ]
+    },
+    {
+      "code": "CSB51",
+      "name": "RECUPERAÇÃO INTELIGENTE DE INFORMAÇÕES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco De Dados",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "CSB52",
+      "name": "DATA WAREHOUSING",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco De Dados",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSB30"
+      ]
+    },
+    {
+      "code": "CSB53",
+      "name": "INTRODUÇÃO A CIÊNCIAS DE DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco De Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSB30"
+      ]
+    },
+    {
+      "code": "CSB54",
+      "name": "INTRODUCTION TO DATA SCIENCE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco De Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSB30",
+        "MA70H"
+      ]
+    },
+    {
+      "code": "CSD40",
+      "name": "SIMULAÇÃO DE EVENTOS DISCRETOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos E Simulação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "MA70H"
+      ]
+    },
+    {
+      "code": "CSD41",
+      "name": "PROGRAMAÇÃO MATEMÁTICA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos E Simulação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSA30"
+      ]
+    },
+    {
+      "code": "CSD42",
+      "name": "SIMULAÇÃO DE SISTEMAS BIOLÓGICOS E SOCIAIS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos E Simulação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSF30"
+      ]
+    },
+    {
+      "code": "CSD45",
+      "name": "MODELAGEM E AVALIAÇÃO DE SISTEMAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos E Simulação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSG20",
+        "MA70H"
+      ]
+    },
+    {
+      "code": "CSD47",
+      "name": "OTIMIZAÇÃO DE SISTEMAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos E Simulação",
+      "recommendedPeriod": 4,
+      "cht": 7,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSD52",
+      "name": "INTRODUÇÃO À COMPUTAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos E Simulação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSD21"
+      ]
+    },
+    {
+      "code": "CSD54",
+      "name": "TEORIA DE FILAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos E Simulação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "MA70E",
+        "MA70H"
+      ]
+    },
+    {
+      "code": "CSD55",
+      "name": "MÉTODOS ESTOCÁSTICOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos E Simulação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "MA70E",
+        "MA70H"
+      ]
+    },
+    {
+      "code": "CSD56",
+      "name": "METAHEURÍSTICA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos E Simulação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "MA70E",
+        "MA70H"
+      ]
+    },
+    {
+      "code": "CSE41",
+      "name": "ENGENHARIA DE REQUISITOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia De Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSE40"
+      ]
+    },
+    {
+      "code": "CSE42",
+      "name": "METODOLOGIAS ÁGEIS PARA O DESENVOLVIMENTO DE SOFTWARE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia De Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSE40"
+      ]
+    },
+    {
+      "code": "CSE43",
+      "name": "TESTES, VERIFICAÇÃO E VALIDAÇÃO DE SISTEMAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia De Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSE40"
+      ]
+    },
+    {
+      "code": "CSE44",
+      "name": "SISTEMAS LEGADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia De Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSE20"
+      ]
+    },
+    {
+      "code": "CSE45",
+      "name": "MODELAGEM DE SOFTWARE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia De Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSE40"
+      ]
+    },
+    {
+      "code": "CSE46",
+      "name": "MÉTRICAS E ESTIMATIVAS DE SOFTWARE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia De Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSE40"
+      ]
+    },
+    {
+      "code": "CSE47",
+      "name": "GERÊNCIA DE PROJETOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia De Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSE30"
+      ]
+    },
+    {
+      "code": "CSE48",
+      "name": "QUALIDADE DE SOFTWARE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia De Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSE40"
+      ]
+    },
+    {
+      "code": "CSG20",
+      "name": "ANÁLISE E PROJETO DE SISTEMAS",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSE20"
+      ]
+    },
+    {
+      "code": "CSG41",
+      "name": "TECNOLOGIAS DA INFORMAÇÃO APLICADA À GESTÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão De Sistemas De Informação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSG30"
+      ]
+    },
+    {
+      "code": "CSG42",
+      "name": "GESTÃO DO CONHECIMENTO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão De Sistemas De Informação",
+      "recommendedPeriod": 4,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [
+        "CSG30"
+      ]
+    },
+    {
+      "code": "CSG43",
+      "name": "SISTEMAS DE APOIO À DECISÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão De Sistemas De Informação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "CSG44",
+      "name": "INFORMÁTICA EM SAÚDE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão De Sistemas De Informação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSG20"
+      ]
+    },
+    {
+      "code": "CSG45",
+      "name": "SISTEMAS DE INFORMAÇÃO EM SAÚDE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão De Sistemas De Informação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSG30"
+      ]
+    },
+    {
+      "code": "CSG47",
+      "name": "INTELIGÊNCIA COLETIVA E REDES SOCIAIS ELETRÔNICAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão De Sistemas De Informação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSG10",
+        "CSG30"
+      ]
+    },
+    {
+      "code": "CSG48",
+      "name": "MODELAGEM DE PROCESSOS DE NEGÓCIOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão De Sistemas De Informação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSG20"
+      ]
+    },
+    {
+      "code": "CSG70",
+      "name": "SISTEMAS DE INFORMAÇÃO E ORGANIZAÇÕES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão De Sistemas De Informação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSG30"
+      ]
+    },
+    {
+      "code": "CSH41",
+      "name": "AVALIAÇÃO EM INTERAÇÃO HUMANO-COMPUTADOR",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano Computador",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSH30"
+      ]
+    },
+    {
+      "code": "CSH42",
+      "name": "ACESSIBILIDADE E INCLUSÃO DIGITAL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano Computador",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSH30"
+      ]
+    },
+    {
+      "code": "CSH43",
+      "name": "TRABALHO COOPERATIVO APOIADO POR COMPUTADOR",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano Computador",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSH30",
+        "ES70G"
+      ]
+    },
+    {
+      "code": "CSH44",
+      "name": "COMPUTAÇÃO E SOCIEDADE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano Computador",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSH30",
+        "ES70G"
+      ]
+    },
+    {
+      "code": "CSH45",
+      "name": "TÓPICOS EM DESIGN DE INTERAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano Computador",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSH30"
+      ]
+    },
+    {
+      "code": "CSH50",
+      "name": "FUNDAMENTOS EM INTERAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano Computador",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSH30"
+      ]
+    },
+    {
+      "code": "CSH51",
+      "name": "DESIGN DE INTERAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano Computador",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSH30"
+      ]
+    },
+    {
+      "code": "CSI31",
+      "name": "Ciências das Redes",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "CSI41",
+      "name": "REDES NEURAIS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "CSI42",
+      "name": "META-HEURISTICAS INSPIRADAS EM INTELIGÊNCIA COLETIVA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "CSI50",
+      "name": "INTELIGÊNCIA ARTIFICIAL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "CSI51",
+      "name": "COMPUTAÇÃO EVOLUCIONÁRIA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "CSI52",
+      "name": "INTELIGÊNCIA ARTIFICIAL DISTRIBUÍDA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "CSI53",
+      "name": "MINERAÇÃO DE DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "CSI54",
+      "name": "ONTOLOGIAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "CSI55",
+      "name": "SISTEMAS AUTÔNOMOS INTELIGENTES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "CSI56",
+      "name": "SISTEMAS FUZZY",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "CSI57",
+      "name": "INTRODUÇÃO ÀS CIÊNCIAS COGNITIVAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSD21",
+        "CSX10"
+      ]
+    },
+    {
+      "code": "CSI58",
+      "name": "DATA MINING",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30",
+        "MA70H"
+      ]
+    },
+    {
+      "code": "CSL40",
+      "name": "ESTRUTURA DE LINGUAGENS DE PROGRAMAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Linguagens De Programação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSA31"
+      ]
+    },
+    {
+      "code": "CSL41",
+      "name": "CONSTRUÇÃO DE COMPILADORES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Linguagens De Programação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSA31"
+      ]
+    },
+    {
+      "code": "CSM40",
+      "name": "HTML/CSS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Desenvolvimento Baseado Em Plataformas",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSM41",
+      "name": "DESENVOLVIMENTO DE APLICAÇÕES WEB",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Desenvolvimento Baseado Em Plataformas",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSB30",
+        "CSE20"
+      ]
+    },
+    {
+      "code": "CSM42",
+      "name": "INFRAESTRUTURA PARA TECNOLOGIA DE INFORMAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Desenvolvimento Baseado Em Plataformas",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSR30"
+      ]
+    },
+    {
+      "code": "CSM43",
+      "name": "PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS E SEM FIO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Desenvolvimento Baseado Em Plataformas",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSE20"
+      ]
+    },
+    {
+      "code": "CSM44",
+      "name": "WEB DESIGN",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Desenvolvimento Baseado Em Plataformas",
+      "recommendedPeriod": 4,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSM45",
+      "name": "COMPUTAÇÃO EM NUVEM",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Desenvolvimento Baseado Em Plataformas",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSO30",
+      "name": "SISTEMAS OPERACIONAIS",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSW20"
+      ]
+    },
+    {
+      "code": "CSR20",
+      "name": "CABEAMENTO ESTRUTURADO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes De Computadores",
+      "recommendedPeriod": 4,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [
+        "CSR30"
+      ]
+    },
+    {
+      "code": "CSR31",
+      "name": "COMUNICAÇÃO DE DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes De Computadores",
+      "recommendedPeriod": 4,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSR40",
+      "name": "REDES E SISTEMAS DE COMUNICAÇÃO MÓVEIS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes De Computadores",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSR30"
+      ]
+    },
+    {
+      "code": "CSR41",
+      "name": "OFICINA DE REDES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes De Computadores",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSO30"
+      ]
+    },
+    {
+      "code": "CSR42",
+      "name": "INFRAESTRUTURA DE LANS HIERARQUICAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes De Computadores",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSR30"
+      ]
+    },
+    {
+      "code": "CSR43",
+      "name": "INFRAESTRUTURA DE WANS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes De Computadores",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSR30"
+      ]
+    },
+    {
+      "code": "CSR44",
+      "name": "SEGURANÇA DE REDES E SISTEMAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes De Computadores",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSR30"
+      ]
+    },
+    {
+      "code": "CSR45",
+      "name": "PROJETO DE INFRAESTRUTURA DE REDES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes De Computadores",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSR30"
+      ]
+    },
+    {
+      "code": "CSR46",
+      "name": "ROTEAMENTO E QUALIDADE DE SERVIÇOS EM REDES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes De Computadores",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSR30"
+      ]
+    },
+    {
+      "code": "CSR47",
+      "name": "REDES SEM FIO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes De Computadores",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSR30"
+      ]
+    },
+    {
+      "code": "CSR48",
+      "name": "SIMULAÇÃO E ANÁLISE DE DESEMPENHO DE REDES DE COMPUTADORES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes De Computadores",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSR30"
+      ]
+    },
+    {
+      "code": "CSV40",
+      "name": "COMPUTAÇÃO GRÁFICA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Processamento Gráfico",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSV30"
+      ]
+    },
+    {
+      "code": "CSV41",
+      "name": "INTRODUÇÃO À VISÃO COMPUTACIONAL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Processamento Gráfico",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSV30"
+      ]
+    },
+    {
+      "code": "CSV42",
+      "name": "TÓPICOS AVANÇADOS EM PROCESSAMENTO GRÁFICO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Processamento Gráfico",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSV30"
+      ]
+    },
+    {
+      "code": "CSV43",
+      "name": "PROCESSAMENTO DIGITAL DE IMAGENS 2",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Processamento Gráfico",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSV30"
+      ]
+    },
+    {
+      "code": "CSV45",
+      "name": "RECONHECIMENTO DE PADRÕES EM IMAGENS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Processamento Gráfico",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSV30"
+      ]
+    },
+    {
+      "code": "CSV50",
+      "name": "COMPUTAÇÃO GRÁFICA 2",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Processamento Gráfico",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSV30"
+      ]
+    },
+    {
+      "code": "CSV52",
+      "name": "VISÃO COMPUTACIONAL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Processamento Gráfico",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSV30"
+      ]
+    },
+    {
+      "code": "CSV53",
+      "name": "FUNDAMENTOS DO PROCESSAMENTO DE IMAGENS MÉDICAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Processamento Gráfico",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSV30"
+      ]
+    },
+    {
+      "code": "CSW21",
+      "name": "FUNDAMENTOS DE CIRCUITOS DIGITAIS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados",
+      "recommendedPeriod": 4,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": [
+        "CSW20"
+      ]
+    },
+    {
+      "code": "CSW40",
+      "name": "SISTEMAS MICROCONTROLADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSW21"
+      ]
+    },
+    {
+      "code": "CSW41",
+      "name": "SISTEMAS EMBARCADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSW20"
+      ]
+    },
+    {
+      "code": "CSW42",
+      "name": "LÓGICA RECONFIGURÁVEL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSW40"
+      ]
+    },
+    {
+      "code": "CSW43",
+      "name": "ARQUITETURA AVANÇADA DE COMPUTADORES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSW20"
+      ]
+    },
+    {
+      "code": "CSW44",
+      "name": "ARQUITETURA DE COMPUTADORES PARALELOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSW20"
+      ]
+    },
+    {
+      "code": "CSW45",
+      "name": "ROBÓTICA MÓVEL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSF30"
+      ]
+    },
+    {
+      "code": "CSW46",
+      "name": "ENGENHARIA DE SISTEMAS APLICADA A SISTEMAS CIBERFÍSICOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSO30"
+      ]
+    },
+    {
+      "code": "CSW51",
+      "name": "SISTEMAS EMBARCADOS PPGCA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSW20"
+      ]
+    },
+    {
+      "code": "CSW53",
+      "name": "COMPUTAÇÃO RECONFIGURÁVEL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSW21"
+      ]
+    },
+    {
+      "code": "CSW55",
+      "name": "TÓPICOS AVANÇADOS EM SISTEMAS EMBARCADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSO30"
+      ]
+    },
+    {
+      "code": "CSX20",
+      "name": "TRABALHO DE INTEGRAÇÃO 1",
+      "category": "MANDATORY",
+      "subcategory": "Integração",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSF20"
+      ]
+    },
+    {
+      "code": "GE65C",
+      "name": "LEGISLAÇÃO PARA INFORMÁTICA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano Computador",
+      "recommendedPeriod": 4,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "GE72A",
+      "name": "TEORIAS ORGANIZACIONAIS",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSB60",
+      "name": "NoSQL-BANCO DE DADOS NÃO RELACIONAIS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco De Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSB30"
+      ]
+    },
+    {
+      "code": "ICSB61",
+      "name": "BIG DATA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco De Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSB30",
+        "CSE20"
+      ]
+    },
+    {
+      "code": "ICSI59",
+      "name": "PROGRAMAÇÃO ORIENTADA À NOTIFICAÇÕES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSIX0",
+      "name": "INTELIGÊNCIA ARTIFICIAL E SOCIEDADE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Inteligentes",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSI30"
+      ]
+    },
+    {
+      "code": "MA70C",
+      "name": "CÁLCULO NUMÉRICO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos E Simulação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSF13",
+        "MA70E"
+      ]
+    },
+    {
+      "code": "CE70B",
+      "name": "COMUNICAÇÃO ORAL E ESCRITA C",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSE30",
+      "name": "ENGENHARIA DE SOFTWARE",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 5,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSG20"
+      ]
+    },
+    {
+      "code": "CSR30",
+      "name": "REDES DE COMPUTADORES",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSO30"
+      ]
+    },
+    {
+      "code": "CSX51",
+      "name": "ESTÁGIO 1",
+      "category": "INTERNSHIP",
+      "subcategory": "Estágio",
+      "recommendedPeriod": 5,
+      "cht": 200,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ED70G",
+      "name": "LIBRAS 1",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ED70H",
+      "name": "LIBRAS 2",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ELSC01",
+      "name": "SMART CHALLENGES",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 120,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ELSP01",
+      "name": "SMART PROJECTS",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 120,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ES70B",
+      "name": "PSICOLOGIA APLICADA AO TRABALHO",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 5,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ES70H",
+      "name": "FUNDAMENTOS DA ÉTICA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ES70J",
+      "name": "A PRESENÇA AFRICANA NO BRASIL: TECNOLOGIA E TRABALHO",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ES70P",
+      "name": "FILOSOFIA DA CIÊNCIA E DA TECNOLOGIA",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7FC",
+      "name": "TEORIA DAS CIÊNCIAS HUMANAS",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7GA",
+      "name": "METROPOLIZAÇÃO CONTEMPORÂNEA: TECNOLOGIA E TERRITÓRIO",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7HB",
+      "name": "HISTÓRIA GERAL DA ECONOMIA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7HC",
+      "name": "CAPITALISMO CONTEMPORÂNEO E ECONOMIA POLÍTICA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7SC",
+      "name": "TECNOLOGIA, TRABALHO E SAÚDE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7XF",
+      "name": "DIMENSÃO AMBIENTAL NA GESTÃO URBANA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7XG",
+      "name": "TECNOPOLÍTICAS DA SOCIEDADE CONTEMPORÂNEA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "GE78B",
+      "name": "RESPONSABILIDADE SOCIAL E DESENVOLVIMENTO SUSTENTÁVEL",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "QB70E",
+      "name": "CIÊNCIAS DO AMBIENTE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "QB70F",
+      "name": "DESENVOLVIMENTO SUSTENTÁVEL",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas",
+      "recommendedPeriod": 5,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSS30",
+      "name": "SISTEMAS DISTRIBUÍDOS",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 6,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSO30",
+        "CSR30"
+      ]
+    },
+    {
+      "code": "CSX30",
+      "name": "TRABALHO DE INTEGRAÇÃO 2",
+      "category": "MANDATORY",
+      "subcategory": "Integração",
+      "recommendedPeriod": 6,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSX20"
+      ]
+    },
+    {
+      "code": "CSX52",
+      "name": "ESTÁGIO 2",
+      "category": "INTERNSHIP",
+      "subcategory": "Estágio",
+      "recommendedPeriod": 6,
+      "cht": 200,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSX40",
+      "name": "TRABALHO DE CONCLUSÃO DE CURSO 1",
+      "category": "TCC",
+      "subcategory": "TCC",
+      "recommendedPeriod": 7,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSX41",
+      "name": "TRABALHO DE CONCLUSÃO DE CURSO 2",
+      "category": "TCC",
+      "subcategory": "TCC",
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    }
   ]
 }

@@ -1,4 +1,4 @@
-export type MatrixCode = "806" | "981";
+export type MatrixCode = "806" | "981" | "962";
 
 export type DisciplineStatus =
   | "APPROVED"

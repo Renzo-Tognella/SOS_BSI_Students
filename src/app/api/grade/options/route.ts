@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { MATRIX_CODE_VALUES } from "@/lib/domain/matrix-metadata";
 import { buildGradeOptions, extractUniqueRequestedCodes } from "@/lib/integrations/gradenahora-scheduler";
 
 export const runtime = "nodejs";
 
 const querySchema = z.object({
-  matrix: z.enum(["806", "981"]),
+  matrix: z.enum(MATRIX_CODE_VALUES),
   course: z.string().min(1),
   campus: z.string().min(1),
   pending: z.string().optional(),

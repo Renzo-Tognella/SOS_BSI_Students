@@ -1,9 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { POST } from "@/app/api/assistant/chat/route";
-import type { GradeOptionsResponse, PendingDiscipline, RoadmapResult } from "@/types/academic";
+import type { GradeOptionsResponse, MatrixCode, PendingDiscipline, RoadmapResult } from "@/types/academic";
 
-function makeGradeOptions(): GradeOptionsResponse {
+function makeGradeOptions(params?: { matrixCode?: MatrixCode; courseCode?: string; campus?: string }): GradeOptionsResponse {
+  const matrixCode = params?.matrixCode ?? "981";
+  const courseCode = params?.courseCode ?? (matrixCode === "962" ? "212" : "236");
+  const campus = params?.campus ?? "01";
+
   const disciplines: GradeOptionsResponse["availableByDiscipline"] = [
     {
       code: "ICSA31",
@@ -152,9 +156,9 @@ function makeGradeOptions(): GradeOptionsResponse {
   ];
 
   return {
-    matrixCode: "981",
-    campus: "01",
-    course: "236",
+    matrixCode,
+    campus,
+    course: courseCode,
     semesterUsed: "2025-2",
     lastUpdate: "2026-02-24",
     requestedCodes: disciplines.map((item) => item.code),
@@ -217,12 +221,12 @@ function makeRoadmap(gradeOptions: GradeOptionsResponse): RoadmapResult {
   }));
 
   return {
-    matrixCode: "981",
+    matrixCode: gradeOptions.matrixCode,
     student: {
       registrationId: "123",
       fullName: "Aluno Teste",
-      courseCode: "236",
-      courseName: "BSI"
+      courseCode: gradeOptions.course,
+      courseName: gradeOptions.matrixCode === "962" ? "Engenharia de Computação" : "BSI"
     },
     progress: [
       {
@@ -278,23 +282,31 @@ function mockOpenRouterAnalysis(intent: string, constraints: Record<string, unkn
 
 async function callAssistant(
   message: string,
-  options: { intent?: string; constraintsFromLlm?: Record<string, unknown> } = {}
+  options: {
+    intent?: string;
+    constraintsFromLlm?: Record<string, unknown>;
+    matrixCode?: MatrixCode;
+    courseCode?: string;
+    includeGradeOptions?: boolean;
+  } = {}
 ) {
   process.env.OPENROUTER_API_KEY = "test-key";
   process.env.GEMINI_API_KEY = "";
   mockOpenRouterAnalysis(options.intent ?? "PLAN_SCHEDULE", options.constraintsFromLlm ?? {});
 
-  const gradeOptions = makeGradeOptions();
+  const matrixCode = options.matrixCode ?? "981";
+  const gradeOptions = makeGradeOptions({ matrixCode, courseCode: options.courseCode });
   const roadmap = makeRoadmap(gradeOptions);
+  const includeGradeOptions = options.includeGradeOptions ?? true;
 
   const request = new Request("http://localhost/api/assistant/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       message,
-      matrixCode: "981",
+      matrixCode,
       roadmap,
-      gradeOptions,
+      gradeOptions: includeGradeOptions ? gradeOptions : undefined,
       maxChsPerPeriod: 18
     })
   });
@@ -393,5 +405,20 @@ describe("assistant chat route simulations", () => {
     const proposals = payload.proposals as Array<{ subjectsCount: number }>;
     expect(proposals.length).toBeGreaterThan(0);
     expect(proposals[0].subjectsCount).toBeGreaterThanOrEqual(4);
+  });
+
+  it("uses EngComp official sources when matrix 962 is active", async () => {
+    const payload = await callAssistant("Quais fontes e links oficiais você usa?", {
+      intent: "GENERAL_HELP",
+      matrixCode: "962",
+      courseCode: "212",
+      includeGradeOptions: false
+    });
+
+    expect(payload.detectedIntent).toBe("GENERAL_HELP");
+    const answer = String(payload.answer ?? "");
+    expect(answer).toContain("Matriz ativa: 962");
+    expect(answer).toContain("engenharia-de-computacao");
+    expect(answer).toContain("listahorario0120260100212.json");
   });
 });
