@@ -42,9 +42,17 @@ interface RawConvalidationMatch {
 
 interface ManualMatchResult {
   sourceCode: string;
-  targetCode: string;
+  targetCode?: string;
   sourceName: string;
-  targetName: string;
+  targetName?: string;
+  targetCategory: DisciplineCategory;
+  creditedCHT: number;
+  manualOnly: boolean;
+}
+
+interface ManualCorrelationOutcome {
+  matches: ManualMatchResult[];
+  creditedByCategory: Record<DisciplineCategory, number>;
 }
 
 const SYNTHETIC_ELECTIVE_PENDING_PREFIX = "ELVP";
@@ -242,30 +250,58 @@ function applyManualCorrelationMatches(params: {
   completedCodes: Set<string>;
   completedSourceCodes: Set<string>;
   manualMappings?: ManualCorrelationInput[];
-}): ManualMatchResult[] {
+}): ManualCorrelationOutcome {
   const { matrix, attempts, completedCodes, completedSourceCodes, manualMappings = [] } = params;
+  const creditedByCategory: Record<DisciplineCategory, number> = {
+    MANDATORY: 0,
+    OPTIONAL: 0,
+    TRACK: 0,
+    ELECTIVE: 0,
+    COMPLEMENTARY: 0,
+    INTERNSHIP: 0,
+    TCC: 0,
+    UNKNOWN: 0
+  };
+
   if (!Array.isArray(manualMappings) || manualMappings.length === 0) {
-    return [];
+    return { matches: [], creditedByCategory };
   }
 
   const matrixByCode = new Map(matrix.disciplines.map((discipline) => [normalizeDisciplineCode(discipline.code), discipline]));
-  const mappingBySourceCode = new Map<string, string>();
-  const mappingBySourceName = new Map<string, string>();
+  const mappingBySourceCode = new Map<string, ManualCorrelationInput>();
+  const mappingBySourceName = new Map<string, ManualCorrelationInput>();
 
   for (const mapping of manualMappings) {
+    const sourceCode = normalizeDisciplineCode(mapping.sourceCode ?? "");
+    const sourceName = normalizeDisciplineNameForComparison(mapping.sourceName ?? "");
     const targetCode = normalizeDisciplineCode(mapping.targetCode ?? "");
-    if (!targetCode || !matrixByCode.has(targetCode)) {
+    const hasCustomName = (mapping.customDisciplineName ?? "").trim().length > 0;
+    const hasCreditedHours = Number.isFinite(mapping.creditedCHT);
+    const isManualOnly = Boolean(mapping.manualOnly);
+    const hasAnyRouting =
+      isManualOnly ||
+      hasCreditedHours ||
+      Boolean(mapping.targetCategory) ||
+      hasCustomName ||
+      Boolean(mapping.customDisciplineCode) ||
+      Boolean(targetCode);
+
+    if (!hasAnyRouting) {
       continue;
     }
 
-    const sourceCode = normalizeDisciplineCode(mapping.sourceCode ?? "");
-    if (sourceCode) {
-      mappingBySourceCode.set(sourceCode, targetCode);
-    }
+    const normalizedMapping: ManualCorrelationInput = {
+      ...mapping,
+      sourceCode: sourceCode || mapping.sourceCode,
+      sourceName: mapping.sourceName,
+      targetCode: targetCode || mapping.targetCode
+    };
 
-    const sourceName = normalizeDisciplineNameForComparison(mapping.sourceName ?? "");
+    if (sourceCode) {
+      mappingBySourceCode.set(sourceCode, normalizedMapping);
+    }
     if (sourceName) {
-      mappingBySourceName.set(sourceName, targetCode);
+      mappingBySourceName.set(sourceName, normalizedMapping);
     }
   }
 
@@ -289,27 +325,48 @@ function applyManualCorrelationMatches(params: {
 
     const sourceName = attempt.name?.trim() ?? sourceCode;
     const normalizedName = normalizeDisciplineNameForComparison(sourceName);
-    const targetCode = mappingBySourceCode.get(sourceCode) ?? (normalizedName ? mappingBySourceName.get(normalizedName) : undefined);
-    if (!targetCode) {
+    const mapping = mappingBySourceCode.get(sourceCode) ?? (normalizedName ? mappingBySourceName.get(normalizedName) : undefined);
+    if (!mapping) {
       continue;
     }
 
-    const targetDiscipline = matrixByCode.get(targetCode);
-    if (!targetDiscipline) {
+    const targetCode = normalizeDisciplineCode(mapping.targetCode ?? "");
+    const targetDiscipline = targetCode ? matrixByCode.get(targetCode) : undefined;
+    const manualOnly = Boolean(mapping.manualOnly);
+    if (!manualOnly && !targetDiscipline) {
       continue;
     }
 
-    completedCodes.add(targetCode);
+    const targetCategory: DisciplineCategory =
+      mapping.targetCategory ??
+      targetDiscipline?.category ??
+      "UNKNOWN";
+
+    const creditedCHTBase = Number.isFinite(mapping.creditedCHT) ? Number(mapping.creditedCHT) : Math.max(attempt.cht ?? 0, 0);
+    const creditedCHT = Math.max(Math.round(creditedCHTBase), 0);
+    if (creditedCHT <= 0) {
+      continue;
+    }
+
     completedSourceCodes.add(sourceCode);
+    creditedByCategory[targetCategory] = (creditedByCategory[targetCategory] ?? 0) + creditedCHT;
+
+    if (!manualOnly && targetDiscipline && targetCategory === targetDiscipline.category && creditedCHT >= targetDiscipline.cht) {
+      completedCodes.add(targetDiscipline.code);
+    }
+
     matches.push({
       sourceCode,
       sourceName,
-      targetCode,
-      targetName: targetDiscipline.name
+      targetCode: targetDiscipline?.code,
+      targetName: mapping.customDisciplineName?.trim() || targetDiscipline?.name,
+      targetCategory,
+      creditedCHT,
+      manualOnly
     });
   }
 
-  return matches;
+  return { matches, creditedByCategory };
 }
 
 function buildUnmatchedApprovedAttempts(params: {
@@ -768,13 +825,15 @@ export async function calculateRoadmap(
     completedCodes.add(match.code);
   }
 
-  const manualMatches = applyManualCorrelationMatches({
+  const manualCorrelationOutcome = applyManualCorrelationMatches({
     matrix,
     attempts: canonicalAttempts,
     completedCodes,
     completedSourceCodes,
     manualMappings
   });
+  const manualMatches = manualCorrelationOutcome.matches;
+  const manualCreditedByCategory = manualCorrelationOutcome.creditedByCategory;
 
   const nameFallbackMatches = applyNameFallbackMatches({
     matrix,
@@ -791,12 +850,23 @@ export async function calculateRoadmap(
   const internshipCompleted = sumCHTByCategory(matrix, completedCodes, ["INTERNSHIP"]);
   const tccCompleted = sumCHTByCategory(matrix, completedCodes, ["TCC"]);
 
+  const mandatoryValidated = Math.max(
+    mandatoryCompleted + (manualCreditedByCategory.MANDATORY ?? 0),
+    getSummaryValue(parsed, "Obrigatórias", "approvedOrValidated") ?? 0
+  );
+
+  const optionalAndTrackManualCredits = (manualCreditedByCategory.OPTIONAL ?? 0) + (manualCreditedByCategory.TRACK ?? 0);
   const optionalValidated = Math.max(
-    optionalCompleted + trackCompleted,
+    optionalCompleted + trackCompleted + optionalAndTrackManualCredits,
     getSummaryValue(parsed, "Optativas", "approvedOrValidated") ?? 0
   );
-  const electiveValidated = Math.max(electiveCompleted, getSummaryValue(parsed, "Eletivas", "approvedOrValidated") ?? 0);
-  const mandatoryValidated = Math.max(mandatoryCompleted, getSummaryValue(parsed, "Obrigatórias", "approvedOrValidated") ?? 0);
+  const electiveValidated = Math.max(
+    electiveCompleted + (manualCreditedByCategory.ELECTIVE ?? 0),
+    getSummaryValue(parsed, "Eletivas", "approvedOrValidated") ?? 0
+  );
+  const complementaryValidated = complementaryCompleted + (manualCreditedByCategory.COMPLEMENTARY ?? 0);
+  const internshipValidated = internshipCompleted + (manualCreditedByCategory.INTERNSHIP ?? 0);
+  const tccValidated = tccCompleted + (manualCreditedByCategory.TCC ?? 0);
 
   const extensionCompleted = Math.max(getExtensionTaken(parsed), completedAttempts.reduce((sum, attempt) => sum + (attempt.chext ?? 0), 0));
 
@@ -804,9 +874,9 @@ export async function calculateRoadmap(
     makeBucket("mandatory", "Obrigatórias", matrix.totals.mandatoryCHT, mandatoryCompleted, mandatoryValidated),
     makeBucket("optional", "Optativas", matrix.totals.optionalCHT, optionalCompleted, optionalValidated),
     makeBucket("elective", "Eletivas", matrix.totals.electiveCHT, electiveCompleted, electiveValidated),
-    makeBucket("complementary", "Atividades Complementares", matrix.totals.complementaryCHT, complementaryCompleted),
-    makeBucket("internship", "Estágio", matrix.totals.internshipCHT, internshipCompleted),
-    makeBucket("tcc", "TCC", matrix.totals.tccCHT, tccCompleted),
+    makeBucket("complementary", "Atividades Complementares", matrix.totals.complementaryCHT, complementaryCompleted, complementaryValidated),
+    makeBucket("internship", "Estágio", matrix.totals.internshipCHT, internshipCompleted, internshipValidated),
+    makeBucket("tcc", "TCC", matrix.totals.tccCHT, tccCompleted, tccValidated),
     makeBucket("extension", "Atividades Extensionistas", matrix.totals.extensionCHT, extensionCompleted)
   ];
 
@@ -875,7 +945,7 @@ export async function calculateRoadmap(
   if (manualMatches.length > 0) {
     const sample = manualMatches
       .slice(0, 4)
-      .map((item) => `${item.sourceCode}->${item.targetCode}`)
+      .map((item) => `${item.sourceCode}->${item.targetCode ?? "MANUAL"}(${item.creditedCHT}h/${item.targetCategory})`)
       .join(", ");
     alerts.push(
       `Correlação manual aplicada em ${manualMatches.length} disciplina(s) (${sample}${manualMatches.length > 4 ? ", ..." : ""}).`

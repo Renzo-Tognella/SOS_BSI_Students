@@ -17,7 +17,14 @@ const requestSchema = z.object({
       z.object({
         sourceCode: z.string().optional(),
         sourceName: z.string().optional(),
-        targetCode: z.string()
+        targetCode: z.string().optional(),
+        targetCategory: z
+          .enum(["MANDATORY", "OPTIONAL", "TRACK", "ELECTIVE", "COMPLEMENTARY", "INTERNSHIP", "TCC", "UNKNOWN"] as const)
+          .optional(),
+        creditedCHT: z.number().optional(),
+        manualOnly: z.boolean().optional(),
+        customDisciplineName: z.string().optional(),
+        customDisciplineCode: z.string().optional()
       })
     )
     .optional()

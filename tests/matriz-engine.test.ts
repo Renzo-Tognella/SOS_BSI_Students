@@ -228,4 +228,98 @@ describe("matriz engine", () => {
     expect(roadmap.unmatchedApprovedAttempts.some((attempt) => attempt.sourceCode === "ICSHX0")).toBe(false);
     expect(roadmap.unusedDisciplines.some((discipline) => discipline.code === "ICSHX0")).toBe(false);
   });
+
+  it("applies partial manual convalidation hours without fully completing destination discipline", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "333333",
+        fullName: "Teste Convalidação Parcial"
+      },
+      detectedMatrixCode: "981",
+      matrixLabel: "Matriz 981",
+      attempts: [
+        {
+          sourceSection: "mandatory",
+          code: "OLD123",
+          name: "Introdução a Banco de Dados",
+          cht: 45,
+          chext: 0,
+          status: "APPROVED",
+          statusText: "Aprovado Por Nota/Frequência",
+          rawBlock: "dummy"
+        }
+      ],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "981", [
+      {
+        sourceCode: "OLD123",
+        targetCode: "ICSB30",
+        targetCategory: "MANDATORY",
+        creditedCHT: 45
+      }
+    ]);
+
+    const mandatoryBucket = roadmap.progress.find((bucket) => bucket.key === "mandatory");
+    expect(mandatoryBucket?.validatedCHT).toBe(45);
+    expect(roadmap.pending.some((discipline) => discipline.code === "ICSB30")).toBe(true);
+    expect(roadmap.unusedDisciplines.some((discipline) => discipline.code === "OLD123")).toBe(false);
+  });
+
+  it("allows manual-only convalidation when no destination discipline exists in matrix", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "444444",
+        fullName: "Teste Convalidação Manual"
+      },
+      detectedMatrixCode: "981",
+      matrixLabel: "Matriz 981",
+      attempts: [
+        {
+          sourceSection: "other",
+          code: "OUT999",
+          name: "Tópicos Livres Externos",
+          cht: 30,
+          chext: 0,
+          status: "APPROVED",
+          statusText: "Aprovado Por Nota/Frequência",
+          rawBlock: "dummy"
+        }
+      ],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "981", [
+      {
+        sourceCode: "OUT999",
+        sourceName: "Tópicos Livres Externos",
+        manualOnly: true,
+        targetCategory: "ELECTIVE",
+        creditedCHT: 30,
+        customDisciplineName: "Convalidação Manual Externa"
+      }
+    ]);
+
+    const electiveBucket = roadmap.progress.find((bucket) => bucket.key === "elective");
+    expect(electiveBucket?.validatedCHT).toBe(30);
+    expect(roadmap.unusedDisciplines.some((discipline) => discipline.code === "OUT999")).toBe(false);
+    expect(roadmap.alerts.some((alert) => alert.includes("OUT999->MANUAL(30h/ELECTIVE)"))).toBe(true);
+  });
 });

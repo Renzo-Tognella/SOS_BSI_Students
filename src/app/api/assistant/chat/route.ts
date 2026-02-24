@@ -3,13 +3,13 @@ import { z } from "zod";
 
 import type {
   AssistantChatResponse,
-  AssistantPlanPatch,
   AssistantScheduleConstraint,
   GradeOptionsResponse,
   MatrixCode,
   ParsedTranscript,
   RoadmapResult
 } from "@/types/academic";
+import { buildAssistantScheduleProposals } from "@/lib/domain/assistant-schedule-engine";
 import { FORECAST_CHEXT_NOTE, FORECAST_INTERNSHIP_NOTE, resolveMissingWorkload } from "@/lib/domain/graduation-forecast";
 import { buildGradeNaHoraUrl } from "@/lib/integrations/gradenahora-client";
 
@@ -31,11 +31,14 @@ const aiAnalysisSchema = z.object({
   constraints: z
     .object({
       targetChsPerPeriod: z.number().int().min(1).max(40).optional(),
+      targetSubjectsPerPeriod: z.number().int().min(1).max(12).optional(),
       offSemesters: z.number().int().min(0).max(10).optional(),
       workStartHour: z.number().int().min(0).max(23).optional(),
       workEndHour: z.number().int().min(0).max(23).optional(),
       maxAfternoonDays: z.number().int().min(0).max(6).optional(),
       maxAfternoonClasses: z.number().int().min(0).max(20).optional(),
+      preferredAfternoonSlot: z.string().regex(/^\d{1,2}:\d{2}$/).optional(),
+      periodIndex: z.number().int().min(1).max(20).optional(),
       allowedShifts: z.array(z.enum(["M", "T", "N"])).optional(),
       blockedShifts: z.array(z.enum(["M", "T", "N"])).optional()
     })
@@ -191,7 +194,7 @@ async function analyzeWithOpenRouter(params: {
   const endpoint = "https://openrouter.ai/api/v1/chat/completions";
   const prompt =
     "Classifique a mensagem do aluno e extraia restrições de grade. Responda APENAS JSON no formato: " +
-    '{"intent":"PLAN_SCHEDULE|GRADUATION_ESTIMATE|TRACK_IA|AVAILABLE_DISCIPLINES|GENERAL_HELP","constraints":{"targetChsPerPeriod":14,"offSemesters":1,"workStartHour":9,"workEndHour":17,"maxAfternoonDays":1,"maxAfternoonClasses":1,"allowedShifts":["N"],"blockedShifts":["M","T"]},"reasoning":"..."}';
+    '{"intent":"PLAN_SCHEDULE|GRADUATION_ESTIMATE|TRACK_IA|AVAILABLE_DISCIPLINES|GENERAL_HELP","constraints":{},"reasoning":"..."}';
 
   const response = await fetch(endpoint, {
     method: "POST",
@@ -213,7 +216,10 @@ async function analyzeWithOpenRouter(params: {
             "Regras estritas: " +
             "1) Se o aluno trabalha 08-17 (ou equivalente), bloquear M e T e permitir N. " +
             "2) Se o aluno disser que pode apenas 1 matéria/aula à tarde, definir maxAfternoonClasses=1 e maxAfternoonDays=1. " +
-            "3) Nunca relaxe restrição de horário sem o aluno pedir explicitamente."
+            "3) Se o aluno pedir quantidade de matérias (ex: 5 matérias), preencher targetSubjectsPerPeriod com esse valor. " +
+            "4) Se o aluno citar preferência de horário da tarde (ex: 15:50), preencher preferredAfternoonSlot com HH:MM. " +
+            "5) Se o aluno citar período (ex: período 3), preencher periodIndex. " +
+            "6) Nunca relaxe restrição de horário sem o aluno pedir explicitamente."
         },
         { role: "user", content: params.message }
       ]
@@ -271,6 +277,8 @@ async function analyzeWithGemini(params: {
   const prompt =
     "Retorne apenas JSON com {intent, constraints, reasoning}. intents válidos: PLAN_SCHEDULE, GRADUATION_ESTIMATE, TRACK_IA, AVAILABLE_DISCIPLINES, GENERAL_HELP. " +
     "Quando houver trabalho 08-17, bloqueie M/T e permita N. Quando houver 'apenas 1 matéria/aula à tarde', use maxAfternoonClasses=1 e maxAfternoonDays=1. " +
+    "Quando o aluno pedir quantidade de matérias, use targetSubjectsPerPeriod. Quando citar horário preferido da tarde (ex: 15:50), use preferredAfternoonSlot em HH:MM. " +
+    "Quando citar período (ex: período 3), use periodIndex. " +
     `Matriz ${params.matrixCode}, CHS padrão ${params.fallbackChs}. Mensagem: ${params.message}`;
 
   const response = await fetch(endpoint, {
@@ -361,11 +369,64 @@ function parseHour(value: string): number {
   return Math.max(0, Math.min(23, hour));
 }
 
+function parsePortugueseCountToken(token: string): number | null {
+  const numeric = Number(token);
+  if (Number.isFinite(numeric)) {
+    return numeric;
+  }
+
+  const normalized = token
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+  const dictionary: Record<string, number> = {
+    um: 1,
+    uma: 1,
+    dois: 2,
+    duas: 2,
+    tres: 3,
+    quatro: 4,
+    cinco: 5,
+    seis: 6,
+    sete: 7,
+    oito: 8,
+    nove: 9,
+    dez: 10,
+    onze: 11,
+    doze: 12
+  };
+
+  return dictionary[normalized] ?? null;
+}
+
 function parseConstraints(message: string, fallbackChs: number): AssistantScheduleConstraint {
   const text = message.toLowerCase();
   const constraints: AssistantScheduleConstraint = {
     targetChsPerPeriod: fallbackChs
   };
+
+  const subjectsMatch =
+    text.match(
+      /(?:quero|preciso|vou|posso|neste semestre|esse semestre)?.{0,30}(?:pegar|fazer|cursar|ter).{0,20}(\d{1,2}|um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez|onze|doze)\s*mat[eé]rias?/i
+    ) ??
+    text.match(/(\d{1,2}|um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez|onze|doze)\s*mat[eé]rias?/i);
+  if (subjectsMatch) {
+    const parsedSubjects = parsePortugueseCountToken(subjectsMatch[1]);
+    if (parsedSubjects !== null) {
+      constraints.targetSubjectsPerPeriod = Math.max(1, Math.min(12, parsedSubjects));
+    }
+  }
+
+  const additionalSubjectsMatch = text.match(
+    /mais\s+(\d{1,2}|um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez|onze|doze)\s+al[eé]m\s+dessa/i
+  );
+  if (additionalSubjectsMatch && /(uma|1)\s*mat[eé]ria/.test(text)) {
+    const parsedAdditional = parsePortugueseCountToken(additionalSubjectsMatch[1]);
+    if (parsedAdditional !== null) {
+      constraints.targetSubjectsPerPeriod = Math.max(1, Math.min(12, 1 + parsedAdditional));
+    }
+  }
 
   const chsMatch = text.match(/(\d{1,2})\s*(?:chs|chs\/semestre|creditos|créditos)/i);
   if (chsMatch) {
@@ -380,10 +441,11 @@ function parseConstraints(message: string, fallbackChs: number): AssistantSchedu
   const workMatch =
     text.match(/trabalh\w*\s*(?:das|de)?\s*(\d{1,2}(?::\d{2}|h\d{0,2})?)\s*(?:as|até|a)\s*(\d{1,2}(?::\d{2}|h\d{0,2})?)/i) ??
     text.match(/(\d{1,2}(?::\d{2}|h\d{0,2})?)\s*(?:as|até|a)\s*(\d{1,2}(?::\d{2}|h\d{0,2})?)/i);
+  const hasWorkKeyword = /trabalh\w*|expediente|emprego|servi[cç]o/i.test(text);
   if (workMatch) {
     constraints.workStartHour = parseHour(workMatch[1]);
     constraints.workEndHour = parseHour(workMatch[2]);
-    if ((constraints.workStartHour ?? 0) <= 9 && (constraints.workEndHour ?? 0) >= 17) {
+    if (hasWorkKeyword && (constraints.workStartHour ?? 0) <= 9 && (constraints.workEndHour ?? 0) >= 17) {
       constraints.blockedShifts = ["M", "T"];
       constraints.allowedShifts = ["N"];
     }
@@ -409,11 +471,141 @@ function parseConstraints(message: string, fallbackChs: number): AssistantSchedu
   ) {
     constraints.maxAfternoonClasses = 1;
     constraints.maxAfternoonDays = Math.min(constraints.maxAfternoonDays ?? 1, 1);
-    constraints.allowedShifts = ["N"];
-    constraints.blockedShifts = ["M", "T"];
+    constraints.preferredAfternoonSlot = "15:50";
+  }
+
+  const preferredAfternoonMatch = text.match(/\b(1[3-7]|0?\d)[:h](00|10|20|30|40|50)\b/);
+  if (preferredAfternoonMatch) {
+    const hour = Number(preferredAfternoonMatch[1]);
+    const minute = preferredAfternoonMatch[2];
+    if (hour >= 12 && hour <= 18) {
+      constraints.preferredAfternoonSlot = `${String(hour).padStart(2, "0")}:${minute}`;
+    }
+  }
+
+  const lateStartMatch = text.match(
+    /(?:a partir da|a partir de|depois das|ap[oó]s)\s*(0?\d|1\d|2[0-3])[:h](00|10|20|30|40|50)/i
+  );
+  if (lateStartMatch) {
+    const hour = Number(lateStartMatch[1]);
+    const minute = lateStartMatch[2];
+    if (hour >= 16) {
+      constraints.preferredAfternoonSlot = `${String(hour).padStart(2, "0")}:${minute}`;
+    }
+  }
+
+  if (/fim de tarde/.test(text)) {
+    constraints.preferredAfternoonSlot = constraints.preferredAfternoonSlot ?? "16:40";
+  }
+
+  if (/mais tarde poss[ií]vel|comec\w*\s+o\s+mais\s+tarde/i.test(text)) {
+    constraints.preferredAfternoonSlot = constraints.preferredAfternoonSlot ?? "16:40";
+  }
+
+  const oneDaytimeMention = /(?:apenas|somente|s[oó]).*(?:1|uma)\s*mat[eé]ria.*08[:h]?00.*17[:h]?00/i.test(text);
+  const additionalLateMention = text.match(
+    /(?:mais|outras?)\s*(\d{1,2}|um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez)\s*(?:al[eé]m)?.*?(?:a partir da|a partir de|depois das|ap[oó]s)\s*(0?\d|1\d|2[0-3])[:h](00|10|20|30|40|50)/i
+  );
+  if (oneDaytimeMention && additionalLateMention) {
+    const lateAdditional = parsePortugueseCountToken(additionalLateMention[1]) ?? 0;
+    const lateHour = Number(additionalLateMention[2]);
+    const lateMinute = additionalLateMention[3];
+    constraints.targetSubjectsPerPeriod = Math.max(1, Math.min(12, 1 + lateAdditional));
+    constraints.preferredAfternoonSlot = `${String(lateHour).padStart(2, "0")}:${lateMinute}`;
+    constraints.allowedShifts = ["T", "N"];
+    constraints.blockedShifts = ["M"];
+    constraints.maxAfternoonDays = undefined;
+    constraints.maxAfternoonClasses = undefined;
   }
 
   return constraints;
+}
+
+function sanitizeAiConstraintsForMessage(
+  message: string,
+  aiConstraints?: AssistantScheduleConstraint
+): AssistantScheduleConstraint | undefined {
+  if (!aiConstraints) {
+    return undefined;
+  }
+
+  const text = message.toLowerCase();
+  const hasSubjectsEvidence = /(\d{1,2}|um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez|onze|doze)\s*mat[eé]rias?/i.test(
+    text
+  );
+  const hasChsEvidence = /(\d{1,2})\s*(chs|cr[eé]ditos|creditos)/i.test(text);
+  const hasPeriodEvidence = /per[ií]odo\s*\d{1,2}|\bp\s*\d{1,2}\b|\d{1,2}\s*[ºo]\s*per[ií]odo/i.test(text);
+  const hasShiftEvidence = /(manh[aã]|tarde|noite|turno)/i.test(text);
+  const hasWorkWindowEvidence = /trabalh\w*.*\d{1,2}.*(?:as|até|a).*\d{1,2}/i.test(text);
+  const hasExclusiveNightEvidence = /(somente|s[oó]|apenas).*(noite)/i.test(text);
+  const hasNightAndAfternoonPreferenceEvidence =
+    /(foc|prioriz|prefer).*(noite).*(tarde)|(foc|prioriz|prefer).*(tarde).*(noite)|fim de tarde/i.test(text);
+  const hasLateStartPreferenceEvidence =
+    /a partir da|a partir de|depois das|ap[oó]s|\b15[:h]?50\b|\b16[:h]?40\b|\b17[:h]?00\b/i.test(text);
+  const hasAfternoonLimitEvidence =
+    /(apenas|somente|s[oó]).*(1|uma).*(mat[eé]ria|aula|dia).*(tarde)|(?:no maximo|maximo|até)\s*\d+\s*(dias?|mat[eé]rias?).*tarde/i.test(
+      text
+    );
+  const hasPreferredSlotEvidence = /\b(1[3-7]|0?\d)[:h](00|10|20|30|40|50)\b/i.test(text);
+
+  const sanitized: AssistantScheduleConstraint = { ...aiConstraints };
+
+  if (!hasSubjectsEvidence) {
+    delete sanitized.targetSubjectsPerPeriod;
+  }
+  if (!hasChsEvidence) {
+    delete sanitized.targetChsPerPeriod;
+  }
+  if (!hasPeriodEvidence) {
+    delete sanitized.periodIndex;
+  }
+  if (!hasAfternoonLimitEvidence) {
+    delete sanitized.maxAfternoonDays;
+    delete sanitized.maxAfternoonClasses;
+  }
+  if (!hasPreferredSlotEvidence) {
+    delete sanitized.preferredAfternoonSlot;
+  }
+
+  // "Foco em noite e tarde" é preferência, não bloqueio rígido.
+  if (hasNightAndAfternoonPreferenceEvidence && !hasExclusiveNightEvidence && !hasWorkWindowEvidence) {
+    delete sanitized.allowedShifts;
+    delete sanitized.blockedShifts;
+  } else if (!hasShiftEvidence && !hasWorkWindowEvidence) {
+    delete sanitized.allowedShifts;
+    delete sanitized.blockedShifts;
+  }
+
+  // "a partir de 16:40" é indicativo de tarde/noite, não de exclusão rígida da tarde.
+  if (
+    hasLateStartPreferenceEvidence &&
+    !hasExclusiveNightEvidence &&
+    !hasWorkWindowEvidence &&
+    Array.isArray(sanitized.allowedShifts) &&
+    sanitized.allowedShifts.includes("N") &&
+    !sanitized.allowedShifts.includes("T")
+  ) {
+    delete sanitized.allowedShifts;
+    delete sanitized.blockedShifts;
+  }
+
+  // Evita que LLM imponha limite de tarde incompatível sem o usuário pedir.
+  if (
+    !hasAfternoonLimitEvidence &&
+    typeof sanitized.targetSubjectsPerPeriod === "number" &&
+    typeof sanitized.maxAfternoonClasses === "number" &&
+    sanitized.maxAfternoonClasses < sanitized.targetSubjectsPerPeriod
+  ) {
+    delete sanitized.maxAfternoonClasses;
+    delete sanitized.maxAfternoonDays;
+  }
+
+  if (hasWorkWindowEvidence) {
+    sanitized.allowedShifts = ["N"];
+    sanitized.blockedShifts = ["M", "T"];
+  }
+
+  return sanitized;
 }
 
 function mergeConstraints(
@@ -424,149 +616,93 @@ function mergeConstraints(
     return parsed;
   }
 
-  return {
+  const merged: AssistantScheduleConstraint = {
     ...parsed,
-    ...override,
-    allowedShifts:
-      override.allowedShifts && override.allowedShifts.length > 0
-        ? override.allowedShifts
-        : parsed.allowedShifts,
-    blockedShifts:
-      override.blockedShifts && override.blockedShifts.length > 0
-        ? override.blockedShifts
-        : parsed.blockedShifts
+    ...override
   };
-}
 
-function decodeHorario(horario: string): { day: string; shift: "M" | "T" | "N" | "X" } {
-  const normalized = horario.trim().toUpperCase();
-  const match = normalized.match(/^([2-7])([MTN])\d+$/);
-  return {
-    day: match?.[1] ?? "0",
-    shift: (match?.[2] as "M" | "T" | "N") ?? "X"
-  };
-}
-
-function countAfternoonDays(classes: Array<{ horarios: Array<{ horario: string }> }>): number {
-  const days = new Set<string>();
-  for (const classItem of classes) {
-    for (const slot of classItem.horarios) {
-      const decoded = decodeHorario(slot.horario);
-      if (decoded.shift === "T") {
-        days.add(decoded.day);
-      }
-    }
+  if (!override.allowedShifts || override.allowedShifts.length === 0) {
+    merged.allowedShifts = parsed.allowedShifts;
   }
-  return days.size;
-}
-
-function countClassesInShift(
-  classes: Array<{ disciplineCode: string; classCode: string; horarios: Array<{ horario: string }> }>,
-  shift: "M" | "T" | "N"
-): number {
-  const keys = new Set<string>();
-  for (const classItem of classes) {
-    const hasShift = classItem.horarios.some((slot) => decodeHorario(slot.horario).shift === shift);
-    if (hasShift) {
-      keys.add(`${classItem.disciplineCode}-${classItem.classCode}`);
-    }
-  }
-  return keys.size;
-}
-
-function violatesShiftConstraint(
-  classes: Array<{ disciplineCode: string; classCode: string; horarios: Array<{ horario: string }> }>,
-  constraints: AssistantScheduleConstraint
-): boolean {
-  const blocked = new Set(constraints.blockedShifts ?? []);
-  const allowed = constraints.allowedShifts ? new Set(constraints.allowedShifts) : null;
-  const maxAfternoonClasses = constraints.maxAfternoonClasses;
-
-  for (const classItem of classes) {
-    for (const slot of classItem.horarios) {
-      const decoded = decodeHorario(slot.horario);
-      if (decoded.shift === "X") {
-        continue;
-      }
-      const isAfternoonException =
-        decoded.shift === "T" &&
-        typeof maxAfternoonClasses === "number" &&
-        maxAfternoonClasses > 0;
-
-      if (blocked.has(decoded.shift) && !isAfternoonException) {
-        return true;
-      }
-      if (allowed && !allowed.has(decoded.shift) && !isAfternoonException) {
-        return true;
-      }
-    }
+  if (!override.blockedShifts || override.blockedShifts.length === 0) {
+    merged.blockedShifts = parsed.blockedShifts;
   }
 
-  if (typeof maxAfternoonClasses === "number") {
-    return countClassesInShift(classes, "T") > maxAfternoonClasses;
+  if (typeof merged.targetChsPerPeriod === "number") {
+    merged.targetChsPerPeriod = Math.max(1, Math.min(40, merged.targetChsPerPeriod));
+  }
+  if (typeof merged.targetSubjectsPerPeriod === "number") {
+    merged.targetSubjectsPerPeriod = Math.max(1, Math.min(12, merged.targetSubjectsPerPeriod));
+  }
+  if (typeof merged.maxAfternoonDays === "number") {
+    merged.maxAfternoonDays = Math.max(0, Math.min(6, merged.maxAfternoonDays));
+  }
+  if (typeof merged.maxAfternoonClasses === "number") {
+    merged.maxAfternoonClasses = Math.max(0, Math.min(20, merged.maxAfternoonClasses));
   }
 
-  return false;
+  return merged;
 }
 
-function chooseBestPlanPatch(params: {
-  gradeOptions: GradeOptionsResponse;
-  constraints: AssistantScheduleConstraint;
-  periodIndex: number;
-}): AssistantPlanPatch | undefined {
-  const { gradeOptions, constraints, periodIndex } = params;
-  const targetChs = Math.max(1, constraints.targetChsPerPeriod ?? 18);
+function extractPeriodIndex(message: string): number | null {
+  const lower = message.toLowerCase();
+  const match =
+    lower.match(/per[ií]odo\s*(\d{1,2})/i) ??
+    lower.match(/\bp\s*(\d{1,2})\b/i) ??
+    lower.match(/(\d{1,2})\s*[ºo]\s*per[ií]odo/i);
+  if (!match) {
+    return null;
+  }
+  const value = Number(match[1]);
+  if (!Number.isFinite(value)) {
+    return null;
+  }
+  return Math.max(1, Math.min(20, Math.floor(value)));
+}
 
-  const ranked = gradeOptions.combinations
-    .filter((combination) => !violatesShiftConstraint(combination.classes, constraints))
-    .filter((combination) => {
-      if (typeof constraints.maxAfternoonDays !== "number") {
-        return true;
-      }
-      return countAfternoonDays(combination.classes) <= constraints.maxAfternoonDays;
-    })
-    .sort((a, b) => {
-      const distA = Math.abs((a.weeklyCredits ?? 0) - targetChs);
-      const distB = Math.abs((b.weeklyCredits ?? 0) - targetChs);
-      if (distA !== distB) {
-        return distA - distB;
-      }
-      if (b.classes.length !== a.classes.length) {
-        return b.classes.length - a.classes.length;
-      }
-      return a.conflictCountAvoided - b.conflictCountAvoided;
-    });
+function buildPeriodQuestionOptions(gradeOptions: GradeOptionsResponse): number[] {
+  const fromPlan = gradeOptions.graduationPlan.periods.map((period) => period.periodIndex);
+  const unique = [...new Set(fromPlan)].filter((value) => Number.isFinite(value) && value >= 1 && value <= 20);
+  if (unique.length > 0) {
+    return unique.slice(0, 12);
+  }
+  return [1, 2, 3, 4, 5, 6];
+}
 
-  const picked = ranked[0];
-  if (!picked) {
-    return undefined;
+function formatProposalSummary(
+  gradeOptions: GradeOptionsResponse,
+  maxProposals = 3
+): string {
+  const lines = gradeOptions.availableByDiscipline.slice(0, maxProposals).map((discipline) => {
+    const firstTurma = discipline.turmas[0];
+    const horarios = firstTurma ? firstTurma.horarios.map((slot) => slot.horario).join(", ") : "sem horários";
+    return `- ${discipline.code} - ${discipline.name} (${firstTurma?.codigo ?? "-"}) [${horarios}]`;
+  });
+  return lines.length > 0 ? lines.join("\n") : "- Sem turmas disponíveis para exibir.";
+}
+
+function formatAvailableClassesPreview(gradeOptions: GradeOptionsResponse, maxDisciplines = 10, maxTurmasPerDiscipline = 2): string {
+  if (!gradeOptions.availableByDiscipline || gradeOptions.availableByDiscipline.length === 0) {
+    return "Não há turmas disponíveis no semestre consultado.";
   }
 
-  const classes = picked.classes.map((item) => ({
-    code: item.disciplineCode,
-    name: item.disciplineName,
-    classCode: item.classCode,
-    horarios: item.horarios,
-    weeklyCredits: item.weeklyCredits ?? 0
-  }));
+  const lines = gradeOptions.availableByDiscipline.slice(0, maxDisciplines).map((discipline) => {
+    const turmasPreview = discipline.turmas
+      .slice(0, maxTurmasPerDiscipline)
+      .map((turma) => {
+        const horarios = turma.horarios.map((slot) => slot.horario).join(", ");
+        return `${turma.codigo} [${horarios || "sem horário"}]`;
+      })
+      .join(" | ");
+    return `- ${discipline.code} - ${discipline.name}: ${turmasPreview || "sem turmas exibíveis"}`;
+  });
 
-  return {
-    periodIndex,
-    targetChs,
-    achievedChs: picked.weeklyCredits,
-    constraintsApplied: constraints,
-    classes,
-    payload: {
-      periodIndex,
-      disciplines: classes.map((item) => item.code),
-      classes: classes.map((item) => ({
-        code: item.code,
-        classCode: item.classCode,
-        horarios: item.horarios.map((slot) => slot.horario),
-        weeklyCredits: item.weeklyCredits
-      }))
-    }
-  };
+  const remaining = gradeOptions.availableByDiscipline.length - Math.min(maxDisciplines, gradeOptions.availableByDiscipline.length);
+  if (remaining > 0) {
+    lines.push(`- ... e mais ${remaining} disciplina(s) com turma nesse semestre.`);
+  }
+
+  return `Oferta disponível (código, turma e horários):\n${lines.join("\n")}`;
 }
 
 function nextSemester(semesterLabel: string): string {
@@ -597,7 +733,8 @@ function estimateGraduationAnswer(params: {
 }): AssistantChatResponse {
   const { roadmap, parsedTranscript, message, gradeOptions, fallbackChs, overrideConstraints } = params;
   const parsedConstraints = parseConstraints(message, fallbackChs);
-  const constraints = mergeConstraints(parsedConstraints, overrideConstraints);
+  const sanitizedOverride = sanitizeAiConstraintsForMessage(message, overrideConstraints);
+  const constraints = mergeConstraints(parsedConstraints, sanitizedOverride);
   const missing = resolveMissingWorkload({
     parsedTranscript,
     roadmap
@@ -682,37 +819,87 @@ function answerSchedulePlan(params: {
   parsedTranscript?: ParsedTranscript;
   gradeOptions?: GradeOptionsResponse;
   message: string;
-  periodIndex: number;
   fallbackChs: number;
   overrideConstraints?: AssistantScheduleConstraint;
   selectedTrackLabels?: string[];
 }): AssistantChatResponse {
-  const { roadmap, parsedTranscript, gradeOptions, message, periodIndex, fallbackChs, overrideConstraints, selectedTrackLabels } = params;
+  const { roadmap, parsedTranscript, gradeOptions, message, fallbackChs, overrideConstraints, selectedTrackLabels } = params;
   const parsedConstraints = parseConstraints(message, fallbackChs);
-  const constraints = mergeConstraints(parsedConstraints, overrideConstraints);
+  const sanitizedOverride = sanitizeAiConstraintsForMessage(message, overrideConstraints);
+  const constraints = mergeConstraints(parsedConstraints, sanitizedOverride);
 
   if (!gradeOptions) {
     return {
+      action: "INFO",
       detectedIntent: "PLAN_SCHEDULE",
       detectedConstraints: constraints,
       answer:
         "Consigo montar a grade com IA, mas preciso da oferta do GradeNaHora carregada. Vá na página Grade e clique em 'Gerar Plano de Formatura', depois tente de novo.\n\n" +
         buildOfficialSourcesBlock(undefined) +
-        selectedTracksNote(selectedTrackLabels)
+        selectedTracksNote(selectedTrackLabels),
+      autoApplied: false
     };
   }
 
-  const planPatch = chooseBestPlanPatch({ gradeOptions, constraints, periodIndex });
-  if (!planPatch) {
+  const explicitPeriodFromMessage = extractPeriodIndex(message);
+  const explicitPeriodFromAi =
+    typeof sanitizedOverride?.periodIndex === "number" ? Math.max(1, Math.min(20, sanitizedOverride.periodIndex)) : null;
+  const periodIndex = explicitPeriodFromMessage ?? explicitPeriodFromAi;
+
+  if (!periodIndex) {
+    const periodOptions = buildPeriodQuestionOptions(gradeOptions);
     return {
+      action: "ASK_PERIOD",
+      detectedIntent: "PLAN_SCHEDULE",
+      detectedConstraints: constraints,
+      question: {
+        kind: "PERIOD",
+        periodOptions,
+        message: "Qual período você quer montar agora?"
+      },
+      answer:
+        "Para montar sua grade, me diga o período alvo (ex.: período 3). " +
+        `Períodos disponíveis no plano atual: ${periodOptions.join(", ")}.`,
+      autoApplied: false
+    };
+  }
+
+  const proposalResult = buildAssistantScheduleProposals({
+    gradeOptions,
+    constraints,
+    periodIndex,
+    optionsCount: 3
+  });
+
+  if (proposalResult.proposals.length === 0) {
+    const availablePreview = formatAvailableClassesPreview(gradeOptions);
+    return {
+      action: "INFO",
       detectedIntent: "PLAN_SCHEDULE",
       detectedConstraints: constraints,
       answer:
-        "Não encontrei combinação que respeite essas restrições para este semestre. Tente relaxar limite de tarde, aumentar CHS alvo ou permitir mais turnos."
+        "Não consegui montar propostas válidas para este período com as regras atuais. " +
+        "Abaixo está a oferta disponível para ajuste manual:\n\n" +
+        `${availablePreview}\n\n` +
+        "Você pode me pedir de novo com um período específico e restrições mais simples para eu gerar alternativas.",
+      diagnostics: [
+        `proposalCount=${proposalResult.diagnostics.proposalCount}`,
+        `searchSpaceSize=${proposalResult.diagnostics.searchSpaceSize}`,
+        `relaxationTier=${proposalResult.diagnostics.relaxationTier}`
+      ],
+      autoApplied: false
     };
   }
 
-  const classesSummary = planPatch.classes.map((item) => `${item.code}-${item.classCode}`).join(", ");
+  const topProposal = proposalResult.proposals[0];
+  const proposalSummary = proposalResult.proposals
+    .map(
+      (proposal, index) =>
+        `${index + 1}) ${proposal.achievedChs} CHS, ${proposal.subjectsCount} matéria(s): ` +
+        proposal.classes.map((item) => `${item.code}-${item.classCode}`).join(", ")
+    )
+    .join("\n");
+
   const missing = resolveMissingWorkload({
     parsedTranscript,
     roadmap
@@ -720,13 +907,23 @@ function answerSchedulePlan(params: {
   const missingChs = missing.missingChs;
 
   return {
+    action: "SHOW_PROPOSALS",
     detectedIntent: "PLAN_SCHEDULE",
     detectedConstraints: constraints,
-    planPatch,
+    proposals: proposalResult.proposals,
+    autoApplied: false,
+    diagnostics: [
+      `proposalCount=${proposalResult.diagnostics.proposalCount}`,
+      `searchSpaceSize=${proposalResult.diagnostics.searchSpaceSize}`,
+      `relaxationTier=${proposalResult.diagnostics.relaxationTier}`
+    ],
     answer:
-      `Plano sugerido para o período ${planPatch.periodIndex}: ${planPatch.achievedChs} CHS (${classesSummary}). ` +
-      `Meta: ${planPatch.targetChs} CHS. Saldo acadêmico atual restante: ~${missingChs} CHS. ` +
-      "Clique em 'Aplicar plano sugerido' para atualizar a distribuição desse período.\n\n" +
+      `Montei ${proposalResult.proposals.length} proposta(s) para o período ${periodIndex}. ` +
+      `Melhor proposta: ${topProposal.achievedChs} CHS com ${topProposal.subjectsCount} matéria(s). ` +
+      `Saldo acadêmico atual restante: ~${missingChs} CHS.\n\n` +
+      `Propostas:\n${proposalSummary}\n\n` +
+      "Use o botão 'Aplicar proposta' em uma das opções para atualizar o período.\n\n" +
+      `Prévia da oferta do semestre:\n${formatProposalSummary(gradeOptions, 3)}\n\n` +
       buildOfficialSourcesBlock(gradeOptions) +
       selectedTracksNote(selectedTrackLabels)
   };
@@ -741,7 +938,6 @@ export async function POST(request: Request) {
     const gradeOptions = body.gradeOptions as GradeOptionsResponse | undefined;
     const selectedTrackLabels = body.selectedTrackLabels;
     const matrixCode = (body.matrixCode ?? roadmap?.matrixCode ?? "981") as MatrixCode;
-    const selectedPeriodIndex = body.selectedPeriodIndex ?? 1;
     const fallbackChs = body.maxChsPerPeriod ?? gradeOptions?.graduationPlan.targetChsPerPeriod ?? 18;
     const lower = message.toLowerCase();
 
@@ -760,16 +956,18 @@ export async function POST(request: Request) {
       /quanto tempo|qnt tempo|quando formo|previs[aã]o|14\s*chs|chs\/semestre|semestre off|pausa/.test(lower);
     const asksTrackIa = /trilha.*\bia\b|intelig[eê]ncia artificial|\bia\b/.test(lower);
     const asksSchedule =
-      /montar grade|organizar grade|sugerir grade|melhor(es)? mat[eé]rias|trabalh|hor[aá]rio|periodo/.test(lower);
+      /montar grade|monte.*grade|organizar grade|sugerir grade|melhor(es)? mat[eé]rias|mat[eé]rias?.*(hor[aá]rios?|turnos?)|trabalh|hor[aá]rios?|per[ií]odo\s*\d{1,2}/.test(
+        lower
+      );
     const asksAvailable = /mat[eé]rias dispon[ií]veis|turmas dispon[ií]veis|o que posso pegar/.test(lower);
     const asksRoleAndSources =
       /papel|como voc[eê] funciona|como a ia funciona|fontes|links oficiais|dados que voc[eê] usa|dados usados/.test(lower);
 
     const intentFromAi = aiAnalysis?.intent;
-    const asksTrackIaFinal = intentFromAi ? intentFromAi === "TRACK_IA" : asksTrackIa;
-    const asksScheduleFinal = intentFromAi ? intentFromAi === "PLAN_SCHEDULE" : asksSchedule;
-    const asksGraduationFinal = intentFromAi ? intentFromAi === "GRADUATION_ESTIMATE" : asksGraduation;
-    const asksAvailableFinal = intentFromAi ? intentFromAi === "AVAILABLE_DISCIPLINES" : asksAvailable;
+    const asksTrackIaFinal = asksTrackIa || intentFromAi === "TRACK_IA";
+    const asksScheduleFinal = asksSchedule || intentFromAi === "PLAN_SCHEDULE";
+    const asksGraduationFinal = asksGraduation || intentFromAi === "GRADUATION_ESTIMATE";
+    const asksAvailableFinal = asksAvailable || intentFromAi === "AVAILABLE_DISCIPLINES";
 
     if (asksRoleAndSources) {
       response = answerAssistantRoleAndData({
@@ -782,14 +980,11 @@ export async function POST(request: Request) {
     } else if (asksTrackIaFinal) {
       response = answerIaTrack(roadmap);
     } else if (asksScheduleFinal) {
-      const periodFromMessage = lower.match(/per[ií]odo\s*(\d{1,2})/);
-      const periodIndex = periodFromMessage ? Math.max(1, Math.min(20, Number(periodFromMessage[1]))) : selectedPeriodIndex;
       response = answerSchedulePlan({
         roadmap,
         parsedTranscript,
         gradeOptions,
         message,
-        periodIndex,
         fallbackChs,
         overrideConstraints: aiAnalysis?.constraints,
         selectedTrackLabels
@@ -817,7 +1012,7 @@ export async function POST(request: Request) {
     }
 
     response.providerUsed = aiAnalysis?.providerUsed ?? aiDecision.providerUsed;
-    response.diagnostics = aiDecision.diagnostics;
+    response.diagnostics = [...aiDecision.diagnostics, ...(response.diagnostics ?? [])];
 
     return NextResponse.json(response);
   } catch (error) {

@@ -262,7 +262,12 @@ export interface PendingDiscipline {
 export interface ManualCorrelationInput {
   sourceCode?: string;
   sourceName?: string;
-  targetCode: string;
+  targetCode?: string;
+  targetCategory?: DisciplineCategory;
+  creditedCHT?: number;
+  manualOnly?: boolean;
+  customDisciplineName?: string;
+  customDisciplineCode?: string;
 }
 
 export interface CorrelationSuggestion {
@@ -419,11 +424,14 @@ export interface GradeOptionsResponse {
 
 export interface AssistantScheduleConstraint {
   targetChsPerPeriod?: number;
+  targetSubjectsPerPeriod?: number;
+  periodIndex?: number;
   offSemesters?: number;
   workStartHour?: number;
   workEndHour?: number;
   maxAfternoonDays?: number;
   maxAfternoonClasses?: number;
+  preferredAfternoonSlot?: string;
   allowedShifts?: Array<"M" | "T" | "N">;
   blockedShifts?: Array<"M" | "T" | "N">;
 }
@@ -454,8 +462,35 @@ export interface AssistantPlanPatch {
   };
 }
 
+export interface AssistantPlanProposal {
+  id: string;
+  periodIndex: number;
+  achievedChs: number;
+  subjectsCount: number;
+  classes: AssistantPlanClass[];
+  constraintReport: {
+    met: string[];
+    relaxed: string[];
+    violated: string[];
+  };
+  scoreBreakdown: {
+    scheduleScore: number;
+    subjectsScore: number;
+    chsScore: number;
+    total: number;
+  };
+  patch: AssistantPlanPatch;
+}
+
+export interface AssistantQuestion {
+  kind: "PERIOD";
+  periodOptions: number[];
+  message: string;
+}
+
 export interface AssistantChatResponse {
   answer: string;
+  action?: "ASK_PERIOD" | "SHOW_PROPOSALS" | "INFO";
   detectedIntent:
     | "PLAN_SCHEDULE"
     | "GRADUATION_ESTIMATE"
@@ -463,6 +498,10 @@ export interface AssistantChatResponse {
     | "AVAILABLE_DISCIPLINES"
     | "GENERAL_HELP";
   detectedConstraints?: AssistantScheduleConstraint;
+  proposals?: AssistantPlanProposal[];
+  question?: AssistantQuestion;
+  autoApplied?: false;
+  // Legacy field kept for backward compatibility while frontend migrates to proposals[].
   planPatch?: AssistantPlanPatch;
   providerUsed?: "openrouter" | "gemini" | "rule-based";
   diagnostics?: string[];

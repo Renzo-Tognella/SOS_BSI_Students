@@ -12,9 +12,9 @@ const DEFAULT_AVERAGE_CHS = 12;
 const DEFAULT_MAX_PROJECTED_SEMESTERS = 20;
 
 export const FORECAST_METHODOLOGY_NOTE =
-  "Estimativa considera apenas CHT de disciplinas (obrigatórias/optativas/eletivas). CHEXT e Estágio não foram incluídos nesta projeção.";
-export const FORECAST_CHEXT_NOTE = "CHEXT não foi incluído nesta estimativa de semestres.";
-export const FORECAST_INTERNSHIP_NOTE = "Estágio não foi incluído nesta estimativa de semestres.";
+  "Estimativas e totais seguem as categorias ativas no filtro do usuário (incluindo Estágio e Extensão quando selecionados).";
+export const FORECAST_CHEXT_NOTE = "Extensão (CHEXT) é contabilizada quando a categoria Extensão está ativa no filtro.";
+export const FORECAST_INTERNSHIP_NOTE = "Estágio é contabilizado quando a categoria Estágio está ativa no filtro.";
 
 function isInternshipAttempt(attempt: ParsedTranscript["attempts"][number]): boolean {
   const normalizedName = normalizeDisciplineName(attempt.name ?? "");
@@ -106,14 +106,17 @@ function normalizeRoadmapMissingCht(roadmap?: RoadmapResult): number {
   return roadmap.progress.reduce((sum, bucket) => sum + Math.max(bucket.missingCHT, 0), 0);
 }
 
-function buildApprovedChsBySemester(parsedTranscript: ParsedTranscript): Array<{ label: string; approvedChs: number }> {
+function buildApprovedChsBySemester(params: {
+  parsedTranscript: ParsedTranscript;
+  includeInternshipInHistory: boolean;
+}): Array<{ label: string; approvedChs: number }> {
   const semesterMap = new Map<string, number>();
 
-  for (const attempt of parsedTranscript.attempts) {
+  for (const attempt of params.parsedTranscript.attempts) {
     if (attempt.status !== "APPROVED") {
       continue;
     }
-    if (isInternshipAttempt(attempt)) {
+    if (!params.includeInternshipInHistory && isInternshipAttempt(attempt)) {
       continue;
     }
     if (!attempt.year || !attempt.semester) {
@@ -222,8 +225,14 @@ export function buildGraduationForecast(params: {
   targetChsPerSemester?: number;
   includeCurrentSemesterIfInHistory?: boolean;
   maxProjectedSemesters?: number;
+  includeInternshipInHistory?: boolean;
+  missingChtOverride?: number;
+  missingChextOverride?: number;
 }): GraduationForecast | null {
-  const historyBySemester = buildApprovedChsBySemester(params.parsedTranscript);
+  const historyBySemester = buildApprovedChsBySemester({
+    parsedTranscript: params.parsedTranscript,
+    includeInternshipInHistory: params.includeInternshipInHistory ?? false
+  });
   if (historyBySemester.length === 0) {
     return null;
   }
@@ -242,10 +251,22 @@ export function buildGraduationForecast(params: {
       : averageChs;
   const projectionChs = roundToSingleDecimal(projectionChsRaw);
 
-  const missing = resolveMissingWorkload({
-    parsedTranscript: params.parsedTranscript,
-    roadmap: params.roadmap
-  });
+  const missing =
+    typeof params.missingChtOverride === "number" && Number.isFinite(params.missingChtOverride) && params.missingChtOverride >= 0
+      ? {
+          missingCht: Math.max(params.missingChtOverride, 0),
+          missingChs: Math.ceil(Math.max(params.missingChtOverride, 0) / 15),
+          missingChext:
+            typeof params.missingChextOverride === "number" && Number.isFinite(params.missingChextOverride)
+              ? Math.max(params.missingChextOverride, 0)
+              : 0,
+          source: "roadmap_fallback" as GraduationForecastMissingSource,
+          official: null
+        }
+      : resolveMissingWorkload({
+          parsedTranscript: params.parsedTranscript,
+          roadmap: params.roadmap
+        });
 
   const nowLabel = currentSemesterLabel();
   const startProjectedLabel =
@@ -261,12 +282,19 @@ export function buildGraduationForecast(params: {
   });
 
   const projectedLabels = projectedBySemester.map((item) => item.label);
-  const projectedValues = projectedBySemester.map((item) => item.projectedChs);
+  const historicalValueByLabel = new Map(historyBySemester.map((item) => [item.label, item.approvedChs]));
+  const projectedValueByLabel = new Map(projectedBySemester.map((item) => [item.label, item.projectedChs]));
+  const mergedLabels = [...historicalLabels];
+  for (const label of projectedLabels) {
+    if (!mergedLabels.includes(label)) {
+      mergedLabels.push(label);
+    }
+  }
 
   return {
-    labels: [...historicalLabels, ...projectedLabels],
-    historical: [...historicalValues, ...projectedLabels.map(() => null)],
-    projected: [...historicalLabels.map(() => null), ...projectedValues],
+    labels: mergedLabels,
+    historical: mergedLabels.map((label) => historicalValueByLabel.get(label) ?? null),
+    projected: mergedLabels.map((label) => projectedValueByLabel.get(label) ?? null),
     startLabel: firstSemesterWithChs,
     averageChs,
     projectionChs,

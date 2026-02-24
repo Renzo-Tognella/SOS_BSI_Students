@@ -131,6 +131,8 @@ export function buildScheduleCombinations(
   available: AvailableDiscipline[],
   maxCombinations = MAX_COMBINATIONS
 ): ScheduleCombination[] {
+  // Legacy helper kept for compatibility with older UI paths.
+  // The assistant chat flow now uses src/lib/domain/assistant-schedule-engine.ts.
   const target = available.slice(0, MAX_DISCIPLINES_FOR_BACKTRACK);
   const combinations: ScheduleCombination[] = [];
 
