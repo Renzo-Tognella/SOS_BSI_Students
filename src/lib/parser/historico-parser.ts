@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -24,6 +25,7 @@ import {
 import { detectSections, sliceByRange } from "@/lib/parser/section-detectors";
 
 const execFileAsync = promisify(execFile);
+const requireFromHere = createRequire(import.meta.url);
 const MIN_TEXT_SIZE_FOR_NO_OCR = 3000;
 const PARSER_VERSION = "1.0.0";
 
@@ -266,14 +268,15 @@ async function runPdftotext(pdfPath: string): Promise<string> {
 }
 
 async function runPdfParseFallback(buffer: Buffer): Promise<string> {
-  try {
-    const mod = await import("pdf-parse");
-    const ParserCtor = mod.PDFParse;
-    if (typeof ParserCtor !== "function") {
+  const tryExtractText = async (PDFParseCtor: unknown): Promise<string> => {
+    if (typeof PDFParseCtor !== "function") {
       return "";
     }
 
-    const parser = new ParserCtor({ data: buffer });
+    const parser = new (PDFParseCtor as new (options: { data: Buffer }) => { getText: () => Promise<{ text?: string }>; destroy?: () => Promise<void> | void })({
+      data: buffer
+    });
+
     try {
       const parsed = await parser.getText();
       return parsed?.text ?? "";
@@ -282,6 +285,22 @@ async function runPdfParseFallback(buffer: Buffer): Promise<string> {
         await parser.destroy();
       }
     }
+  };
+
+  try {
+    // Prefer CommonJS loader in Node runtime to avoid browser-conditioned exports in serverless bundles.
+    const mod = requireFromHere("pdf-parse") as { PDFParse?: unknown };
+    const text = await tryExtractText(mod?.PDFParse);
+    if (text.trim()) {
+      return text;
+    }
+  } catch {
+    // Ignore and try dynamic import fallback below.
+  }
+
+  try {
+    const mod = (await import("pdf-parse")) as { PDFParse?: unknown };
+    return await tryExtractText(mod?.PDFParse);
   } catch {
     return "";
   }
