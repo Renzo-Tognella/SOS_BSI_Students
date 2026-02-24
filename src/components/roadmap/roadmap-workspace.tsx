@@ -343,6 +343,26 @@ function buildCombinedManualMappings(
   return [...merged.values()];
 }
 
+function buildParseValidationError(parsed: ParsedTranscript): string | null {
+  if (parsed.attempts.length > 0) {
+    return null;
+  }
+
+  const normalizedRawText = (parsed.rawText ?? "").toLowerCase();
+  const looksLikeMatrixDocument =
+    normalizedRawText.includes("consulta curso e matriz curricular") || normalizedRawText.includes("matriz curricular - versão");
+
+  if (looksLikeMatrixDocument) {
+    return "O PDF enviado parece ser a matriz curricular do curso, não o histórico escolar do aluno. Envie o histórico completo (com disciplinas cursadas, status e notas).";
+  }
+
+  if (parsed.warnings.length > 0) {
+    return `Não foi possível extrair disciplinas do histórico. ${parsed.warnings.join(" ")}`;
+  }
+
+  return "Não foi possível extrair disciplinas do histórico. Verifique se o PDF é o histórico completo e tente novamente.";
+}
+
 const CORRELATION_CATEGORY_LABEL: Record<PendingDiscipline["category"], string> = {
   MANDATORY: "Obrigatórias",
   OPTIONAL: "Optativas",
@@ -1212,7 +1232,15 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     try {
       setErrorMessage(null);
       setGradeOptions(null);
+      setRoadmap(null);
       const parsed = await parseMutation.mutateAsync(selectedFile);
+      const parseValidationError = buildParseValidationError(parsed);
+      if (parseValidationError) {
+        setParsedTranscript(parsed);
+        setErrorMessage(parseValidationError);
+        return;
+      }
+
       setParsedTranscript(parsed);
       setManualCorrelations({});
       setManualConvalidationMappings({});
