@@ -114,3 +114,56 @@ Referências oficiais:
 - Nunca commite `.env` no Git.
 - Não exponha `GEMINI_API_KEY` no frontend.
 - Use a chave apenas no backend (como já está implementado em `src/app/api/assistant/chat/route.ts`).
+
+## Deploy na Railway (com OCR nativo)
+
+Este projeto já está preparado para Railway com `Dockerfile` e inclui:
+- `pdftotext` / `pdftoppm` (`poppler-utils`)
+- `tesseract` + idioma `por`
+
+### 1. Pré-requisito no repositório
+
+- Garanta que os arquivos estejam versionados:
+  - `Dockerfile`
+  - `.dockerignore`
+
+### 2. Criar projeto na Railway
+
+1. Acesse [Railway](https://railway.app/), faça login e clique em **New Project**.
+2. Selecione **Deploy from GitHub Repo**.
+3. Escolha este repositório.
+4. A Railway vai detectar o `Dockerfile` e buildar a imagem automaticamente.
+
+### 3. Configurar variáveis de ambiente
+
+No serviço da Railway, vá em **Variables** e configure (conforme seu uso):
+
+```env
+OPENROUTER_API_KEY=
+OPENROUTER_MODEL=minimax/minimax-m2.5
+OPENROUTER_REFERER=https://SEU_DOMINIO_RAILWAY
+
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-1.5-flash
+```
+
+Observações:
+- Não é necessário definir `PORT`; a Railway injeta automaticamente.
+- O container já inicia com `next start -H 0.0.0.0 -p $PORT`.
+
+### 4. Healthcheck e validação
+
+Depois do deploy:
+1. Abra a URL gerada pela Railway.
+2. Teste os endpoints:
+   - `GET /api/roadmap/lookup-disciplines`
+   - `POST /api/roadmap/parse` com histórico real em PDF
+   - `POST /api/roadmap/calculate`
+3. Verifique logs para confirmar que não há erro de OCR/binários.
+
+### 5. Domínio: preciso ter?
+
+Não. Você pode usar sem domínio próprio.
+
+- A Railway fornece um domínio padrão `*.up.railway.app`.
+- Domínio customizado é opcional (apenas se você quiser URL própria).
