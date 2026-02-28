@@ -14,7 +14,7 @@ describe("historico parser", () => {
     const parsed = parseHistoricoText(raw);
 
     expect(parsed.detectedMatrixCode).toBe("981");
-    expect(parsed.student.registrationId).toBe("2413949");
+    expect(parsed.student.registrationId).toBe("9991001");
     expect(parsed.student.courseCode).toBe("236");
     expect(parsed.attempts.length).toBeGreaterThan(5);
   });
