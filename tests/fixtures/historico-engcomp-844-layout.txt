@@ -1,5 +1,5 @@
 Histórico Escolar
-Aluno: 2235382 - ALUNO TESTE Identidade-UF: 133672230-
+Aluno: 9999999 - ALUNO TESTE Identidade-UF: 000000000-
 Curso: 212 - Eng De Computação Período: 10
 Turno: Diurno (M/T) Matriz: 844 - Matriz 3 De Eng De Computação Situação: Regular
 Ingresso: 1/2020 Data da colação: --/--/----
