@@ -1,0 +1,1038 @@
+[
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "COE70A",
+    "name": "COMUNICAÇÃO ORAL E ESCRITA",
+    "cht": 30
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "EDU70J",
+    "name": "LIBRAS",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "EDU70K",
+    "name": "TECNOLOGIAS DIGITAIS NA EDUCAÇÃO",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1171",
+    "code": "ELEW40",
+    "name": "ENGENHARIA DE SISTEMAS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1171",
+    "code": "ELEW41",
+    "name": "ROBÓTICA",
+    "cht": 75
+  },
+  {
+    "period": 3,
+    "optGroup": null,
+    "code": "EST70C",
+    "name": "INTRODUÇÃO À ESTATÍSTICA",
+    "cht": 60
+  },
+  {
+    "period": 5,
+    "optGroup": null,
+    "code": "FCH7FA",
+    "name": "FILOSOFIA DA CIÊNCIA E DA TECNOLOGIA",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "FCH7FB",
+    "name": "FUNDAMENTOS DA ÉTICA",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "FCH7FC",
+    "name": "TEORIA DAS CIÊNCIAS HUMANAS",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "FCH7GA",
+    "name": "METROPOLIZAÇÃO CONTEMPORÂNEA: TECNOLOGIA E TERRITÓRIO",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1159",
+    "code": "FCH7HA",
+    "name": "HISTÓRIA DA TÉCNICA E DA TECNOLOGIA",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "FCH7HB",
+    "name": "HISTÓRIA GERAL DA ECONOMIA",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "FCH7HC",
+    "name": "CAPITALISMO CONTEMPORÂNEO E ECONOMIA POLÍTICA",
+    "cht": 45
+  },
+  {
+    "period": 5,
+    "optGroup": null,
+    "code": "FCH7PA",
+    "name": "PSICOLOGIA DO TRABALHO",
+    "cht": 30
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "FCH7PC",
+    "name": "PLANEJAMENTO DE CARREIRA",
+    "cht": 60
+  },
+  {
+    "period": 3,
+    "optGroup": null,
+    "code": "FCH7SA",
+    "name": "SOCIOLOGIA",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "FCH7SC",
+    "name": "TECNOLOGIA, TRABALHO E SAÚDE",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "FCH7XB",
+    "name": "PRESENÇA AFRICANA NO BRASIL: TECNOLOGIA, TRABALHO E CULTURA",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "FCH7XF",
+    "name": "DIMENSÃO AMBIENTAL NA GESTÃO URBANA",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "FCH7XG",
+    "name": "TECNOPOLÍTICAS DA SOCIEDADE CONTEMPORÂNEA",
+    "cht": 45
+  },
+  {
+    "period": 2,
+    "optGroup": null,
+    "code": "GEE7A1",
+    "name": "FUNDAMENTOS DE ADMINISTRAÇÃO",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": null,
+    "code": "GEE7E1",
+    "name": "FUNDAMENTOS DE EMPREENDEDORISMO",
+    "cht": 30
+  },
+  {
+    "period": 3,
+    "optGroup": "1159",
+    "code": "GEE7G1",
+    "name": "FUNDAMENTOS DE GESTÃO DE PESSOAS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": null,
+    "code": "ICSA30",
+    "name": "PROJETO E ANÁLISE DE ALGORITMOS",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1159",
+    "code": "ICSA31",
+    "name": "TEORIA DA COMPUTAÇÃO",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1168",
+    "code": "ICSA41",
+    "name": "COMPLEXIDADE COMPUTACIONAL",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1168",
+    "code": "ICSA42",
+    "name": "PROGRAMAÇÃO COMPETITIVA, INTERINSTITUCIONALIDADE E MERCADO DE TRABALHO",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1168",
+    "code": "ICSA46",
+    "name": "ALGORITMOS E COMPLEXIDADE",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1168",
+    "code": "ICSA47",
+    "name": "COMPUTAÇÃO QUÂNTICA",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1168",
+    "code": "ICSA48",
+    "name": "TEORIA DOS GRAFOS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1168",
+    "code": "ICSA49",
+    "name": "INTRODUÇÃO À CRIPTOGRAFIA",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1168",
+    "code": "ICSA4A",
+    "name": "GEOMETRIA COMPUTACIONAL",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": null,
+    "code": "ICSB30",
+    "name": "INTRODUÇÃO A BANCO DE DADOS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1165",
+    "code": "ICSB41",
+    "name": "BANCO DE DADOS 2",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1165",
+    "code": "ICSB50",
+    "name": "BANCO DE DADOS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1165",
+    "code": "ICSB52",
+    "name": "DATA WAREHOUSING",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1165",
+    "code": "ICSB53",
+    "name": "INTRODUÇÃO A CIÊNCIA DE DADOS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1165",
+    "code": "ICSB54",
+    "name": "INTRODUCTION TO DATA SCIENCE",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1165",
+    "code": "ICSB56",
+    "name": "CIÊNCIA DE DADOS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1165",
+    "code": "ICSB57",
+    "name": "DATA SCIENCE",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1165",
+    "code": "ICSB59",
+    "name": "PROCESSAMENTO DE LINGUAGEM NATURAL",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1165",
+    "code": "ICSB60",
+    "name": "NoSQL - BANCO DE DADOS NÃO RELACIONAIS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1165",
+    "code": "ICSB61",
+    "name": "BIG DATA",
+    "cht": 60
+  },
+  {
+    "period": 1,
+    "optGroup": null,
+    "code": "ICSD20",
+    "name": "INTRODUÇÃO À LÓGICA PARA COMPUTAÇÃO",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": null,
+    "code": "ICSD21",
+    "name": "MATEMÁTICA DISCRETA",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1173",
+    "code": "ICSD41",
+    "name": "PROGRAMAÇÃO MATEMÁTICA",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1173",
+    "code": "ICSD42",
+    "name": "SIMULAÇÃO DE SISTEMAS BIOLÓGICOS E SOCIAIS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1173",
+    "code": "ICSD43",
+    "name": "SIMULAÇÃO DE EVENTOS DISCRETOS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1173",
+    "code": "ICSD45",
+    "name": "MODELAGEM E AVALIAÇÃO DE SISTEMAS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1173",
+    "code": "ICSD47",
+    "name": "OTIMIZAÇÃO DE SISTEMAS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1173",
+    "code": "ICSD50",
+    "name": "MÉTODOS ESTOCÁSTICOS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1173",
+    "code": "ICSD51",
+    "name": "METAHEURÍSTICA",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1173",
+    "code": "ICSD52",
+    "name": "INTRODUÇÃO À COMPUTAÇÃO",
+    "cht": 60
+  },
+  {
+    "period": 2,
+    "optGroup": null,
+    "code": "ICSE20",
+    "name": "TÉCNICAS DE PROGRAMAÇÃO",
+    "cht": 60
+  },
+  {
+    "period": 5,
+    "optGroup": null,
+    "code": "ICSE30",
+    "name": "ENGENHARIA DE SOFTWARE",
+    "cht": 60
+  },
+  {
+    "period": 3,
+    "optGroup": "1159",
+    "code": "ICSE40",
+    "name": "ENGENHARIA DE SOFTWARE 2",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1169",
+    "code": "ICSE41",
+    "name": "ENGENHARIA DE REQUISITOS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1169",
+    "code": "ICSE42",
+    "name": "METODOLOGIAS ÁGEIS PARA O DESENVOLVIMENTO DE SOFTWARE",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1169",
+    "code": "ICSE43",
+    "name": "TESTES, VERIFICAÇÃO E VALIDAÇÃO DE SISTEMAS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1169",
+    "code": "ICSE44",
+    "name": "SISTEMAS LEGADOS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1169",
+    "code": "ICSE45",
+    "name": "MODELAGEM DE SOFTWARE",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1169",
+    "code": "ICSE46",
+    "name": "MÉTRICAS E ESTIMATIVAS DE SOFTWARE",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1169",
+    "code": "ICSE47",
+    "name": "GERÊNCIA DE PROJETOS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1169",
+    "code": "ICSE48",
+    "name": "QUALIDADE DE SOFTWARE",
+    "cht": 45
+  },
+  {
+    "period": 1,
+    "optGroup": null,
+    "code": "ICSF13",
+    "name": "FUNDAMENTOS DE PROGRAMAÇÃO 1",
+    "cht": 90
+  },
+  {
+    "period": 2,
+    "optGroup": null,
+    "code": "ICSF20",
+    "name": "ESTRUTURAS DE DADOS 1",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": null,
+    "code": "ICSF30",
+    "name": "ESTRUTURAS DE DADOS 2",
+    "cht": 45
+  },
+  {
+    "period": 1,
+    "optGroup": null,
+    "code": "ICSG10",
+    "name": "FUNDAMENTOS DE SISTEMAS DE INFORMAÇÃO",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": null,
+    "code": "ICSG20",
+    "name": "ANÁLISE E PROJETO DE SISTEMAS",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1159",
+    "code": "ICSG31",
+    "name": "GESTÃO DA INFORMAÇÃO EM SISTEMAS DE INFORMAÇÃO",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1162",
+    "code": "ICSG41",
+    "name": "TECNOLOGIAS DA INFORMAÇÃO APLICADA À GESTÃO",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1162",
+    "code": "ICSG42",
+    "name": "GESTÃO DO CONHECIMENTO",
+    "cht": 30
+  },
+  {
+    "period": 4,
+    "optGroup": "1162",
+    "code": "ICSG44",
+    "name": "INFORMÁTICA NA SAÚDE",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1162",
+    "code": "ICSG45",
+    "name": "SISTEMAS DE INFORMAÇÃO EM SAÚDE",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1162",
+    "code": "ICSG47",
+    "name": "INTELIGÊNCIA COLETIVA E REDES SOCIAIS ELETRÔNICAS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1162",
+    "code": "ICSG48",
+    "name": "MODELAGEM DE PROCESSOS DE NEGÓCIOS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1162",
+    "code": "ICSG70",
+    "name": "SISTEMAS DE INFORMAÇÃO E ORGANIZAÇÕES",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1159",
+    "code": "ICSH31",
+    "name": "INTRODUÇÃO À INTERAÇÃO HUMANO-COMPUTADOR",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1163",
+    "code": "ICSH41",
+    "name": "AVALIAÇÃO EM INTERAÇÃO HUMANO-COMPUTADOR",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1163",
+    "code": "ICSH43",
+    "name": "TRABALHO COOPERATIVO APOIADO POR COMPUTADOR",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1163",
+    "code": "ICSH45",
+    "name": "TÓPICOS EM DESIGN DE INTERAÇÃO",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1163",
+    "code": "ICSHX0",
+    "name": "ACESSIBILIDADE E INCLUSÃO DIGITAL",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1163",
+    "code": "ICSHX1",
+    "name": "COMPUTAÇÃO E SOCIEDADE",
+    "cht": 45
+  },
+  {
+    "period": 3,
+    "optGroup": "1159",
+    "code": "ICSI30",
+    "name": "SISTEMAS INTELIGENTES",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSI31",
+    "name": "CIÊNCIA DAS REDES",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSI41",
+    "name": "REDES NEURAIS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSI50",
+    "name": "INTELIGÊNCIA ARTIFICIAL",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSI51",
+    "name": "COMPUTAÇÃO EVOLUCIONÁRIA",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSI52",
+    "name": "INTELIGÊNCIA ARTIFICIAL DISTRIBUÍDA",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSI53",
+    "name": "MINERAÇÃO DE DADOS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSI54",
+    "name": "GRAFOS DE CONHECIMENTO",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSI55",
+    "name": "SISTEMAS AUTÔNOMOS INTELIGENTES",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSI56",
+    "name": "SISTEMAS FUZZY",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSI57",
+    "name": "INTRODUÇÃO ÀS CIÊNCIAS COGNITIVAS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSI58",
+    "name": "DATA MINING",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSI59",
+    "name": "PROGRAMAÇÃO ORIENTADA À NOTIFICAÇÕES",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1166",
+    "code": "ICSIX0",
+    "name": "INTELIGÊNCIA ARTIFICIAL E SOCIEDADE",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1172",
+    "code": "ICSL40",
+    "name": "ESTRUTURA DE LINGUAGENS DE PROGRAMAÇÃO",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1172",
+    "code": "ICSL41",
+    "name": "CONSTRUÇÃO DE COMPILADORES",
+    "cht": 60
+  },
+  {
+    "period": 3,
+    "optGroup": "1159",
+    "code": "ICSM31",
+    "name": "DESENVOLVIMENTO INTEGRADO DE SISTEMAS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1164",
+    "code": "ICSM42",
+    "name": "INFRAESTRUTURA PARA TECNOLOGIA DE INFORMAÇÃO",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1164",
+    "code": "ICSM45",
+    "name": "COMPUTAÇÃO EM NUVEM",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1164",
+    "code": "ICSM46",
+    "name": "PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS E SEM FIO",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1164",
+    "code": "ICSM47",
+    "name": "DESENVOLVIMENTO DE APLICAÇÕES WEB-FRONT END",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1164",
+    "code": "ICSM48",
+    "name": "DESENVOLVIMENTO DE APLICAÇÕES WEB-BACK END",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1164",
+    "code": "ICSM49",
+    "name": "PADRÕES WEB",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": null,
+    "code": "ICSO30",
+    "name": "SISTEMAS OPERACIONAIS",
+    "cht": 60
+  },
+  {
+    "period": 5,
+    "optGroup": null,
+    "code": "ICSR30",
+    "name": "REDES DE COMPUTADORES",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1170",
+    "code": "ICSR31",
+    "name": "COMUNICAÇÃO DE DADOS",
+    "cht": 30
+  },
+  {
+    "period": 4,
+    "optGroup": "1170",
+    "code": "ICSR40",
+    "name": "REDES E SISTEMAS DE COMUNICAÇÕES MÓVEIS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1170",
+    "code": "ICSR41",
+    "name": "OFICINA DE REDES",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1170",
+    "code": "ICSR42",
+    "name": "INFRAESTRUTURA DE LANS HIERÁRQUICAS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1170",
+    "code": "ICSR43",
+    "name": "INFRAESTRUTURA DE WANS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1170",
+    "code": "ICSR44",
+    "name": "SEGURANÇA DE REDES E SISTEMAS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1170",
+    "code": "ICSR45",
+    "name": "PROJETO DE INFRAESTRUTURA DE REDES",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1170",
+    "code": "ICSR46",
+    "name": "ROTEAMENTO E QUALIDADE DE SERVIÇOS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1170",
+    "code": "ICSR47",
+    "name": "REDES SEM FIO",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1170",
+    "code": "ICSR48",
+    "name": "SIMULAÇÃO E ANÁLISE DE DESEMPENHO DE REDES DE COMPUTADORES",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1170",
+    "code": "ICSR49",
+    "name": "TÓPICOS AVANÇADOS EM REDES DE COMPUTADORES",
+    "cht": 60
+  },
+  {
+    "period": 6,
+    "optGroup": null,
+    "code": "ICSS30",
+    "name": "SISTEMAS DISTRIBUÍDOS",
+    "cht": 60
+  },
+  {
+    "period": 3,
+    "optGroup": "1159",
+    "code": "ICSV30",
+    "name": "PROCESSAMENTO DIGITAL DE IMAGENS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1167",
+    "code": "ICSV40",
+    "name": "COMPUTAÇÃO GRÁFICA",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1167",
+    "code": "ICSV41",
+    "name": "INTRODUÇÃO À VISÃO COMPUTACIONAL",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1167",
+    "code": "ICSV45",
+    "name": "RECONHECIMENTO DE PADRÕES EM IMAGENS",
+    "cht": 60
+  },
+  {
+    "period": 3,
+    "optGroup": null,
+    "code": "ICSW20",
+    "name": "ARQUITETURA EM ORGANIZAÇÃO DE COMPUTADORES",
+    "cht": 60
+  },
+  {
+    "period": 3,
+    "optGroup": "1159",
+    "code": "ICSW22",
+    "name": "FUNDAMENTOS DE CIRCUITOS DIGITAIS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1171",
+    "code": "ICSW40",
+    "name": "SISTEMAS MICROCONTROLADOS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1171",
+    "code": "ICSW41",
+    "name": "SISTEMAS EMBARCADOS",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1171",
+    "code": "ICSW42",
+    "name": "LÓGICA RECONFIGURÁVEL",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1171",
+    "code": "ICSW45",
+    "name": "ROBÓTICA MÓVEL",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1171",
+    "code": "ICSW46",
+    "name": "ENGENHARIA DE SISTEMAS APLICADA A SISTEMAS CIBERFÍSICOS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1171",
+    "code": "ICSW47",
+    "name": "SISTEMAS TEMPO REAL",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1171",
+    "code": "ICSW4B",
+    "name": "ELETRICIDADE",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1171",
+    "code": "ICSW51",
+    "name": "ARQUITETURA DE COMPUTADORES PARA SISTEMAS EMBARCADOS",
+    "cht": 45
+  },
+  {
+    "period": 4,
+    "optGroup": "1171",
+    "code": "ICSW53",
+    "name": "COMPUTAÇÃO RECONFIGURÁVEL",
+    "cht": 45
+  },
+  {
+    "period": 1,
+    "optGroup": null,
+    "code": "ICSX10",
+    "name": "INTRODUÇÃO AO COMPUTAR",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": null,
+    "code": "ICSX20",
+    "name": "TRABALHO DE INTEGRAÇÃO",
+    "cht": 60
+  },
+  {
+    "period": 6,
+    "optGroup": null,
+    "code": "ICSX30",
+    "name": "TRABALHO DE INTEGRAÇÃO",
+    "cht": 45
+  },
+  {
+    "period": 7,
+    "optGroup": null,
+    "code": "ICSX40",
+    "name": "TRABALHO DE CONCLUSÃO",
+    "cht": 30
+  },
+  {
+    "period": 8,
+    "optGroup": null,
+    "code": "ICSX41",
+    "name": "TRABALHO DE CONCLUSÃO 2",
+    "cht": 30
+  },
+  {
+    "period": 2,
+    "optGroup": null,
+    "code": "ICSX50",
+    "name": "ATIVIDADES COMPLEMENTARES COMPLEMENTARES",
+    "cht": 90
+  },
+  {
+    "period": 4,
+    "optGroup": null,
+    "code": "ICSX51",
+    "name": "ESTÁGIO 1",
+    "cht": 200
+  },
+  {
+    "period": 5,
+    "optGroup": null,
+    "code": "ICSX52",
+    "name": "ESTÁGIO 2",
+    "cht": 200
+  },
+  {
+    "period": 2,
+    "optGroup": null,
+    "code": "MAT7AL",
+    "name": "ÁLGEBRA LINEAR",
+    "cht": 60
+  },
+  {
+    "period": 2,
+    "optGroup": null,
+    "code": "MAT7C1",
+    "name": "CÁLCULO DIFERENCIAL E INTEGRAL 1",
+    "cht": 90
+  },
+  {
+    "period": 1,
+    "optGroup": null,
+    "code": "MAT7GA",
+    "name": "GEOMETRIA ANALÍTICA",
+    "cht": 60
+  },
+  {
+    "period": 4,
+    "optGroup": "1173",
+    "code": "MAT7N1",
+    "name": "CÁLCULO NUMÉRICO",
+    "cht": 60
+  },
+  {
+    "period": 3,
+    "optGroup": "1161",
+    "code": "QBI7CA",
+    "name": "CIÊNCIAS DO AMBIENTE",
+    "cht": 30
+  }
+]

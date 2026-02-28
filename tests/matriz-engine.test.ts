@@ -1,0 +1,425 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { describe, expect, it } from "vitest";
+
+import { calculateRoadmap } from "@/lib/domain/matriz-engine";
+import { parseHistoricoText } from "@/lib/parser/historico-parser";
+import type { ParsedTranscript } from "@/types/academic";
+
+describe("matriz engine", () => {
+  const fixturePath = path.join(process.cwd(), "tests/fixtures/historico-sample.txt");
+  const raw = readFileSync(fixturePath, "utf8");
+  const engcompFixturePath = path.join(process.cwd(), "tests/fixtures/historico-engcomp-844-layout.txt");
+  const engcompRaw = readFileSync(engcompFixturePath, "utf8");
+
+  it("computes progress and pending disciplines", async () => {
+    const parsed = parseHistoricoText(raw);
+    const roadmap = await calculateRoadmap(parsed, "981");
+
+    expect(roadmap.matrixCode).toBe("981");
+    expect(roadmap.progress.length).toBeGreaterThan(5);
+    expect(roadmap.pending.some((discipline) => discipline.code === "FCH7FA")).toBe(true);
+    expect(roadmap.pending.some((discipline) => discipline.code === "ICSS30")).toBe(true);
+    const electivePending = roadmap.pending.filter((discipline) => discipline.category === "ELECTIVE");
+    expect(electivePending.length).toBeGreaterThan(0);
+    expect(electivePending.every((discipline) => discipline.code.startsWith("ELVP"))).toBe(true);
+    expect(electivePending.reduce((sum, discipline) => sum + discipline.cht, 0)).toBe(105);
+    expect((roadmap.electiveOptions ?? []).length).toBeGreaterThan(0);
+    expect((roadmap.electiveOptions ?? []).some((discipline) => discipline.code === "ELEW40")).toBe(true);
+  });
+
+  it("computes roadmap for matrix 962 without failing mandatory pending flow", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "212001",
+        fullName: "Aluno Engenharia Computação",
+        courseCode: "212",
+        courseName: "Engenharia de Computação"
+      },
+      detectedMatrixCode: "962",
+      matrixLabel: "Matriz 962",
+      attempts: [],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "962");
+    const mandatoryBucket = roadmap.progress.find((bucket) => bucket.key === "mandatory");
+
+    expect(roadmap.matrixCode).toBe("962");
+    expect(mandatoryBucket?.requiredCHT).toBe(2805);
+    expect(roadmap.pending.some((discipline) => discipline.category === "MANDATORY")).toBe(true);
+  });
+
+  it("computes roadmap for matrix 844 using old EngComp layout", async () => {
+    const parsed = parseHistoricoText(engcompRaw);
+    const roadmap = await calculateRoadmap(parsed, "844");
+    const mandatoryBucket = roadmap.progress.find((bucket) => bucket.key === "mandatory");
+
+    expect(roadmap.matrixCode).toBe("844");
+    expect(mandatoryBucket?.requiredCHT).toBe(2820);
+    expect(roadmap.pending.some((discipline) => discipline.code === "CSX54")).toBe(true);
+    expect(roadmap.pending.some((discipline) => discipline.code === "CSS30")).toBe(true);
+  });
+
+  it("applies 844->962 equivalences when recalculating old EngComp history on matrix 962", async () => {
+    const parsed = parseHistoricoText(engcompRaw);
+    const roadmap = await calculateRoadmap(parsed, "962");
+
+    expect(roadmap.pending.some((discipline) => discipline.code === "ICSD20")).toBe(false);
+    expect(roadmap.pending.some((discipline) => discipline.code === "ICSF13")).toBe(false);
+    expect(roadmap.unusedDisciplines.some((discipline) => discipline.code === "CSD20")).toBe(false);
+  });
+
+  it("keeps only approved attempt as completed", async () => {
+    const parsed = parseHistoricoText(raw);
+    const roadmap = await calculateRoadmap(parsed, "981");
+
+    const discreteNode = roadmap.prereqGraph.nodes.find((node) => node.code === "ICSD21");
+    expect(discreteNode?.status).toBe("DONE");
+  });
+
+  it("returns graph and unused list structures", async () => {
+    const parsed = parseHistoricoText(raw);
+    const roadmap = await calculateRoadmap(parsed, "981");
+
+    expect(roadmap.prereqGraph.nodes.length).toBeGreaterThan(10);
+    expect(Array.isArray(roadmap.unusedDisciplines)).toBe(true);
+  });
+
+  it("applies fallback matching by discipline name when code does not match matrix", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "999999",
+        fullName: "Teste Nome Fallback"
+      },
+      detectedMatrixCode: "981",
+      matrixLabel: "Matriz 981",
+      attempts: [
+        {
+          sourceSection: "mandatory",
+          code: "XTRB22",
+          name: "Trabalho de Integração 2",
+          cht: 45,
+          chext: 0,
+          status: "APPROVED",
+          statusText: "Aprovado Por Nota/Frequência",
+          rawBlock: "dummy"
+        }
+      ],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "981");
+    expect(roadmap.pending.some((discipline) => discipline.code === "ICSX30")).toBe(false);
+    expect(roadmap.alerts.some((alert) => alert.includes("Fallback por nome aplicado"))).toBe(true);
+  });
+
+  it("maps approved discipline by name when code changes across matrices", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "999998",
+        fullName: "Teste Código Diferente Mesmo Nome"
+      },
+      detectedMatrixCode: "806",
+      matrixLabel: "Matriz 806",
+      attempts: [
+        {
+          sourceSection: "mandatory",
+          code: "ICSD20",
+          name: "Introdução à Lógica para Computação",
+          cht: 54,
+          chext: 0,
+          status: "APPROVED",
+          statusText: "Aprovado Por Nota/Frequência",
+          rawBlock: "dummy"
+        }
+      ],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "806");
+    expect(roadmap.pending.some((discipline) => discipline.code === "CSD20")).toBe(false);
+    expect(roadmap.unusedDisciplines.some((discipline) => discipline.code === "ICSD20")).toBe(false);
+    expect(roadmap.alerts.some((alert) => alert.includes("ICSD20->CSD20"))).toBe(true);
+  });
+
+  it("applies approved convalidation markers from raw transcript text", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText:
+        "Crédito Consignado [disciplina FCH7PA - Fechamento de Turmas - Cursou Disciplina(s) Equivalente(s)] Aprovado Por Nota/Frequência",
+      student: {
+        registrationId: "999999",
+        fullName: "Teste Convalidação"
+      },
+      detectedMatrixCode: "981",
+      matrixLabel: "Matriz 981",
+      attempts: [
+        {
+          sourceSection: "mandatory",
+          code: "FCH7PA",
+          name: "Psicologia do Trabalho",
+          cht: 30,
+          chext: 0,
+          status: "CANCELED",
+          statusText: "Cancelado",
+          rawBlock: "dummy"
+        }
+      ],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "981");
+    expect(roadmap.pending.some((discipline) => discipline.code === "FCH7PA")).toBe(false);
+    expect(roadmap.alerts.some((alert) => alert.includes("Convalidações aprovadas detectadas"))).toBe(true);
+  });
+
+  it("applies manual correlation and removes discipline from pending", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "111111",
+        fullName: "Teste Correlação Manual"
+      },
+      detectedMatrixCode: "981",
+      matrixLabel: "Matriz 981",
+      attempts: [
+        {
+          sourceSection: "mandatory",
+          code: "ZZZ999",
+          name: "Disciplina Externa Sem Match Automático",
+          cht: 45,
+          chext: 0,
+          status: "APPROVED",
+          statusText: "Aprovado Por Nota/Frequência",
+          rawBlock: "dummy"
+        }
+      ],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const targetCode = "FCH7HA";
+    const withoutManual = await calculateRoadmap(parsed, "981");
+    expect(withoutManual.pending.some((discipline) => discipline.code === targetCode)).toBe(true);
+
+    const withManual = await calculateRoadmap(parsed, "981", [{ sourceCode: "ZZZ999", targetCode }]);
+    expect(withManual.pending.some((discipline) => discipline.code === targetCode)).toBe(false);
+    expect(withManual.unmatchedApprovedAttempts.some((attempt) => attempt.sourceCode === "ZZZ999")).toBe(false);
+    expect(withManual.alerts.some((alert) => alert.includes("Correlação manual aplicada"))).toBe(true);
+  });
+
+  it("recognizes approved disciplines from supplemental catalog by code", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "222222",
+        fullName: "Teste Catálogo Suplementar"
+      },
+      detectedMatrixCode: "981",
+      matrixLabel: "Matriz 981",
+      attempts: [
+        {
+          sourceSection: "optional",
+          code: "ICSHX0",
+          name: "Texto com ruído do PDF",
+          cht: 45,
+          chext: 0,
+          status: "APPROVED",
+          statusText: "Aprovado Por Nota/Frequência",
+          rawBlock: "dummy"
+        }
+      ],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "981");
+    expect(roadmap.unmatchedApprovedAttempts.some((attempt) => attempt.sourceCode === "ICSHX0")).toBe(false);
+    expect(roadmap.unusedDisciplines.some((discipline) => discipline.code === "ICSHX0")).toBe(false);
+  });
+
+  it("applies partial manual convalidation hours without fully completing destination discipline", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "333333",
+        fullName: "Teste Convalidação Parcial"
+      },
+      detectedMatrixCode: "981",
+      matrixLabel: "Matriz 981",
+      attempts: [
+        {
+          sourceSection: "mandatory",
+          code: "OLD123",
+          name: "Introdução a Banco de Dados",
+          cht: 45,
+          chext: 0,
+          status: "APPROVED",
+          statusText: "Aprovado Por Nota/Frequência",
+          rawBlock: "dummy"
+        }
+      ],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "981", [
+      {
+        sourceCode: "OLD123",
+        targetCode: "ICSB30",
+        targetCategory: "MANDATORY",
+        creditedCHT: 45
+      }
+    ]);
+
+    const mandatoryBucket = roadmap.progress.find((bucket) => bucket.key === "mandatory");
+    expect(mandatoryBucket?.validatedCHT).toBe(45);
+    expect(roadmap.pending.some((discipline) => discipline.code === "ICSB30")).toBe(true);
+    expect(roadmap.unusedDisciplines.some((discipline) => discipline.code === "OLD123")).toBe(false);
+  });
+
+  it("allows manual-only convalidation when no destination discipline exists in matrix", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "444444",
+        fullName: "Teste Convalidação Manual"
+      },
+      detectedMatrixCode: "981",
+      matrixLabel: "Matriz 981",
+      attempts: [
+        {
+          sourceSection: "other",
+          code: "OUT999",
+          name: "Tópicos Livres Externos",
+          cht: 30,
+          chext: 0,
+          status: "APPROVED",
+          statusText: "Aprovado Por Nota/Frequência",
+          rawBlock: "dummy"
+        }
+      ],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "981", [
+      {
+        sourceCode: "OUT999",
+        sourceName: "Tópicos Livres Externos",
+        manualOnly: true,
+        targetCategory: "ELECTIVE",
+        creditedCHT: 30,
+        customDisciplineName: "Convalidação Manual Externa"
+      }
+    ]);
+
+    const electiveBucket = roadmap.progress.find((bucket) => bucket.key === "elective");
+    expect(electiveBucket?.validatedCHT).toBe(30);
+    expect(roadmap.unusedDisciplines.some((discipline) => discipline.code === "OUT999")).toBe(false);
+    expect(roadmap.alerts.some((alert) => alert.includes("OUT999->MANUAL(30h/ELECTIVE)"))).toBe(true);
+  });
+
+  it("builds progress buckets dynamically by matrix capability", async () => {
+    const parsed = parseHistoricoText(raw);
+    const roadmap962 = await calculateRoadmap(parsed, "962");
+    const roadmap844 = await calculateRoadmap(parsed, "844");
+
+    expect(roadmap962.progress.some((bucket) => bucket.key === "extension")).toBe(true);
+    expect(roadmap844.progress.some((bucket) => bucket.key === "extension")).toBe(false);
+    expect(roadmap962.progress.some((bucket) => bucket.key === "mandatory")).toBe(true);
+  });
+
+  it("keeps old EngComp discipline without official rule as unused with explicit reason code", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "555555",
+        fullName: "Teste EngComp Sem Regra"
+      },
+      detectedMatrixCode: "844",
+      matrixLabel: "Matriz 844",
+      attempts: [
+        {
+          sourceSection: "mandatory",
+          code: "MA73A",
+          name: "MA73A",
+          cht: 60,
+          chext: 0,
+          status: "APPROVED",
+          statusText: "Aprovado Por Nota/Frequência",
+          rawBlock: "dummy"
+        }
+      ],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "962");
+    const unused = roadmap.unusedDisciplines.find((discipline) => discipline.code === "MA73A");
+
+    expect(unused).toBeDefined();
+    expect(unused?.reasonCode).toBe("NO_EQUIVALENCE_RULE");
+  });
+});

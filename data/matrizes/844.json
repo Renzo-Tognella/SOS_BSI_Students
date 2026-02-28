@@ -1,0 +1,2635 @@
+{
+  "matrixCode": "844",
+  "courseCode": "212",
+  "courseName": "Bacharelado em Engenharia de Computação",
+  "versionName": "Matriz 3 de Engenharia de Computação",
+  "totals": {
+    "mandatoryCHT": 2820,
+    "optionalCHT": 270,
+    "electiveCHT": 90,
+    "complementaryCHT": 180,
+    "internshipCHT": 400,
+    "tccCHT": 60,
+    "extensionCHT": 0
+  },
+  "disciplines": [
+    {
+      "code": "CSD20",
+      "name": "INTRODUÇÃO À LÓGICA PARA A COMPUTAÇÃO",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 1,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSF13",
+      "name": "FUNDAMENTOS DE PROGRAMAÇÃO 1",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 1,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FI71S",
+      "name": "FÍSICA TEÓRICA A",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 1,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "MA71A",
+      "name": "CÁLCULO DIFERENCIAL E INTEGRAL 1",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 1,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "MA71B",
+      "name": "GEOMETRIA ANALÍTICA E ÁLGEBRA LINEAR",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 1,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSE20",
+      "name": "TÉCNICAS DE PROGRAMAÇÃO",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 2,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSF13"
+      ]
+    },
+    {
+      "code": "CSF20",
+      "name": "ESTRUTURA DE DADOS 1",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 2,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSF13"
+      ]
+    },
+    {
+      "code": "CSX53",
+      "name": "ATIVIDADES COMPLEMENTARES",
+      "category": "COMPLEMENTARY",
+      "subcategory": "Atividades Complementares",
+      "recommendedPeriod": 2,
+      "cht": 180,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEX11",
+      "name": "INTRODUÇÃO À PRÁTICAS DE ELETRICIDADE E ELETRÔNICA",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 2,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FI72N",
+      "name": "FÍSICA EXPERIMENTAL 1",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 2,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [
+        "FI71S",
+        "MA71A"
+      ]
+    },
+    {
+      "code": "FI72S",
+      "name": "FÍSICA TEÓRICA B",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 2,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "FI71S",
+        "MA71A"
+      ]
+    },
+    {
+      "code": "MA72A",
+      "name": "CÁLCULO DIFERENCIAL E INTEGRAL 2",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 2,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "MA71A"
+      ]
+    },
+    {
+      "code": "QB70C",
+      "name": "QUÍMICA",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 2,
+      "cht": 75,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSF30",
+      "name": "ESTRUTURA DE DADOS 2",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSF20"
+      ]
+    },
+    {
+      "code": "EEB21",
+      "name": "ELETRICIDADE",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "FI72S",
+        "MA72A"
+      ]
+    },
+    {
+      "code": "EEX21",
+      "name": "OFICINA DE INTEGRAÇÃO 1",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "EEX11"
+      ]
+    },
+    {
+      "code": "FI73S",
+      "name": "FÍSICA TEÓRICA C",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "FI72S",
+        "MA72A"
+      ]
+    },
+    {
+      "code": "MA70G",
+      "name": "EQUAÇÕES DIFERENCIAIS",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "MA71B",
+        "MA72A"
+      ]
+    },
+    {
+      "code": "MA70H",
+      "name": "PROBABILIDADE E ESTATÍSTICA",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "MA72A"
+      ]
+    },
+    {
+      "code": "MA73A",
+      "name": "CÁLCULO DIFERENCIAL E INTEGRAL 3",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "MA72A"
+      ]
+    },
+    {
+      "code": "CSD21",
+      "name": "MATEMÁTICA DISCRETA",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSD20"
+      ]
+    },
+    {
+      "code": "EEB22",
+      "name": "CIRCUITOS ELÉTRICOS",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "EEB21",
+        "FI73S"
+      ]
+    },
+    {
+      "code": "EEB31",
+      "name": "CIRCUITOS DIGITAIS",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 4,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": [
+        "EEB21"
+      ]
+    },
+    {
+      "code": "EEF11",
+      "name": "DESENHO TÉCNICO",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 4,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEQ31",
+      "name": "ANÁLISE DE SISTEMAS",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 4,
+      "cht": 75,
+      "chext": 0,
+      "prerequisites": [
+        "MA70G",
+        "MA73A"
+      ]
+    },
+    {
+      "code": "FI74N",
+      "name": "FÍSICA EXPERIMENTAL 2",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 4,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [
+        "FI73S",
+        "MA73A"
+      ]
+    },
+    {
+      "code": "FI74S",
+      "name": "FÍSICA TEÓRICA D",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "FI73S",
+        "MA73A"
+      ]
+    },
+    {
+      "code": "CSA30",
+      "name": "PROJETO E ANÁLISE DE ALGORITMOS",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSD21",
+        "CSF30"
+      ]
+    },
+    {
+      "code": "CSB30",
+      "name": "INTRODUÇÃO A BANCO DE DADOS",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 5,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSD21",
+        "CSE20",
+        "CSF30"
+      ]
+    },
+    {
+      "code": "CSG20",
+      "name": "ANÁLISE E PROJETO DE",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSE20"
+      ]
+    },
+    {
+      "code": "CSR31",
+      "name": "COMUNICAÇÃO DE",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 5,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [
+        "EEQ31"
+      ]
+    },
+    {
+      "code": "CSW30",
+      "name": "ARQUITETURA E ORGANIZAÇÃO DE",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 5,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSF20",
+        "EEB31"
+      ]
+    },
+    {
+      "code": "EEE31",
+      "name": "ELETRÔNICA GERAL 1",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 5,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "EEB22"
+      ]
+    },
+    {
+      "code": "EEF21",
+      "name": "DESENHO TÉCNICO",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 5,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [
+        "EEF11",
+        "EEX11"
+      ]
+    },
+    {
+      "code": "ES70G",
+      "name": "SOCIOLOGIA",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSA31",
+      "name": "TEORIA DA COMPUTAÇÃO",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 6,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSA30"
+      ]
+    },
+    {
+      "code": "CSE30",
+      "name": "ENGENHARIA DE",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 6,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSG20"
+      ]
+    },
+    {
+      "code": "CSO30",
+      "name": "OPERACIONAIS",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 6,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSW30"
+      ]
+    },
+    {
+      "code": "CSW40",
+      "name": "MICROCONTROLADOS",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 6,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "EEB31",
+        "EEE31"
+      ]
+    },
+    {
+      "code": "CSX54",
+      "name": "ESTÁGIO SUPERVISIONADO",
+      "category": "INTERNSHIP",
+      "subcategory": "Estágio",
+      "recommendedPeriod": 6,
+      "cht": 400,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEE32",
+      "name": "ELETRÔNICA GERAL 2",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 6,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "EEE31",
+        "MA73A"
+      ]
+    },
+    {
+      "code": "EEX22",
+      "name": "OFICINA DE INTEGRAÇÃO 2",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 6,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSI30",
+      "name": "INTELIGENTES",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 7,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSA30"
+      ]
+    },
+    {
+      "code": "CSR30",
+      "name": "REDES DE COMPUTADORES",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 7,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "CSO30"
+      ]
+    },
+    {
+      "code": "CSW41",
+      "name": "EMBARCADOS",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 7,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSW40"
+      ]
+    },
+    {
+      "code": "CSW42",
+      "name": "LÓGICA RECONFIGURÁVEL",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 7,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSW40"
+      ]
+    },
+    {
+      "code": "EEC21",
+      "name": "CONTROLE 1",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 7,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "EEE32",
+        "EEQ31"
+      ]
+    },
+    {
+      "code": "EEQ32",
+      "name": "PROCESSAMENTO DIGITAL DE SINAIS",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 7,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "EEQ31"
+      ]
+    },
+    {
+      "code": "ES70P",
+      "name": "FILOSOFIA DA CIÊNCIA E DA TECNOLOGIA",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 7,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ES70G"
+      ]
+    },
+    {
+      "code": "CSA40",
+      "name": "ALGORITMOS E COMPLEXIDADE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Algoritmos E Complexidade",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSA41",
+      "name": "COMPLEXIDADE COMPUTACIONAL",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Algoritmos E Complexidade",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSA42",
+      "name": "TEORIA DOS GRAFOS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Algoritmos E Complexidade",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSA43",
+      "name": "COMPUTAÇÃO QUÂNTICA",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Algoritmos E Complexidade",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSA44",
+      "name": "INTRODUÇÃO À CRIPTOGRAFIA",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Algoritmos E Complexidade",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSA45",
+      "name": "GEOMETRIA COMPUTACIONAL",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Algoritmos E Complexidade",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSB40",
+      "name": "BIBLIOTECAS DIGITAIS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Banco De Dados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSB41",
+      "name": "BANCO DE DADOS 2",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Banco De Dados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSB42",
+      "name": "COMPUTAÇÃO BASEADA EM DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Banco De Dados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSB43",
+      "name": "TÓPICOS EM BANCO DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Banco De Dados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSB50",
+      "name": "BANCO DE DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Banco De Dados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSB51",
+      "name": "RECUPERAÇÃO INTELIGENTE DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Banco De Dados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSB52",
+      "name": "DATA WAREHOUSING",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Banco De Dados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSB53",
+      "name": "INTRODUÇÃO A CIÊNCIAS DE DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Banco De Dados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSB54",
+      "name": "INTRODUCTION TO DATA",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Banco De Dados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSB55",
+      "name": "CIÊNCIA DE DADOS E MULTIDISCIPLINARIDADE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSD40",
+      "name": "SIMULAÇÃO DE EVENTOS DISCRETOS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Otim, Mod Analíticos E Simul",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSD41",
+      "name": "PROGRAMAÇÃO MATEMÁTICA",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Otim, Mod Analíticos E Simul",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSD42",
+      "name": "SIMULAÇÃO DE SISTEMAS BIOLÓGICOS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Otim, Mod Analíticos E Simul",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSD43",
+      "name": "SIMULAÇÃO DE EVENTOS DISCRETOS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Otim, Mod Analíticos E Simul",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSD45",
+      "name": "MODELAGEM E AVALIAÇÃO DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Otim, Mod Analíticos E Simul",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSD47",
+      "name": "OTIMIZAÇÃO DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Otim, Mod Analíticos E Simul",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSD52",
+      "name": "INTRODUÇÃO À COMPUTAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Otim, Mod Analíticos E Simul",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSD55",
+      "name": "MÉTODOS ESTOCÁSTICOS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Otim, Mod Analíticos E Simul",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSD57",
+      "name": "MÉTODOS FORMAIS II",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Otim, Mod Analíticos E Simul",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSD58",
+      "name": "TÓPICOS ESPECIAIS EM TELEMÁTICA III",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Otim, Mod Analíticos E Simul",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSE40",
+      "name": "ENGENHARIA DE SOFTWARE 2",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia De Software",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSE41",
+      "name": "ENGENHARIA DE REQUISITOS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia De Software",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSE42",
+      "name": "METODOLOGIAS ÁGEIS PARA O",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia De Software",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSE43",
+      "name": "TESTES, VERIFICAÇÃO E VALIDAÇÃO DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia De Software",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSE44",
+      "name": "SISTEMAS LEGADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia De Software",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSE45",
+      "name": "MODELAGEM DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia De Software",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSE46",
+      "name": "MÉTRICAS E ESTIMATIVAS DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia De Software",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSE47",
+      "name": "GERÊNCIA DE PROJETOS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia De Software",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSE48",
+      "name": "QUALIDADE DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia De Software",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSG41",
+      "name": "TECNOLOGIAS DA INFORMAÇÃO APLICADA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSG42",
+      "name": "GESTÃO DO CONHECIMENTO",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSG43",
+      "name": "SISTEMAS DE APOIO À DECISÃO",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSG44",
+      "name": "INFORMÁTICA EM SAÚDE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSG45",
+      "name": "SISTEMAS DE INFORMAÇÃO EM SAÚDE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSG47",
+      "name": "INTELIGÊNCIA COLETIVA E REDES SOCIAIS",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSG48",
+      "name": "MODELAGEM DE PROCESSOS DE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSG70",
+      "name": "SISTEMAS DE INFORMAÇÃO E",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSH30",
+      "name": "INTRODUÇÃO À INTERAÇÃO HUMANO-",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Interação Hum-Comp",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSH41",
+      "name": "AVALIAÇÃO EM INTERAÇÃO HUMANO-",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Interação Hum-Comp",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSH42",
+      "name": "ACESSIBILIDADE E INCLUSÃO DIGITAL",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Interação Hum-Comp",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSH43",
+      "name": "COOPERATIVO APOIADO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Interação Hum-Comp",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSH44",
+      "name": "COMPUTAÇÃO E SOCIEDADE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Interação Hum-Comp",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSH45",
+      "name": "TÓPICOS EM DESIGN DE INTERAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Interação Hum-Comp",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSH50",
+      "name": "FUNDAMENTOS EM INTERAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Interação Hum-Comp",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSH51",
+      "name": "DESIGN DE INTERAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Interação Hum-Comp",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSI31",
+      "name": "Ciências das Redes",
+      "category": "TRACK",
+      "subcategory": "Trilhas Em Sistemas Inteligentes",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSI41",
+      "name": "REDES NEURAIS",
+      "category": "TRACK",
+      "subcategory": "Trilhas Em Sistemas Inteligentes",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSI42",
+      "name": "META-HEURISTICAS INSPIRADAS EM",
+      "category": "TRACK",
+      "subcategory": "Trilhas Em Sistemas Inteligentes",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSI51",
+      "name": "COMPUTAÇÃO EVOLUCIONÁRIA",
+      "category": "TRACK",
+      "subcategory": "Trilhas Em Sistemas Inteligentes",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSI52",
+      "name": "INTELIGÊNCIA ARTIFICIAL DISTRIBUÍDA",
+      "category": "TRACK",
+      "subcategory": "Trilhas Em Sistemas Inteligentes",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSI53",
+      "name": "MINERAÇÃO DE DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilhas Em Sistemas Inteligentes",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSI54",
+      "name": "ONTOLOGIAS",
+      "category": "TRACK",
+      "subcategory": "Trilhas Em Sistemas Inteligentes",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSI55",
+      "name": "SISTEMAS AUTÔNOMOS INTELIGENTES",
+      "category": "TRACK",
+      "subcategory": "Trilhas Em Sistemas Inteligentes",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSI56",
+      "name": "SISTEMAS FUZZY",
+      "category": "TRACK",
+      "subcategory": "Trilhas Em Sistemas Inteligentes",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSI57",
+      "name": "INTRODUÇÃO ÀS CIÊNCIAS COGNITIVAS",
+      "category": "TRACK",
+      "subcategory": "Trilhas Em Sistemas Inteligentes",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSI58",
+      "name": "DATA MINING",
+      "category": "TRACK",
+      "subcategory": "Trilhas Em Sistemas Inteligentes",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSL40",
+      "name": "ESTRUTURA DE LINGUAGENS DE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSL41",
+      "name": "CONSTRUÇÃO DE COMPILADORES",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSM30",
+      "name": "DESENVOLVIMENTO INTEGRADO DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia De Software",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSM40",
+      "name": "HTML/CSS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Desenv Bas Em Plataforma",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSM41",
+      "name": "DESENVOLVIMENTO DE APLICAÇÕES WEB",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Desenv Bas Em Plataforma",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSM42",
+      "name": "INFRAESTRUTURA PARA TECNOLOGIA DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Desenv Bas Em Plataforma",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSM43",
+      "name": "PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS E",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Desenv Bas Em Plataforma",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSM44",
+      "name": "WEB DESIGN",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Desenv Bas Em Plataforma",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSM45",
+      "name": "COMPUTAÇÃO EM",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Desenv Bas Em Plataforma",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSR20",
+      "name": "CABEAMENTO ESTRUTURADO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSR40",
+      "name": "REDES E SISTEMAS DE COMUNICAÇÃO MÓVEIS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSR41",
+      "name": "OFICINA DE REDES",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSR42",
+      "name": "INFRAESTRUTURA DE LANS HIERARQUICAS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSR43",
+      "name": "INFRAESTRUTURA DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSR44",
+      "name": "SEGURANÇA DE REDES E",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSR45",
+      "name": "PROJETO DE INFRAESTRUTURA DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSR46",
+      "name": "ROTEAMENTO E QUALIDADE DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSR47",
+      "name": "REDES SEM FIO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSR48",
+      "name": "SIMULAÇÃO E ANÁLISE DE DESEMPENHO DE COMPUTADORES",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSR53",
+      "name": "COMUNICAÇÕES SEM FIO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSS30",
+      "name": "DISTRIBUÍDOS",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "CSO30",
+        "CSR30"
+      ]
+    },
+    {
+      "code": "CSU40",
+      "name": "DESENVOLVIMENTO DE OBJETOS DE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSU41",
+      "name": "DESIGN INSTRUCIONAL",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSU42",
+      "name": "INFORMÁTICA NA EDUCAÇÃO",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSU43",
+      "name": "INTRODUÇÃO À EDUCAÇÃO À DISTÂNCIA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSU44",
+      "name": "SISTEMAS HIPERMIDIA ADAPTATIVOS",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 75,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSV30",
+      "name": "PROCESSAMENTO DIGITAL DE IMAGENS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Processamento Gráfico",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSV40",
+      "name": "COMPUTAÇÃO GRÁFICA",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Processamento Gráfico",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSV41",
+      "name": "INTRODUÇÃO À VISÃO COMPUTACIONAL",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Processamento Gráfico",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSV42",
+      "name": "TÓPICOS AVANÇADOS EM PROCESSAMENTO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Processamento Gráfico",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSV43",
+      "name": "PROCESSAMENTO DIGITAL DE IMAGENS 2",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Processamento Gráfico",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSV45",
+      "name": "RECONHECIMENTO DE PADRÕES EM IMAGENS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Processamento Gráfico",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSV50",
+      "name": "COMPUTAÇÃO GRÁFICA 2",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Processamento Gráfico",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSV52",
+      "name": "VISÃO COMPUTACIONAL",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Processamento Gráfico",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSV53",
+      "name": "FUNDAMENTOS DO PROCESSAMENTO DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Processamento Gráfico",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSW43",
+      "name": "ARQUITETURA AVANÇADA DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Sistemas Embarcados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSW44",
+      "name": "ARQUITETURA DE COMPUTADORES",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Sistemas Embarcados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSW45",
+      "name": "ROBÓTICA MÓVEL",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Sistemas Embarcados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSW46",
+      "name": "ENGENHARIA DE SISTEMAS APLICADA A",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Sistemas Embarcados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSW47",
+      "name": "SISTEMAS DE TEMPO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Sistemas Embarcados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSW48",
+      "name": "LABORATÓRIO DE PROCESSAMENTO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Controle",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSW49",
+      "name": "LÓGICA PROGRAMÁVEL E VHDL",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Controle",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSW55",
+      "name": "TÓPICOS AVANÇADOS EM SISTEMAS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Sistemas Embarcados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSW56",
+      "name": "PROGRAMAÇÃO ORIENTADA A",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "DI84D",
+      "name": "Web Design",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Desenv Bas Em Plataforma",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 75,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ED70T",
+      "name": "LIBRAS A",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ED70U",
+      "name": "LIBRAS B",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEC31",
+      "name": "LABORATÓRIO DE CONTROLE DISCRETO",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [
+        "EEC21"
+      ]
+    },
+    {
+      "code": "EEC41",
+      "name": "SUPERVISÓRIO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Controle",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEC42",
+      "name": "CONTROLE INTELIGENTE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Controle",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEC43",
+      "name": "IDENTIFICAÇÃO DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Controle",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEC44",
+      "name": "CONTROLE 3",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Controle",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEC45",
+      "name": "CONTROLE 4",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Controle",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEC46",
+      "name": "CONTROLE À EVENTOS DISCRETOS",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Controle",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEL51",
+      "name": "FOTÔNICA",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Física",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EES41",
+      "name": "INTRODUÇÃO À MICROELETRÔNICA",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Sistemas Embarcados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEX23",
+      "name": "OFICINA DE INTEGRAÇÃO 3",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "EEX22"
+      ]
+    },
+    {
+      "code": "EEY41",
+      "name": "ENGENHARIA BIOMÉDICA",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia Biomédica",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEY42",
+      "name": "BIOENGENHARIA",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia Biomédica",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEY43",
+      "name": "ENGENHARIA MÉDICA",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia Biomédica",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEY44",
+      "name": "ENGENHARIA CLÍNICA",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia Biomédica",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEY51",
+      "name": "INSTRUMENTAÇÃO E TRANSDUÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia Biomédica",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EEY52",
+      "name": "INSTRUMENTAÇÃO E TRANSDUÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia Biomédica",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL64B",
+      "name": "ELETROMAGNETISMO",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL65B",
+      "name": "PROPAGAÇÃO DE ONDAS E GUIAS",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL65F",
+      "name": "SENSORES E ATUADORES",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL66B",
+      "name": "LINHAS DE TRANSMISSÃO E",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL6AE",
+      "name": "INTRODUÇÃO À ROBÓTICA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL6BA",
+      "name": "COMUNICAÇÕES ÓPTICAS",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL6BB",
+      "name": "PROCESSAMENTO DA INFORMAÇÃO",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL6BC",
+      "name": "TÓPICOS EM COMUNICAÇÕES",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL6BD",
+      "name": "SISTEMAS DE COMUNICAÇÃO 1",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL6BE",
+      "name": "SISTEMAS DE COMUNICAÇÃO 2",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL6CA",
+      "name": "GESTÃO DA QUALIDADE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL6CB",
+      "name": "GESTÃO DE PROJETOS TECNOLÓGICOS",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL6CC",
+      "name": "GESTÃO ESTRATÉGICA DE TECNOLOGIA E",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL6CD",
+      "name": "CONFIABILIDADE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL6EE",
+      "name": "FABRICAÇÃO ELETRÔNICA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EL75H",
+      "name": "ENGENHARIA DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Engenharia De Software",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ELER50",
+      "name": "SIMULAÇÕES DE SISTEMAS DE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ELH03",
+      "name": "DESIGN THINKING PARA DESENVOLVIMENTO DE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ELSC01",
+      "name": "SMART CHALLENGES",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 120,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ELSP01",
+      "name": "SMART PROJECTS",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 120,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ES70B",
+      "name": "PSICOLOGIA APLICADA AO TRABALHO",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ES70J",
+      "name": "A PRESENÇA AFRICANA NO BRASIL: TECNOLOGIA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ES70N",
+      "name": "HISTÓRIA DA TÉCNICA E DA TECNOLOGIA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ET7GL",
+      "name": "LABORATÓRIO DE REDES DE SENSORES SEM FIO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ET7GM",
+      "name": "REDES DE SENSORES SEM FIO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Redes De Computadores",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7FC",
+      "name": "TEORIA DAS CIÊNCIAS",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7GA",
+      "name": "METROPOLIZAÇÃO CONTEMPORÂNEA: TERRITÓRIO",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7HB",
+      "name": "HISTÓRIA GERAL DA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7HC",
+      "name": "CAPITALISMO CONTEMPORÂNEO E",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7SC",
+      "name": "TECNOLOGIA, TRABALHO E SAÚDE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7XF",
+      "name": "DIMENSÃO AMBIENTAL NA GESTÃO URBANA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7XG",
+      "name": "TECNOPOLÍTICAS DA SOCIEDADE",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FI70A",
+      "name": "MECÂNICA GERAL 1",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Física",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FI70B",
+      "name": "MECÂNICA GERAL 2",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Física",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FI70D",
+      "name": "FENÔMENOS DE TRANSPORTE 1",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Física",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FI70E",
+      "name": "FENÔMENOS DE TRANSPORTE 2",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Física",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FI77B",
+      "name": "ÓTICA",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Física",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "GE70D",
+      "name": "GE70D",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "GE70F",
+      "name": "GESTÃO DE PESSOAS",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSB55",
+      "name": "CIÊNCIA DE DADOS E MULTIDISCIPLINARIDADE",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Banco De Dados",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSHX2",
+      "name": "Computação e Pluralidade",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Interação Hum-Comp",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSIX0",
+      "name": "INTELIGÊNCIA ARTIFICIAL E SOCIEDADE",
+      "category": "TRACK",
+      "subcategory": "Trilhas Em Sistemas Inteligentes",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "IF6BV",
+      "name": "COMPILADORES",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "IF6CJ",
+      "name": "BIGDATA - PROCESSAMENTO E GRANDE ESCALA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "IF6CK",
+      "name": "SERVIDORES E APLICAÇÕES PARA",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "IF6CM",
+      "name": "NoSQL - BANCOS DE DADOS NÃO",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "LEM701",
+      "name": "FRANCÊS PARA FINS ACADÊMICOS DD 1",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "LEM702",
+      "name": "FRANCÊS PARA FINS ACADÊMICOS DD 2",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "LEM703",
+      "name": "FRANCÊS PARA FINS ACADÊMICOS DD 3",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "MA70C",
+      "name": "CÁLCULO NUMÉRICO",
+      "category": "TRACK",
+      "subcategory": "Trilha Em Otim, Mod Analíticos E Simul",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "MA7AV",
+      "name": "TÓPICOS MATEMÁTICOS PARA ENGENHEIROS",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "QB70F",
+      "name": "DESENVOLVIMENTO SUSTENTÁVEL",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "QB74I",
+      "name": "QB74I",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "QB7AH",
+      "name": "EDUCAÇÃO AMBIENTAL",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "QB7AI",
+      "name": "ENERGIA E MEIO",
+      "category": "OPTIONAL",
+      "subcategory": "Optativas Isoladas",
+      "catalogOnly": true,
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSX42",
+      "name": "TRABALHO DE CONCLUSÃO DE CURSO",
+      "category": "TCC",
+      "subcategory": "TCC",
+      "recommendedPeriod": 9,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [
+        "EEX22"
+      ]
+    },
+    {
+      "code": "GE70H",
+      "name": "GESTÃO FINANCEIRA",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 9,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "QB70E",
+      "name": "CIÊNCIAS DO AMBIENTE",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 9,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "CSX43",
+      "name": "TRABALHO DE CONCLUSÃO DE CURSO",
+      "category": "TCC",
+      "subcategory": "TCC",
+      "recommendedPeriod": 10,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [
+        "CSX42"
+      ]
+    },
+    {
+      "code": "EEF31",
+      "name": "ÉTICA, PROFISSÃO E CIDADANIA",
+      "category": "MANDATORY",
+      "subcategory": "Obrigatórias",
+      "recommendedPeriod": 10,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    }
+  ]
+}

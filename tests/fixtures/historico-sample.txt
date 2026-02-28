@@ -1,0 +1,44 @@
+Histórico Escolar
+Aluno: 9991001 - ALUNO BSI TESTE Identidade-UF: 00000000-0-
+Curso: 236 - Sist De Informação Período: 6
+Turno: Integral (T/N) Matriz: 981 - Matriz 3 De Sistemas De Informação Situação: Regular
+Ingresso: 2/2021 Data da colação: --/--/----
+
+Disciplinas Obrigatórias
+Disciplinas Obrigatórias Cursadas
+1 ICSD20 Introdução À Lógica Para Computação S72 R 3 45 0 6,7 90,0 1 2023 Aprovado Por Nota/Frequência
+2 ICSF13 Fundamentos De Programação 1 S73 R 6 90 0 7,2 100,0 2 2024 Crédito Consignado
+3 ICSD21 Matemática Discreta S71 R 3 45 0 4,5 56,3 2 2023 Reprovado Por Nota/Frequência
+3 ICSD21 Matemática Discreta S73 R 3 45 0 7,7 100,0 1 2024 Aprovado Por Nota/Frequência
+4 ICSX20 Trabalho De Integração 1 S73 R 4 60 60 7,5 87,5 1 2025 Aprovado Por Nota/Frequência
+
+Disciplinas Optativas
+Disciplinas Optativas Cursadas
+3 COE70A Comunicação Oral E Escrita S21 R 2 30 0 8,1 81,6 2 2025 Aprovado Por Nota/Frequência
+4 ICSM49 Padrões Web S73 R 4 60 0 7,7 84,2 2 2025 Aprovado Por Nota/Frequência
+
+Resumo Optativas
+
+Eletivas
+Detalhes das Disciplinas Eletivas
+4 Universidade BR ELN8BB - Big Data E Aplicações Curitiba N11 45 0 79,0 2 2023 Reprovado Por Nota Não
+
+Resumo Eletiva (Carga horária total)
+
+Disciplinas Obrigatórias Faltantes
+5 FCH7FA Filosofia Da Ciência E Da Tecnologia
+6 ICSS30 Sistemas Distribuídos
+Dependências
+FCH7FA Filosofia Da Ciência E Da Tecnologia
+
+Resumo Geral
+Quadro Resumo disciplinas
+CHT Disciplinas Obrigatórias 2.005 1.945 1.840 165 1.840
+CHT Disciplinas Optativas 840 405 135 705 405
+CHT Disciplinas Eletivas 105 210 0 105 0
+CHT Geral do curso 2.950 2.350 1.975 975 2.245
+
+Quadro Resumo Atividades Extensionistas
+CHEXT Disciplinas obrigatórias 60 60 0 OK
+CHEXT Disciplinas Optativas 300 0 0 OK
+CHEXT geral do curso 330 60 270 Falta cumprir

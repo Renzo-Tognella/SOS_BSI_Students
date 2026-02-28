@@ -1,0 +1,17 @@
+{
+  "utfpr": {
+    "curitiba": {
+      "campusCode": "01",
+      "courses": {
+        "236": {
+          "name": "Sist De Informação",
+          "matrixCodes": ["981", "806"]
+        },
+        "212": {
+          "name": "Engenharia de Computação",
+          "matrixCodes": ["962"]
+        }
+      }
+    }
+  }
+}

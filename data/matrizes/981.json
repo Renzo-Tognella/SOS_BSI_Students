@@ -1,0 +1,1767 @@
+{
+  "matrixCode": "981",
+  "courseCode": "236",
+  "courseName": "Bacharelado em Sistemas de Informação",
+  "versionName": "Matriz 3 de Sistemas de Informação",
+  "totals": {
+    "mandatoryCHT": 2005,
+    "optionalCHT": 840,
+    "electiveCHT": 105,
+    "complementaryCHT": 90,
+    "internshipCHT": 400,
+    "tccCHT": 60,
+    "extensionCHT": 330
+  },
+  "disciplines": [
+    {
+      "code": "ICSD20",
+      "name": "Introdução à Lógica Para Computação",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 1,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSF13",
+      "name": "Fundamentos de Programação 1",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 1,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSG10",
+      "name": "Fundamentos de Sistemas de Informação",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 1,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSX10",
+      "name": "Introdução ao Computar",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 1,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "MAT7GA",
+      "name": "Geometria Analítica",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 1,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "GEE7A1",
+      "name": "Fundamentos de Administração",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 2,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSE20",
+      "name": "Técnicas de Programação",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 2,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "ICSF13"
+      ]
+    },
+    {
+      "code": "ICSF20",
+      "name": "Estruturas de Dados 1",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 2,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ICSF13"
+      ]
+    },
+    {
+      "code": "MAT7AL",
+      "name": "Álgebra Linear",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 2,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "MAT7GA"
+      ]
+    },
+    {
+      "code": "MAT7C1",
+      "name": "Cálculo Diferencial e Integral 1",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 2,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSX50",
+      "name": "Atividades Complementares",
+      "category": "COMPLEMENTARY",
+      "subcategory": "Atividades Complementares",
+      "recommendedPeriod": 2,
+      "cht": 90,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "EST70C",
+      "name": "Introdução à Estatística",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7SA",
+      "name": "Sociologia",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSD21",
+      "name": "Matemática Discreta",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ICSD20"
+      ]
+    },
+    {
+      "code": "ICSF30",
+      "name": "Estruturas de Dados 2",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ICSF20"
+      ]
+    },
+    {
+      "code": "ICSW20",
+      "name": "Arquitetura em Organização de Computadores",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "ICSD20",
+        "ICSF20"
+      ]
+    },
+    {
+      "code": "GEE7E1",
+      "name": "Fundamentos de Empreendedorismo",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 4,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSA30",
+      "name": "Projeto e Análise de Algoritmos",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ICSD21",
+        "ICSF30"
+      ]
+    },
+    {
+      "code": "ICSB30",
+      "name": "Introdução a Banco de Dados",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "ICSD21",
+        "ICSE20",
+        "ICSF30"
+      ]
+    },
+    {
+      "code": "ICSG20",
+      "name": "Análise e Projeto de Sistemas",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ICSG10"
+      ]
+    },
+    {
+      "code": "ICSO30",
+      "name": "Sistemas Operacionais",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "ICSW20"
+      ]
+    },
+    {
+      "code": "ICSX20",
+      "name": "Trabalho de Integração 1",
+      "category": "MANDATORY",
+      "subcategory": "Integração",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 60,
+      "prerequisites": [
+        "ICSG10"
+      ]
+    },
+    {
+      "code": "FCH7PA",
+      "name": "Psicologia do Trabalho",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 5,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSE30",
+      "name": "Engenharia de Software",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 5,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "ICSE20",
+        "ICSG20"
+      ]
+    },
+    {
+      "code": "ICSR30",
+      "name": "Redes de Computadores",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 5,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ICSW20"
+      ]
+    },
+    {
+      "code": "ICSX51",
+      "name": "Estágio 1",
+      "category": "INTERNSHIP",
+      "subcategory": "Estágio",
+      "recommendedPeriod": 5,
+      "cht": 200,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7FA",
+      "name": "Filosofia da Ciência e da Tecnologia",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 6,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSS30",
+      "name": "Sistemas Distribuídos",
+      "category": "MANDATORY",
+      "subcategory": "Primeiro Estrato",
+      "recommendedPeriod": 6,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "ICSO30",
+        "ICSR30"
+      ]
+    },
+    {
+      "code": "ICSX30",
+      "name": "Trabalho de Integração 2",
+      "category": "MANDATORY",
+      "subcategory": "Integração",
+      "recommendedPeriod": 6,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ICSX20"
+      ]
+    },
+    {
+      "code": "ICSX52",
+      "name": "Estágio 2",
+      "category": "INTERNSHIP",
+      "subcategory": "Estágio",
+      "recommendedPeriod": 6,
+      "cht": 200,
+      "chext": 0,
+      "prerequisites": [
+        "ICSX51"
+      ]
+    },
+    {
+      "code": "ICSX40",
+      "name": "Trabalho de Conclusão 1",
+      "category": "TCC",
+      "subcategory": "TCC",
+      "recommendedPeriod": 7,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [
+        "ICSX30"
+      ]
+    },
+    {
+      "code": "ICSX41",
+      "name": "Trabalho de Conclusão 2",
+      "category": "TCC",
+      "subcategory": "TCC",
+      "recommendedPeriod": 8,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [
+        "ICSX40"
+      ]
+    },
+    {
+      "code": "COE70A",
+      "name": "Comunicação Oral e Escrita",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7FB",
+      "name": "Fundamentos da Ética",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7HA",
+      "name": "História da Técnica e da Tecnologia",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "FCH7HB",
+      "name": "História Geral da Economia",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "QBI7CA",
+      "name": "Ciências do Ambiente",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": []
+    },
+    {
+      "code": "ICSI30",
+      "name": "Sistemas Inteligentes",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ICSA30"
+      ]
+    },
+    {
+      "code": "ICSV30",
+      "name": "Processamento Digital de Imagens",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "track": "Processamento Gráfico",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "ICSF30",
+        "MAT7AL",
+        "MAT7GA"
+      ]
+    },
+    {
+      "code": "ICSB59",
+      "name": "Processamento de Linguagem Natural",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco de Dados",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ICSB30"
+      ]
+    },
+    {
+      "code": "ICSM49",
+      "name": "Padrões Web",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Desenvolvimento Baseado em Plataformas",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "ICSE30"
+      ]
+    },
+    {
+      "code": "ICSB41",
+      "name": "Banco de Dados 2",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco de Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "ICSB30"
+      ]
+    },
+    {
+      "code": "ICSB56",
+      "name": "Ciência de Dados",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco de Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "EST70C",
+        "ICSB30"
+      ]
+    },
+    {
+      "code": "ICSB61",
+      "name": "Big Data",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco de Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "ICSB30",
+        "ICSE20"
+      ]
+    },
+    {
+      "code": "ICSA31",
+      "name": "Teoria da Computação",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "track": "Algoritmos e Complexidade",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ICSA30"
+      ]
+    },
+    {
+      "code": "ICSH31",
+      "name": "Introdução à Interação Humano-Computador",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "track": "Interação Humano-Computador",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "GEE7A1",
+        "ICSE20",
+        "ICSX10"
+      ]
+    },
+    {
+      "code": "ICSA48",
+      "name": "Teoria dos Grafos",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos e Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [
+        "ICSA30"
+      ]
+    },
+    {
+      "code": "ICSE40",
+      "name": "Engenharia de Software 2",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia de Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ICSE30"
+      ]
+    },
+    {
+      "code": "ICSM31",
+      "name": "Desenvolvimento Integrado de Sistemas",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "track": "Desenvolvimento Baseado em Plataformas",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [
+        "ICSB30",
+        "ICSG20"
+      ]
+    },
+    {
+      "code": "EDU70J",
+      "name": "LIBRAS",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "EDU70K",
+      "name": "TECNOLOGIAS DIGITAIS NA EDUCAÇÃO",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "FCH7FC",
+      "name": "TEORIA DAS CIÊNCIAS HUMANAS",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "FCH7GA",
+      "name": "METROPOLIZAÇÃO CONTEMPORÂNEA: TECNOLOGIA E TERRITÓRIO",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "FCH7HC",
+      "name": "CAPITALISMO CONTEMPORÂNEO E ECONOMIA POLÍTICA",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "FCH7PC",
+      "name": "PLANEJAMENTO DE CARREIRA",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "FCH7SC",
+      "name": "TECNOLOGIA, TRABALHO E SAÚDE",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "FCH7XB",
+      "name": "PRESENÇA AFRICANA NO BRASIL: TECNOLOGIA, TRABALHO E CULTURA",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "FCH7XF",
+      "name": "DIMENSÃO AMBIENTAL NA GESTÃO URBANA",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "FCH7XG",
+      "name": "TECNOPOLÍTICAS DA SOCIEDADE CONTEMPORÂNEA",
+      "category": "OPTIONAL",
+      "subcategory": "Ciclo de Humanidades",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "GEE7G1",
+      "name": "FUNDAMENTOS DE GESTÃO DE PESSOAS",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSG31",
+      "name": "GESTÃO DA INFORMAÇÃO EM SISTEMAS DE INFORMAÇÃO",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSW22",
+      "name": "FUNDAMENTOS DE CIRCUITOS DIGITAIS",
+      "category": "OPTIONAL",
+      "subcategory": "Segundo Estrato",
+      "recommendedPeriod": 3,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ELEW40",
+      "name": "ENGENHARIA DE SISTEMAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados e Robótica",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ELEW41",
+      "name": "ROBÓTICA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados e Robótica",
+      "recommendedPeriod": 4,
+      "cht": 75,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSA41",
+      "name": "COMPLEXIDADE COMPUTACIONAL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos e Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSA42",
+      "name": "PROGRAMAÇÃO COMPETITIVA, INTERINSTITUCIONALIDADE E MERCADO DE TRABALHO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos e Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSA46",
+      "name": "ALGORITMOS E COMPLEXIDADE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos e Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSA47",
+      "name": "COMPUTAÇÃO QUÂNTICA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos e Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSA49",
+      "name": "INTRODUÇÃO À CRIPTOGRAFIA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos e Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSA4A",
+      "name": "GEOMETRIA COMPUTACIONAL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Algoritmos e Complexidade",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSB50",
+      "name": "BANCO DE DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco de Dados",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSB52",
+      "name": "DATA WAREHOUSING",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco de Dados",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSB53",
+      "name": "INTRODUÇÃO A CIÊNCIA DE DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco de Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSB54",
+      "name": "INTRODUCTION TO DATA SCIENCE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco de Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSB57",
+      "name": "DATA SCIENCE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco de Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSB60",
+      "name": "NoSQL - BANCO DE DADOS NÃO RELACIONAIS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Banco de Dados",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSD41",
+      "name": "PROGRAMAÇÃO MATEMÁTICA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos e Simulação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSD42",
+      "name": "SIMULAÇÃO DE SISTEMAS BIOLÓGICOS E SOCIAIS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos e Simulação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSD43",
+      "name": "SIMULAÇÃO DE EVENTOS DISCRETOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos e Simulação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSD45",
+      "name": "MODELAGEM E AVALIAÇÃO DE SISTEMAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos e Simulação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSD47",
+      "name": "OTIMIZAÇÃO DE SISTEMAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos e Simulação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSD50",
+      "name": "MÉTODOS ESTOCÁSTICOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos e Simulação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSD51",
+      "name": "METAHEURÍSTICA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos e Simulação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSD52",
+      "name": "INTRODUÇÃO À COMPUTAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos e Simulação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSE41",
+      "name": "ENGENHARIA DE REQUISITOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia de Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSE42",
+      "name": "METODOLOGIAS ÁGEIS PARA O DESENVOLVIMENTO DE SOFTWARE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia de Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSE43",
+      "name": "TESTES, VERIFICAÇÃO E VALIDAÇÃO DE SISTEMAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia de Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSE44",
+      "name": "SISTEMAS LEGADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia de Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSE45",
+      "name": "MODELAGEM DE SOFTWARE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia de Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSE46",
+      "name": "MÉTRICAS E ESTIMATIVAS DE SOFTWARE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia de Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSE47",
+      "name": "GERÊNCIA DE PROJETOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia de Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSE48",
+      "name": "QUALIDADE DE SOFTWARE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Engenharia de Software",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSG41",
+      "name": "TECNOLOGIAS DA INFORMAÇÃO APLICADA À GESTÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão de Sistemas de Informação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSG42",
+      "name": "GESTÃO DO CONHECIMENTO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão de Sistemas de Informação",
+      "recommendedPeriod": 4,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSG44",
+      "name": "INFORMÁTICA NA SAÚDE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão de Sistemas de Informação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSG45",
+      "name": "SISTEMAS DE INFORMAÇÃO EM SAÚDE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão de Sistemas de Informação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSG47",
+      "name": "INTELIGÊNCIA COLETIVA E REDES SOCIAIS ELETRÔNICAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão de Sistemas de Informação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSG48",
+      "name": "MODELAGEM DE PROCESSOS DE NEGÓCIOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão de Sistemas de Informação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSG70",
+      "name": "SISTEMAS DE INFORMAÇÃO E ORGANIZAÇÕES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Gestão de Sistemas de Informação",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSH41",
+      "name": "AVALIAÇÃO EM INTERAÇÃO HUMANO-COMPUTADOR",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano-Computador",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSH43",
+      "name": "TRABALHO COOPERATIVO APOIADO POR COMPUTADOR",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano-Computador",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSH45",
+      "name": "TÓPICOS EM DESIGN DE INTERAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano-Computador",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSHX0",
+      "name": "ACESSIBILIDADE E INCLUSÃO DIGITAL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano-Computador",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSHX1",
+      "name": "COMPUTAÇÃO E SOCIEDADE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Interação Humano-Computador",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSI31",
+      "name": "CIÊNCIA DAS REDES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSI41",
+      "name": "REDES NEURAIS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSI50",
+      "name": "INTELIGÊNCIA ARTIFICIAL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSI51",
+      "name": "COMPUTAÇÃO EVOLUCIONÁRIA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSI52",
+      "name": "INTELIGÊNCIA ARTIFICIAL DISTRIBUÍDA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSI53",
+      "name": "MINERAÇÃO DE DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSI54",
+      "name": "GRAFOS DE CONHECIMENTO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSI55",
+      "name": "SISTEMAS AUTÔNOMOS INTELIGENTES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSI56",
+      "name": "SISTEMAS FUZZY",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSI57",
+      "name": "INTRODUÇÃO ÀS CIÊNCIAS COGNITIVAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSI58",
+      "name": "DATA MINING",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSI59",
+      "name": "PROGRAMAÇÃO ORIENTADA À NOTIFICAÇÕES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSIX0",
+      "name": "INTELIGÊNCIA ARTIFICIAL E SOCIEDADE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Inteligência Artificial",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSL40",
+      "name": "ESTRUTURA DE LINGUAGENS DE PROGRAMAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Linguagens de Programação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSL41",
+      "name": "CONSTRUÇÃO DE COMPILADORES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Linguagens de Programação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSM42",
+      "name": "INFRAESTRUTURA PARA TECNOLOGIA DE INFORMAÇÃO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Desenvolvimento Baseado em Plataformas",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSM45",
+      "name": "COMPUTAÇÃO EM NUVEM",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Desenvolvimento Baseado em Plataformas",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSM46",
+      "name": "PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS E SEM FIO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Desenvolvimento Baseado em Plataformas",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSM47",
+      "name": "DESENVOLVIMENTO DE APLICAÇÕES WEB-FRONT END",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Desenvolvimento Baseado em Plataformas",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSM48",
+      "name": "DESENVOLVIMENTO DE APLICAÇÕES WEB-BACK END",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Desenvolvimento Baseado em Plataformas",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSR31",
+      "name": "COMUNICAÇÃO DE DADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes de Computadores",
+      "recommendedPeriod": 4,
+      "cht": 30,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSR40",
+      "name": "REDES E SISTEMAS DE COMUNICAÇÕES MÓVEIS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes de Computadores",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSR41",
+      "name": "OFICINA DE REDES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes de Computadores",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSR42",
+      "name": "INFRAESTRUTURA DE LANS HIERÁRQUICAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes de Computadores",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSR43",
+      "name": "INFRAESTRUTURA DE WANS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes de Computadores",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSR44",
+      "name": "SEGURANÇA DE REDES E SISTEMAS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes de Computadores",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSR45",
+      "name": "PROJETO DE INFRAESTRUTURA DE REDES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes de Computadores",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSR46",
+      "name": "ROTEAMENTO E QUALIDADE DE SERVIÇOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes de Computadores",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSR47",
+      "name": "REDES SEM FIO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes de Computadores",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSR48",
+      "name": "SIMULAÇÃO E ANÁLISE DE DESEMPENHO DE REDES DE COMPUTADORES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes de Computadores",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSR49",
+      "name": "TÓPICOS AVANÇADOS EM REDES DE COMPUTADORES",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Redes de Computadores",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSV40",
+      "name": "COMPUTAÇÃO GRÁFICA",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Processamento Gráfico",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSV41",
+      "name": "INTRODUÇÃO À VISÃO COMPUTACIONAL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Processamento Gráfico",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSV45",
+      "name": "RECONHECIMENTO DE PADRÕES EM IMAGENS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Processamento Gráfico",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSW40",
+      "name": "SISTEMAS MICROCONTROLADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados e Robótica",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSW41",
+      "name": "SISTEMAS EMBARCADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados e Robótica",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSW42",
+      "name": "LÓGICA RECONFIGURÁVEL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados e Robótica",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSW45",
+      "name": "ROBÓTICA MÓVEL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados e Robótica",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSW46",
+      "name": "ENGENHARIA DE SISTEMAS APLICADA A SISTEMAS CIBERFÍSICOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados e Robótica",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSW47",
+      "name": "SISTEMAS TEMPO REAL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados e Robótica",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSW4B",
+      "name": "ELETRICIDADE",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados e Robótica",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSW51",
+      "name": "ARQUITETURA DE COMPUTADORES PARA SISTEMAS EMBARCADOS",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados e Robótica",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "ICSW53",
+      "name": "COMPUTAÇÃO RECONFIGURÁVEL",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Sistemas Embarcados e Robótica",
+      "recommendedPeriod": 4,
+      "cht": 45,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    },
+    {
+      "code": "MAT7N1",
+      "name": "CÁLCULO NUMÉRICO",
+      "category": "TRACK",
+      "subcategory": "Trilha",
+      "track": "Otimização, Mod Analíticos e Simulação",
+      "recommendedPeriod": 4,
+      "cht": 60,
+      "chext": 0,
+      "prerequisites": [],
+      "catalogOnly": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+.git
+.github
+.next
+node_modules
+coverage
+tmp
+.playwright-cli
+.env
+.env.*
+!.env.example
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+*.tsbuildinfo
