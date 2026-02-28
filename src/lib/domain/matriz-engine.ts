@@ -36,6 +36,10 @@ interface NameMatchResult {
   targetName: string;
 }
 
+interface ConservativeNameMatchResult extends NameMatchResult {
+  score: number;
+}
+
 interface RawConvalidationMatch {
   code: string;
   reason: string;
@@ -56,11 +60,26 @@ interface ManualCorrelationOutcome {
   creditedByCategory: Record<DisciplineCategory, number>;
 }
 
+interface MatrixCapability {
+  hasMandatory: boolean;
+  hasOptional: boolean;
+  hasTrack: boolean;
+  hasElective: boolean;
+  hasComplementary: boolean;
+  hasInternship: boolean;
+  hasTcc: boolean;
+  hasExtension: boolean;
+}
+
 const SYNTHETIC_ELECTIVE_PENDING_PREFIX = "ELVP";
 const SYNTHETIC_ELECTIVE_DONE_PREFIX = "ELVD";
 const SYNTHETIC_ELECTIVE_DEFAULT_PERIOD = 8;
 const SYNTHETIC_ELECTIVE_UNIT_CHT = 15;
 const CATALOG_ELECTIVE_GROUPS = new Set(["1171"]);
+
+function isEngComp844To962Migration(parsed: ParsedTranscript, matrixCode: MatrixCode): boolean {
+  return parsed.detectedMatrixCode === "844" && matrixCode === "962";
+}
 
 async function readJsonFromRoot<T>(relativePath: string): Promise<T> {
   const normalizedPath = relativePath.replace(/\\/g, "/").replace(/^\.?\//, "");
@@ -95,8 +114,18 @@ export async function loadCurriculumMatrix(matrixCode: MatrixCode): Promise<Curr
   return readJsonFromRoot<CurriculumMatrix>(`data/matrizes/${matrixCode}.json`);
 }
 
-export async function loadEquivalenceRules(): Promise<EquivalenceRule[]> {
-  return readJsonFromRoot<EquivalenceRule[]>("data/matrizes/equivalencias_806_981.json");
+export async function loadEquivalenceRules(targetMatrixCode: MatrixCode): Promise<EquivalenceRule[]> {
+  const fileByTarget: Partial<Record<MatrixCode, string>> = {
+    "981": "data/matrizes/equivalencias_806_981.json",
+    "962": "data/matrizes/equivalencias_844_962.json"
+  };
+
+  const relativePath = fileByTarget[targetMatrixCode];
+  if (!relativePath) {
+    return [];
+  }
+
+  return readJsonFromRoot<EquivalenceRule[]>(relativePath);
 }
 
 function extractConvalidationTargets(statusText: string): string[] {
@@ -392,14 +421,25 @@ function applyManualCorrelationMatches(params: {
 
 function buildUnmatchedApprovedAttempts(params: {
   matrix: CurriculumMatrix;
+  rules: EquivalenceRule[];
   completedCodes: Set<string>;
   completedSourceCodes: Set<string>;
   completedAttempts: TranscriptAttempt[];
 }): UnmatchedApprovedAttempt[] {
-  const { matrix, completedCodes, completedSourceCodes, completedAttempts } = params;
+  const { matrix, rules, completedCodes, completedSourceCodes, completedAttempts } = params;
   const matrixCandidates = matrix.disciplines
     .filter((discipline) => !completedCodes.has(discipline.code))
     .sort((a, b) => (a.recommendedPeriod ?? 99) - (b.recommendedPeriod ?? 99) || a.code.localeCompare(b.code));
+  const matrixByCode = new Map(matrix.disciplines.map((discipline) => [normalizeDisciplineCode(discipline.code), discipline]));
+  const rulesBySourceCode = new Map<string, string[]>();
+  for (const rule of rules) {
+    const sourceCode = normalizeDisciplineCode(rule.fromCode);
+    const targets = (rule.toCodes ?? []).map((code) => normalizeDisciplineCode(code)).filter(Boolean);
+    if (!sourceCode || targets.length === 0) {
+      continue;
+    }
+    rulesBySourceCode.set(sourceCode, targets);
+  }
 
   const attempts = completedAttempts
     .slice()
@@ -425,7 +465,24 @@ function buildUnmatchedApprovedAttempts(params: {
     const suggestions: CorrelationSuggestion[] = [];
     const seenTargets = new Set<string>();
 
+    const equivalenceTargets = rulesBySourceCode.get(sourceCode) ?? [];
+    for (const targetCode of equivalenceTargets) {
+      const target = matrixByCode.get(targetCode);
+      if (!target || completedCodes.has(target.code) || seenTargets.has(target.code)) {
+        continue;
+      }
+      suggestions.push({
+        code: target.code,
+        name: target.name,
+        strategy: "EQUIVALENCE"
+      });
+      seenTargets.add(target.code);
+    }
+
     for (const discipline of matrixCandidates) {
+      if (seenTargets.has(discipline.code)) {
+        continue;
+      }
       if (normalizeDisciplineCode(discipline.code) === sourceCode) {
         suggestions.push({
           code: discipline.code,
@@ -533,6 +590,154 @@ function sumCHTByCategory(
     .reduce((sum, discipline) => sum + discipline.cht, 0);
 }
 
+function inferMatrixCapability(matrix: CurriculumMatrix): MatrixCapability {
+  const matrixCategories = new Set(matrix.disciplines.map((discipline) => discipline.category));
+  const hasCategory = (category: DisciplineCategory): boolean => matrixCategories.has(category);
+
+  return {
+    hasMandatory: matrix.totals.mandatoryCHT > 0 || hasCategory("MANDATORY"),
+    hasOptional: matrix.totals.optionalCHT > 0 || hasCategory("OPTIONAL") || hasCategory("TRACK"),
+    hasTrack: hasCategory("TRACK"),
+    hasElective: matrix.totals.electiveCHT > 0 || hasCategory("ELECTIVE"),
+    hasComplementary: matrix.totals.complementaryCHT > 0 || hasCategory("COMPLEMENTARY"),
+    hasInternship: matrix.totals.internshipCHT > 0 || hasCategory("INTERNSHIP"),
+    hasTcc: matrix.totals.tccCHT > 0 || hasCategory("TCC"),
+    hasExtension: matrix.totals.extensionCHT > 0
+  };
+}
+
+function getExtensionTaken(parsed: ParsedTranscript): number {
+  const row = parsed.extensionSummary.find((item) => item.key.toLowerCase().includes("geral"));
+  return row?.taken ?? 0;
+}
+
+function isLikelySectionCategoryMatch(sourceSection: TranscriptAttempt["sourceSection"], targetCategory: DisciplineCategory): boolean {
+  if (sourceSection === "mandatory") {
+    return targetCategory === "MANDATORY";
+  }
+  if (sourceSection === "optional") {
+    return targetCategory === "OPTIONAL" || targetCategory === "TRACK";
+  }
+  if (sourceSection === "elective") {
+    return targetCategory === "ELECTIVE" || targetCategory === "OPTIONAL" || targetCategory === "TRACK";
+  }
+  return true;
+}
+
+function evaluateConservativeNameMatchScore(params: {
+  source: TranscriptAttempt;
+  target: CurriculumMatrix["disciplines"][number];
+}): number {
+  const { source, target } = params;
+  const sourceName = source.name?.trim() ?? "";
+  const targetName = target.name?.trim() ?? "";
+  if (!sourceName || !targetName) {
+    return Number.NEGATIVE_INFINITY;
+  }
+
+  const sourceNormalized = normalizeDisciplineNameForComparison(sourceName);
+  const targetNormalized = normalizeDisciplineNameForComparison(targetName);
+  if (!sourceNormalized || !targetNormalized) {
+    return Number.NEGATIVE_INFINITY;
+  }
+
+  let score = Number.NEGATIVE_INFINITY;
+  if (sourceNormalized === targetNormalized) {
+    score = 100;
+  } else if (disciplineNamesLikelyMatch(sourceName, targetName)) {
+    score = 75;
+  }
+
+  if (!Number.isFinite(score)) {
+    return Number.NEGATIVE_INFINITY;
+  }
+
+  if (!isLikelySectionCategoryMatch(source.sourceSection, target.category)) {
+    return Number.NEGATIVE_INFINITY;
+  }
+  score += 12;
+
+  if (source.cht > 0 && target.cht > 0) {
+    if (source.cht === target.cht) {
+      score += 10;
+    } else if (Math.abs(source.cht - target.cht) <= 15) {
+      score += 4;
+    } else {
+      score -= 6;
+    }
+  }
+
+  return score;
+}
+
+function applyConservativeNameInferenceForEngComp(params: {
+  matrix: CurriculumMatrix;
+  attempts: TranscriptAttempt[];
+  completedCodes: Set<string>;
+  completedSourceCodes: Set<string>;
+  rules: EquivalenceRule[];
+}): ConservativeNameMatchResult[] {
+  const { matrix, attempts, completedCodes, completedSourceCodes, rules } = params;
+  const sourceCodesWithOfficialRule = new Set(rules.map((rule) => normalizeDisciplineCode(rule.fromCode)));
+
+  const approvedAttempts = attempts
+    .filter((attempt) => attempt.status === "APPROVED")
+    .sort((a, b) => {
+      const yearDiff = (b.year ?? 0) - (a.year ?? 0);
+      if (yearDiff !== 0) {
+        return yearDiff;
+      }
+      return (b.semester ?? 0) - (a.semester ?? 0);
+    });
+
+  const matches: ConservativeNameMatchResult[] = [];
+
+  for (const attempt of approvedAttempts) {
+    const sourceCode = normalizeDisciplineCode(attempt.code);
+    if (!sourceCode || completedSourceCodes.has(sourceCode) || sourceCodesWithOfficialRule.has(sourceCode)) {
+      continue;
+    }
+
+    const sourceName = attempt.name?.trim();
+    if (!sourceName || sourceName === sourceCode) {
+      continue;
+    }
+
+    const candidates = matrix.disciplines
+      .filter((discipline) => !completedCodes.has(discipline.code))
+      .map((discipline) => ({
+        discipline,
+        score: evaluateConservativeNameMatchScore({ source: attempt, target: discipline })
+      }))
+      .filter((item) => Number.isFinite(item.score))
+      .sort((a, b) => b.score - a.score || (a.discipline.recommendedPeriod ?? 99) - (b.discipline.recommendedPeriod ?? 99));
+
+    if (candidates.length === 0) {
+      continue;
+    }
+
+    const strongest = candidates[0];
+    const secondStrongest = candidates[1];
+    const hasStrongCandidate = strongest.score >= 95;
+    const hasAmbiguity = secondStrongest ? strongest.score - secondStrongest.score < 8 : false;
+    if (!hasStrongCandidate || hasAmbiguity) {
+      continue;
+    }
+
+    completedCodes.add(strongest.discipline.code);
+    completedSourceCodes.add(sourceCode);
+    matches.push({
+      sourceCode,
+      targetCode: strongest.discipline.code,
+      sourceName,
+      targetName: strongest.discipline.name,
+      score: strongest.score
+    });
+  }
+
+  return matches;
+}
+
 function getSummaryValue(
   parsed: ParsedTranscript,
   rowNeedle: string,
@@ -540,11 +745,6 @@ function getSummaryValue(
 ): number | undefined {
   const row = parsed.summary.find((item) => item.key.toLowerCase().includes(rowNeedle.toLowerCase()));
   return row?.[key] as number | undefined;
-}
-
-function getExtensionTaken(parsed: ParsedTranscript): number {
-  const row = parsed.extensionSummary.find((item) => item.key.toLowerCase().includes("geral"));
-  return row?.taken ?? 0;
 }
 
 function splitSyntheticElectiveUnits(totalCht: number): number[] {
@@ -678,8 +878,14 @@ function computePending(matrix: CurriculumMatrix, completedCodes: Set<string>): 
 function computeUnused(
   parsed: ParsedTranscript,
   completedSourceCodes: Set<string>,
-  completedAttempts: TranscriptAttempt[]
+  completedAttempts: TranscriptAttempt[],
+  params?: {
+    equivalenceSourceCodes?: Set<string>;
+    isEngCompMigration?: boolean;
+  }
 ): UnusedDiscipline[] {
+  const equivalenceSourceCodes = params?.equivalenceSourceCodes ?? new Set<string>();
+  const isEngCompMigration = params?.isEngCompMigration ?? false;
   const output: UnusedDiscipline[] = [];
   const seen = new Set<string>();
 
@@ -699,12 +905,19 @@ function computeUnused(
       attempt.sourceSection === "elective"
         ? "Disciplina cursada em eletivas, mas não validada para a matriz selecionada."
         : "Disciplina não utilizada no cálculo da matriz ativa.";
+    const reasonCode =
+      attempt.sourceSection === "elective"
+        ? "ELECTIVE_NO_TARGET"
+        : isEngCompMigration && !equivalenceSourceCodes.has(sourceCode)
+          ? "NO_EQUIVALENCE_RULE"
+          : "OTHER";
 
     output.push({
       code: sourceCode,
       name: attempt.name || sourceCode,
       cht: attempt.cht,
       reason,
+      reasonCode,
       relatedSubjects: [`${sourceCode} - ${attempt.name || sourceCode}`]
     });
   }
@@ -736,6 +949,7 @@ function computeUnused(
       name: "Carga eletiva cursada sem validação",
       cht: parsed.summary.find((row) => row.key.toLowerCase().includes("eletivas"))?.taken ?? 0,
       reason: "Há carga eletiva cursada no histórico sem validação final para integralização.",
+      reasonCode: "ELECTIVE_NO_TARGET",
       relatedSubjects: relatedSubjectsWithFallback
     });
   }
@@ -791,9 +1005,13 @@ export async function calculateRoadmap(
 
   const [matrix, rules, catalogByCode] = await Promise.all([
     loadCurriculumMatrix(matrixCode),
-    loadEquivalenceRules(),
+    loadEquivalenceRules(matrixCode),
     loadMatrixCatalogByCode(matrixCode)
   ]);
+  const isEngCompMigration = isEngComp844To962Migration(parsed, matrixCode);
+  const equivalenceSourceCodes = new Set(rules.map((rule) => normalizeDisciplineCode(rule.fromCode)).filter(Boolean));
+  const matrixCapability = inferMatrixCapability(matrix);
+
   const canonicalAttempts = parsed.attempts.map((attempt) => {
     const normalizedCode = normalizeDisciplineCode(attempt.code);
     const canonicalDiscipline = catalogByCode.get(normalizedCode);
@@ -856,12 +1074,20 @@ export async function calculateRoadmap(
   const manualMatches = manualCorrelationOutcome.matches;
   const manualCreditedByCategory = manualCorrelationOutcome.creditedByCategory;
 
-  const nameFallbackMatches = applyNameFallbackMatches({
-    matrix,
-    attempts: canonicalAttempts,
-    completedCodes,
-    completedSourceCodes
-  });
+  const nameFallbackMatches = isEngCompMigration
+    ? applyConservativeNameInferenceForEngComp({
+        matrix,
+        attempts: canonicalAttempts,
+        completedCodes,
+        completedSourceCodes,
+        rules
+      })
+    : applyNameFallbackMatches({
+        matrix,
+        attempts: canonicalAttempts,
+        completedCodes,
+        completedSourceCodes
+      });
 
   const mandatoryCompleted = sumCHTByCategory(matrix, completedCodes, ["MANDATORY"]);
   const optionalCompleted = sumCHTByCategory(matrix, completedCodes, ["OPTIONAL"]);
@@ -888,18 +1114,41 @@ export async function calculateRoadmap(
   const complementaryValidated = complementaryCompleted + (manualCreditedByCategory.COMPLEMENTARY ?? 0);
   const internshipValidated = internshipCompleted + (manualCreditedByCategory.INTERNSHIP ?? 0);
   const tccValidated = tccCompleted + (manualCreditedByCategory.TCC ?? 0);
+  const extensionCompleted = Math.max(
+    getExtensionTaken(parsed),
+    completedAttempts.reduce((sum, attempt) => sum + (attempt.chext ?? 0), 0)
+  );
 
-  const extensionCompleted = Math.max(getExtensionTaken(parsed), completedAttempts.reduce((sum, attempt) => sum + (attempt.chext ?? 0), 0));
-
-  const progress: ProgressBucket[] = [
-    makeBucket("mandatory", "Obrigatórias", matrix.totals.mandatoryCHT, mandatoryCompleted, mandatoryValidated),
-    makeBucket("optional", "Optativas", matrix.totals.optionalCHT, optionalCompleted, optionalValidated),
-    makeBucket("elective", "Eletivas", matrix.totals.electiveCHT, electiveCompleted, electiveValidated),
-    makeBucket("complementary", "Atividades Complementares", matrix.totals.complementaryCHT, complementaryCompleted, complementaryValidated),
-    makeBucket("internship", "Estágio", matrix.totals.internshipCHT, internshipCompleted, internshipValidated),
-    makeBucket("tcc", "TCC", matrix.totals.tccCHT, tccCompleted, tccValidated),
-    makeBucket("extension", "Atividades Extensionistas", matrix.totals.extensionCHT, extensionCompleted)
-  ];
+  const progress: ProgressBucket[] = [];
+  if (matrixCapability.hasMandatory) {
+    progress.push(makeBucket("mandatory", "Obrigatórias", matrix.totals.mandatoryCHT, mandatoryCompleted, mandatoryValidated));
+  }
+  if (matrixCapability.hasOptional || matrixCapability.hasTrack) {
+    progress.push(makeBucket("optional", "Optativas", matrix.totals.optionalCHT, optionalCompleted, optionalValidated));
+  }
+  if (matrixCapability.hasElective) {
+    progress.push(makeBucket("elective", "Eletivas", matrix.totals.electiveCHT, electiveCompleted, electiveValidated));
+  }
+  if (matrixCapability.hasComplementary) {
+    progress.push(
+      makeBucket(
+        "complementary",
+        "Atividades Complementares",
+        matrix.totals.complementaryCHT,
+        complementaryCompleted,
+        complementaryValidated
+      )
+    );
+  }
+  if (matrixCapability.hasInternship) {
+    progress.push(makeBucket("internship", "Estágio", matrix.totals.internshipCHT, internshipCompleted, internshipValidated));
+  }
+  if (matrixCapability.hasTcc) {
+    progress.push(makeBucket("tcc", "TCC", matrix.totals.tccCHT, tccCompleted, tccValidated));
+  }
+  if (matrixCapability.hasExtension) {
+    progress.push(makeBucket("extension", "Atividades Extensionistas", matrix.totals.extensionCHT, extensionCompleted));
+  }
 
   const syntheticElectiveData = buildSyntheticElectiveData({
     matrix,
@@ -923,9 +1172,13 @@ export async function calculateRoadmap(
   const pendingCodeSet = new Set(pending.map((item) => item.code));
   const unresolvedExplicitMissing = [...explicitMissingCodes].filter((code) => !pendingCodeSet.has(code));
 
-  const unusedDisciplines = computeUnused(parsed, completedSourceCodes, completedAttempts);
+  const unusedDisciplines = computeUnused(parsed, completedSourceCodes, completedAttempts, {
+    equivalenceSourceCodes,
+    isEngCompMigration
+  });
   const unmatchedApprovedAttempts = buildUnmatchedApprovedAttempts({
     matrix,
+    rules,
     completedCodes,
     completedSourceCodes,
     completedAttempts
@@ -977,9 +1230,15 @@ export async function calculateRoadmap(
       .slice(0, 3)
       .map((item) => `${item.sourceCode}->${item.targetCode}`)
       .join(", ");
-    alerts.push(
-      `Fallback por nome aplicado em ${nameFallbackMatches.length} disciplina(s) sem match por código (${sample}${nameFallbackMatches.length > 3 ? ", ..." : ""}).`
-    );
+    if (isEngCompMigration) {
+      alerts.push(
+        `Inferência conservadora aplicada em ${nameFallbackMatches.length} disciplina(s) sem regra oficial (${sample}${nameFallbackMatches.length > 3 ? ", ..." : ""}).`
+      );
+    } else {
+      alerts.push(
+        `Fallback por nome aplicado em ${nameFallbackMatches.length} disciplina(s) sem match por código (${sample}${nameFallbackMatches.length > 3 ? ", ..." : ""}).`
+      );
+    }
   }
   if (rawConvalidationMatches.length > 0) {
     const sample = rawConvalidationMatches

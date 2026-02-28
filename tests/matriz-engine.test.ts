@@ -9,6 +9,8 @@ import type { ParsedTranscript } from "@/types/academic";
 describe("matriz engine", () => {
   const fixturePath = path.join(process.cwd(), "tests/fixtures/historico-sample.txt");
   const raw = readFileSync(fixturePath, "utf8");
+  const engcompFixturePath = path.join(process.cwd(), "tests/fixtures/historico-engcomp-844-layout.txt");
+  const engcompRaw = readFileSync(engcompFixturePath, "utf8");
 
   it("computes progress and pending disciplines", async () => {
     const parsed = parseHistoricoText(raw);
@@ -54,6 +56,26 @@ describe("matriz engine", () => {
     expect(roadmap.matrixCode).toBe("962");
     expect(mandatoryBucket?.requiredCHT).toBe(2805);
     expect(roadmap.pending.some((discipline) => discipline.category === "MANDATORY")).toBe(true);
+  });
+
+  it("computes roadmap for matrix 844 using old EngComp layout", async () => {
+    const parsed = parseHistoricoText(engcompRaw);
+    const roadmap = await calculateRoadmap(parsed, "844");
+    const mandatoryBucket = roadmap.progress.find((bucket) => bucket.key === "mandatory");
+
+    expect(roadmap.matrixCode).toBe("844");
+    expect(mandatoryBucket?.requiredCHT).toBe(2820);
+    expect(roadmap.pending.some((discipline) => discipline.code === "CSX54")).toBe(true);
+    expect(roadmap.pending.some((discipline) => discipline.code === "CSS30")).toBe(true);
+  });
+
+  it("applies 844->962 equivalences when recalculating old EngComp history on matrix 962", async () => {
+    const parsed = parseHistoricoText(engcompRaw);
+    const roadmap = await calculateRoadmap(parsed, "962");
+
+    expect(roadmap.pending.some((discipline) => discipline.code === "ICSD20")).toBe(false);
+    expect(roadmap.pending.some((discipline) => discipline.code === "ICSF13")).toBe(false);
+    expect(roadmap.unusedDisciplines.some((discipline) => discipline.code === "CSD20")).toBe(false);
   });
 
   it("keeps only approved attempt as completed", async () => {
@@ -351,5 +373,53 @@ describe("matriz engine", () => {
     expect(electiveBucket?.validatedCHT).toBe(30);
     expect(roadmap.unusedDisciplines.some((discipline) => discipline.code === "OUT999")).toBe(false);
     expect(roadmap.alerts.some((alert) => alert.includes("OUT999->MANUAL(30h/ELECTIVE)"))).toBe(true);
+  });
+
+  it("builds progress buckets dynamically by matrix capability", async () => {
+    const parsed = parseHistoricoText(raw);
+    const roadmap962 = await calculateRoadmap(parsed, "962");
+    const roadmap844 = await calculateRoadmap(parsed, "844");
+
+    expect(roadmap962.progress.some((bucket) => bucket.key === "extension")).toBe(true);
+    expect(roadmap844.progress.some((bucket) => bucket.key === "extension")).toBe(false);
+    expect(roadmap962.progress.some((bucket) => bucket.key === "mandatory")).toBe(true);
+  });
+
+  it("keeps old EngComp discipline without official rule as unused with explicit reason code", async () => {
+    const parsed: ParsedTranscript = {
+      parserVersion: "test",
+      generatedAt: new Date().toISOString(),
+      rawText: "",
+      student: {
+        registrationId: "555555",
+        fullName: "Teste EngComp Sem Regra"
+      },
+      detectedMatrixCode: "844",
+      matrixLabel: "Matriz 844",
+      attempts: [
+        {
+          sourceSection: "mandatory",
+          code: "MA73A",
+          name: "MA73A",
+          cht: 60,
+          chext: 0,
+          status: "APPROVED",
+          statusText: "Aprovado Por Nota/Frequência",
+          rawBlock: "dummy"
+        }
+      ],
+      explicitMissing: [],
+      dependencies: [],
+      summary: [],
+      extensionSummary: [],
+      unparsedBlocks: [],
+      warnings: []
+    };
+
+    const roadmap = await calculateRoadmap(parsed, "962");
+    const unused = roadmap.unusedDisciplines.find((discipline) => discipline.code === "MA73A");
+
+    expect(unused).toBeDefined();
+    expect(unused?.reasonCode).toBe("NO_EQUIVALENCE_RULE");
   });
 });

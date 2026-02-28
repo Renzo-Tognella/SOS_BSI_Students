@@ -7,6 +7,8 @@ import { parseHistoricoText } from "@/lib/parser/historico-parser";
 describe("historico parser", () => {
   const fixturePath = path.join(process.cwd(), "tests/fixtures/historico-sample.txt");
   const raw = readFileSync(fixturePath, "utf8");
+  const engcompFixturePath = path.join(process.cwd(), "tests/fixtures/historico-engcomp-844-layout.txt");
+  const engcompRaw = readFileSync(engcompFixturePath, "utf8");
 
   it("extracts matrix, student and attempts", () => {
     const parsed = parseHistoricoText(raw);
@@ -54,5 +56,25 @@ describe("historico parser", () => {
 
     const parsed = parseHistoricoText(minimalHeader);
     expect(parsed.detectedMatrixCode).toBe("962");
+  });
+
+  it("recognizes matrix 844 from transcript header", () => {
+    const parsed = parseHistoricoText(engcompRaw);
+    expect(parsed.detectedMatrixCode).toBe("844");
+  });
+
+  it("parses EngComp 844 layout including elective rows and decimal dot grades", () => {
+    const parsed = parseHistoricoText(engcompRaw);
+    const csf13 = parsed.attempts.find((attempt) => attempt.code === "CSF13");
+    const electiveCodes = parsed.attempts
+      .filter((attempt) => attempt.sourceSection === "elective")
+      .map((attempt) => attempt.code);
+    const csm45 = parsed.attempts.find((attempt) => attempt.code === "CSM45");
+
+    expect(csf13?.average).toBe(9.5);
+    expect(csm45?.name.toLowerCase()).toContain("nuvem");
+    expect(electiveCodes).toContain("ELN8CA");
+    expect(electiveCodes).toContain("ELT77A");
+    expect(parsed.unparsedBlocks.length).toBe(0);
   });
 });

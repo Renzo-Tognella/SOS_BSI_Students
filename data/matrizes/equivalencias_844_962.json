@@ -1,0 +1,1131 @@
+[
+  {
+    "fromCode": "CSA30",
+    "toCodes": [
+      "ICSA30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSA31",
+    "toCodes": [
+      "ICSA31"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSA40",
+    "toCodes": [
+      "ICSA46"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSA41",
+    "toCodes": [
+      "ICSA41"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSA42",
+    "toCodes": [
+      "ICSA48"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSA43",
+    "toCodes": [
+      "ICSA47"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSA44",
+    "toCodes": [
+      "ICSA49"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSA45",
+    "toCodes": [
+      "ICSA4A"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSB30",
+    "toCodes": [
+      "ICSB30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSB41",
+    "toCodes": [
+      "ICSB41"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSB50",
+    "toCodes": [
+      "ICSB50"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSB51",
+    "toCodes": [
+      "ICSB51"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSB52",
+    "toCodes": [
+      "ICSB52"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSB53",
+    "toCodes": [
+      "ICSB53"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSB54",
+    "toCodes": [
+      "ICSB54"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSD20",
+    "toCodes": [
+      "ICSD20"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSD21",
+    "toCodes": [
+      "ICSD21"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSD41",
+    "toCodes": [
+      "ICSD41"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSD42",
+    "toCodes": [
+      "ICSD42"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSD43",
+    "toCodes": [
+      "ICSD43"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSD45",
+    "toCodes": [
+      "ICSD45"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSD47",
+    "toCodes": [
+      "ICSD47"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSD52",
+    "toCodes": [
+      "ICSD52"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSD55",
+    "toCodes": [
+      "ICSD50"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSE20",
+    "toCodes": [
+      "ICSE20"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSE30",
+    "toCodes": [
+      "ICSE30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSE40",
+    "toCodes": [
+      "ICSE40"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSE41",
+    "toCodes": [
+      "ICSE41"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSE42",
+    "toCodes": [
+      "ICSE42"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSE43",
+    "toCodes": [
+      "ICSE43"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSE44",
+    "toCodes": [
+      "ICSE44"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSE45",
+    "toCodes": [
+      "ICSE45"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSE46",
+    "toCodes": [
+      "ICSE46"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSE47",
+    "toCodes": [
+      "ICSE47"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSE48",
+    "toCodes": [
+      "ICSE48"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSF13",
+    "toCodes": [
+      "ICSF13"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSF20",
+    "toCodes": [
+      "ICSF20"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSF30",
+    "toCodes": [
+      "ICSF30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSG20",
+    "toCodes": [
+      "ICSG20"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSG41",
+    "toCodes": [
+      "ICSG41"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSG42",
+    "toCodes": [
+      "ICSG42"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSG44",
+    "toCodes": [
+      "ICSG44"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSG45",
+    "toCodes": [
+      "ICSG45"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSG47",
+    "toCodes": [
+      "ICSG47"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSG48",
+    "toCodes": [
+      "ICSG48"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSG70",
+    "toCodes": [
+      "ICSG70"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSH30",
+    "toCodes": [
+      "ICSH31"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSH41",
+    "toCodes": [
+      "ICSH41"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSH42",
+    "toCodes": [
+      "ICSHX0"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSH43",
+    "toCodes": [
+      "ICSH43"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSH44",
+    "toCodes": [
+      "ICSHX1"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSH45",
+    "toCodes": [
+      "ICSH45"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSI30",
+    "toCodes": [
+      "ICSI30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSI31",
+    "toCodes": [
+      "ICSI31"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSI41",
+    "toCodes": [
+      "ICSI41"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSI51",
+    "toCodes": [
+      "ICSI51"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSI52",
+    "toCodes": [
+      "ICSI52"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSI53",
+    "toCodes": [
+      "ICSI53"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSI54",
+    "toCodes": [
+      "ICSI54"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSI55",
+    "toCodes": [
+      "ICSI55"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSI56",
+    "toCodes": [
+      "ICSI56"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSI57",
+    "toCodes": [
+      "ICSI57"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSI58",
+    "toCodes": [
+      "ICSI58"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSL40",
+    "toCodes": [
+      "ICSL40"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSL41",
+    "toCodes": [
+      "ICSL41"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSM30",
+    "toCodes": [
+      "ICSM31"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSM40",
+    "toCodes": [
+      "ICSM49"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSM42",
+    "toCodes": [
+      "ICSM42"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSM43",
+    "toCodes": [
+      "ICSM46"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSM45",
+    "toCodes": [
+      "ICSM45"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSO30",
+    "toCodes": [
+      "ICSO30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSR30",
+    "toCodes": [
+      "ICSR30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSR31",
+    "toCodes": [
+      "ELET30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSR40",
+    "toCodes": [
+      "ICSR40"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSR41",
+    "toCodes": [
+      "ICSR41"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSR42",
+    "toCodes": [
+      "ICSR42"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSR43",
+    "toCodes": [
+      "ICSR43"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSR44",
+    "toCodes": [
+      "ICSR44"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSR45",
+    "toCodes": [
+      "ICSR45"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSR46",
+    "toCodes": [
+      "ICSR46"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSR47",
+    "toCodes": [
+      "ICSR47"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSR48",
+    "toCodes": [
+      "ICSR48"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSR53",
+    "toCodes": [
+      "ELTB3"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSS30",
+    "toCodes": [
+      "ICSS30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSU40",
+    "toCodes": [
+      "ICSU40"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSU41",
+    "toCodes": [
+      "ICSU41"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSU42",
+    "toCodes": [
+      "ICSU42"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSU43",
+    "toCodes": [
+      "ICSU43"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSU44",
+    "toCodes": [
+      "ICSU44"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSV30",
+    "toCodes": [
+      "ICSV30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSV40",
+    "toCodes": [
+      "ICSV40"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSV41",
+    "toCodes": [
+      "ICSV41"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSV45",
+    "toCodes": [
+      "ICSV45"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSW30",
+    "toCodes": [
+      "ELEW30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSW40",
+    "toCodes": [
+      "ELEW31"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSW41",
+    "toCodes": [
+      "ELEW32"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSW42",
+    "toCodes": [
+      "ELEW33"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSW45",
+    "toCodes": [
+      "ICSW45"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSW46",
+    "toCodes": [
+      "ICSW46"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSW47",
+    "toCodes": [
+      "ICSW47"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSW56",
+    "toCodes": [
+      "ICSI59"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSX42",
+    "toCodes": [
+      "ICSXG0"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSX43",
+    "toCodes": [
+      "ICSXG1"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSX53",
+    "toCodes": [
+      "ICSXG3"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "CSX54",
+    "toCodes": [
+      "ICSXG2"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "ED70T",
+    "toCodes": [
+      "EDU70J"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEB21",
+    "toCodes": [
+      "ELEB20"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEB22",
+    "toCodes": [
+      "ELEB21"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEB31",
+    "toCodes": [
+      "ELEB30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEC21",
+    "toCodes": [
+      "ELEC20"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEC31",
+    "toCodes": [
+      "ELEC30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEC43",
+    "toCodes": [
+      "ELTE10"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEC46",
+    "toCodes": [
+      "ELF81"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEE31",
+    "toCodes": [
+      "ELEE30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEE32",
+    "toCodes": [
+      "ELEE31"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEF11",
+    "toCodes": [
+      "ELEF10"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEF21",
+    "toCodes": [
+      "ELEF20"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEF31",
+    "toCodes": [
+      "ELEF30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEL51",
+    "toCodes": [
+      "ELEY43"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEQ31",
+    "toCodes": [
+      "ELEQ30"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEQ32",
+    "toCodes": [
+      "ELEQ31"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEX11",
+    "toCodes": [
+      "ELEX10"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEX21",
+    "toCodes": [
+      "ELEX20"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEX22",
+    "toCodes": [
+      "ELEX21"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEX23",
+    "toCodes": [
+      "ELEX22"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEY41",
+    "toCodes": [
+      "ELTA1"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEY42",
+    "toCodes": [
+      "ELTA2"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEY43",
+    "toCodes": [
+      "ELTA3"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEY44",
+    "toCodes": [
+      "ELTA4"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEY51",
+    "toCodes": [
+      "ELTA6"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EEY52",
+    "toCodes": [
+      "ELTA7"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EL64B",
+    "toCodes": [
+      "ELB52"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EL66B",
+    "toCodes": [
+      "ELP64"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EL6BA",
+    "toCodes": [
+      "ELTB4"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EL6BC",
+    "toCodes": [
+      "ELTB6"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EL6BD",
+    "toCodes": [
+      "ELTB1"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "EL75H",
+    "toCodes": [
+      "ELEW40"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "ES70B",
+    "toCodes": [
+      "FCH7PA"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "ES70G",
+    "toCodes": [
+      "FCH7SA"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "ES70J",
+    "toCodes": [
+      "FCH7XC"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "ES70N",
+    "toCodes": [
+      "FCH7HA"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "ES70P",
+    "toCodes": [
+      "FCH7FA"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "FI71S",
+    "toCodes": [
+      "FIS7F1"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "FI72N",
+    "toCodes": [
+      "FIS7E1"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "FI72S",
+    "toCodes": [
+      "FIS7F2"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "FI73S",
+    "toCodes": [
+      "FIS7F3"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "FI74N",
+    "toCodes": [
+      "FIS7E2"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "FI74S",
+    "toCodes": [
+      "FIS7F4"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "GE70D",
+    "toCodes": [
+      "GEE7E3"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "GE70F",
+    "toCodes": [
+      "GEE7G1"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "GE70H",
+    "toCodes": [
+      "GEE7F1"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "IF6CJ",
+    "toCodes": [
+      "ICSB61"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "IF6CM",
+    "toCodes": [
+      "ICSB60"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "MA70C",
+    "toCodes": [
+      "MAT7N1"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "MA70G",
+    "toCodes": [
+      "MAT7ED"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "MA70H",
+    "toCodes": [
+      "EST70A"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "MA71A",
+    "toCodes": [
+      "MAT7C1"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "MA71B",
+    "toCodes": [
+      "MAT7AL",
+      "MAT7GA"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "MA72A",
+    "toCodes": [
+      "MAT7C2"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "QB70C",
+    "toCodes": [
+      "QBI7QE",
+      "QBI7QT"
+    ],
+    "note": "Equivalência 844 -> 962"
+  },
+  {
+    "fromCode": "QB70E",
+    "toCodes": [
+      "QBI7CA"
+    ],
+    "note": "Equivalência 844 -> 962"
+  }
+]

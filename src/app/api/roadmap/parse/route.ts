@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { loadMatrixCatalogByCode } from "@/lib/domain/matrix-catalog";
+import { looksLikeCurriculumMatrixDocument } from "@/lib/parser/document-type";
 import { normalizeDisciplineCode } from "@/lib/utils/academic";
 import { parseHistoricoPdfBuffer } from "@/lib/parser/historico-parser";
 import type { MatrixCode } from "@/types/academic";
@@ -22,6 +23,16 @@ export async function POST(request: Request) {
 
     const arrayBuffer = await file.arrayBuffer();
     const parsed = await parseHistoricoPdfBuffer(Buffer.from(arrayBuffer));
+    if (looksLikeCurriculumMatrixDocument(parsed.rawText)) {
+      return NextResponse.json(
+        {
+          error:
+            "O PDF enviado parece ser a matriz curricular do curso, não o histórico escolar do aluno. Envie o histórico completo com disciplinas cursadas.",
+          code: "INVALID_TRANSCRIPT_DOCUMENT"
+        },
+        { status: 422 }
+      );
+    }
 
     const matrixCode = parsed.detectedMatrixCode as MatrixCode | undefined;
     if (matrixCode) {

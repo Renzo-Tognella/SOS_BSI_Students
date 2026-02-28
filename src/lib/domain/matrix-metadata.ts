@@ -1,6 +1,6 @@
 import type { MatrixCode } from "@/types/academic";
 
-export const MATRIX_CODE_VALUES = ["806", "981", "962"] as const;
+export const MATRIX_CODE_VALUES = ["806", "981", "844", "962"] as const;
 
 export type OptionalPoolModuleKey = "second" | "tracks" | "humanities";
 
@@ -53,6 +53,12 @@ const ENGCOMP_OPTIONAL_POOL: OptionalPoolModuleDefinition[] = [
   { key: "humanities", label: "Optativas do Ciclo de Humanidades", requiredCHT: 120 }
 ];
 
+const ENGCOMP_844_OPTIONAL_POOL: OptionalPoolModuleDefinition[] = [
+  { key: "second", label: "Conjuntos Não-Trilha", requiredCHT: 0 },
+  { key: "tracks", label: "Optativas Profissionalizantes/Trilhas", requiredCHT: 270 },
+  { key: "humanities", label: "Optativas do Ciclo de Humanidades", requiredCHT: 0 }
+];
+
 export const MATRIX_METADATA_BY_CODE: Record<MatrixCode, MatrixMetadata> = {
   "806": {
     matrixCode: "806",
@@ -77,6 +83,18 @@ export const MATRIX_METADATA_BY_CODE: Record<MatrixCode, MatrixMetadata> = {
       matrixUrl: BSI_MATRIX_URL
     },
     optionalPoolModules: BSI_981_OPTIONAL_POOL
+  },
+  "844": {
+    matrixCode: "844",
+    courseCode: "212",
+    campusCode: "01",
+    courseName: "Bacharelado em Engenharia de Computação",
+    courseAbbreviation: "ECOMP",
+    officialSources: {
+      courseUrl: ENGCOMP_COURSE_URL,
+      matrixUrl: ENGCOMP_MATRIX_URL
+    },
+    optionalPoolModules: ENGCOMP_844_OPTIONAL_POOL
   },
   "962": {
     matrixCode: "962",

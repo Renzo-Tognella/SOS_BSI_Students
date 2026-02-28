@@ -128,8 +128,7 @@ const periodCategoryDefinitions = [
   { key: "ELECTIVE", label: "Eletivas", color: "#f59e0b" },
   { key: "COMPLEMENTARY", label: "Complementares", color: "#a78bfa" },
   { key: "INTERNSHIP", label: "Estágio", color: "#f472b6" },
-  { key: "TCC", label: "TCC", color: "#facc15" },
-  { key: "UNKNOWN", label: "Outras", color: "#94a3b8" }
+  { key: "TCC", label: "TCC", color: "#facc15" }
 ] as const;
 
 const SUPPORTED_MATRICES_LABEL = MATRIX_CODE_VALUES.join(", ");
@@ -375,33 +374,32 @@ const CORRELATION_CATEGORY_LABEL: Record<PendingDiscipline["category"], string> 
 };
 
 type CorrelationCategory = PendingDiscipline["category"];
-type CalculationCategory = CorrelationCategory | "EXTENSION";
+type CalculationCategory = Exclude<CorrelationCategory, "UNKNOWN"> | "EXTENSION";
 
-const CALCULATION_FILTER_OPTIONS = [
-  { category: "MANDATORY" as const, label: "Obrigatórias" },
-  { category: "OPTIONAL" as const, label: "Optativas" },
-  { category: "TRACK" as const, label: "Trilhas" },
-  { category: "ELECTIVE" as const, label: "Eletivas" },
-  { category: "COMPLEMENTARY" as const, label: "Complementares" },
-  { category: "INTERNSHIP" as const, label: "Estágio" },
-  { category: "TCC" as const, label: "TCC" },
-  { category: "EXTENSION" as const, label: "Extensão" },
-  { category: "UNKNOWN" as const, label: "Outras" }
-] satisfies Array<{ category: CalculationCategory; label: string }>;
+const CALCULATION_CATEGORY_ORDER: CalculationCategory[] = [
+  "MANDATORY",
+  "OPTIONAL",
+  "TRACK",
+  "ELECTIVE",
+  "COMPLEMENTARY",
+  "INTERNSHIP",
+  "TCC",
+  "EXTENSION"
+];
 
-const DEFAULT_CALCULATION_CATEGORIES = CALCULATION_FILTER_OPTIONS.map((item) => item.category);
+const DEFAULT_CALCULATION_CATEGORIES = [...CALCULATION_CATEGORY_ORDER];
 
-function sanitizeCalculationCategories(value: unknown): CalculationCategory[] {
+function sanitizeCalculationCategories(value: unknown, allowedCategories: CalculationCategory[] = DEFAULT_CALCULATION_CATEGORIES): CalculationCategory[] {
   if (!Array.isArray(value)) {
-    return DEFAULT_CALCULATION_CATEGORIES;
+    return [...allowedCategories];
   }
 
-  const allowed = new Set<CalculationCategory>(DEFAULT_CALCULATION_CATEGORIES);
+  const allowed = new Set<CalculationCategory>(allowedCategories);
   const categories = value
     .map((item) => String(item).toUpperCase() as CalculationCategory)
     .filter((item): item is CalculationCategory => allowed.has(item));
 
-  return categories.length > 0 ? [...new Set(categories)] : DEFAULT_CALCULATION_CATEGORIES;
+  return categories.length > 0 ? [...new Set(categories)] : [...allowedCategories];
 }
 
 interface CorrelationLookupOption {
@@ -469,6 +467,78 @@ function arraysEqual(a: string[], b: string[]): boolean {
     return false;
   }
   return a.every((value, index) => value === b[index]);
+}
+
+function progressKeyToCalculationCategory(
+  key: RoadmapResult["progress"][number]["key"]
+): CalculationCategory | null {
+  if (key === "mandatory") return "MANDATORY";
+  if (key === "optional") return "OPTIONAL";
+  if (key === "elective") return "ELECTIVE";
+  if (key === "complementary") return "COMPLEMENTARY";
+  if (key === "internship") return "INTERNSHIP";
+  if (key === "tcc") return "TCC";
+  if (key === "extension") return "EXTENSION";
+  return null;
+}
+
+function calculationCategoryLabel(category: CalculationCategory): string {
+  if (category === "EXTENSION") {
+    return "Extensão";
+  }
+  return CORRELATION_CATEGORY_LABEL[category];
+}
+
+function isCorrelationCalculationCategory(category: CalculationCategory): category is Exclude<CorrelationCategory, "UNKNOWN"> {
+  return category !== "EXTENSION";
+}
+
+function deriveAvailableCategoriesFromRoadmap(roadmap: RoadmapResult | null): CalculationCategory[] {
+  if (!roadmap) {
+    return [...DEFAULT_CALCULATION_CATEGORIES];
+  }
+
+  const available = new Set<CalculationCategory>();
+
+  for (const bucket of roadmap.progress) {
+    const category = progressKeyToCalculationCategory(bucket.key);
+    if (category) {
+      available.add(category);
+    }
+  }
+
+  for (const node of roadmap.prereqGraph.nodes) {
+    if (node.status === "OUTSIDE_SCOPE" || node.category === "UNKNOWN") {
+      continue;
+    }
+    available.add(node.category as Exclude<CorrelationCategory, "UNKNOWN">);
+  }
+
+  if (available.size === 0) {
+    return [...DEFAULT_CALCULATION_CATEGORIES];
+  }
+
+  return CALCULATION_CATEGORY_ORDER.filter((category) => available.has(category));
+}
+
+function deriveMatrixPeriodCount(roadmap: RoadmapResult | null): number {
+  if (!roadmap) {
+    return 8;
+  }
+
+  const maxPeriodFromGraph = roadmap.prereqGraph.nodes.reduce((max, node) => {
+    const period = node.recommendedPeriod ?? 0;
+    if (!Number.isFinite(period) || period < 0) {
+      return max;
+    }
+    return Math.max(max, Math.floor(period));
+  }, 0);
+
+  if (maxPeriodFromGraph > 0) {
+    return maxPeriodFromGraph;
+  }
+
+  return roadmap.matrixCode === "844" || roadmap.matrixCode === "962" ? 10 : 8;
 }
 
 function buildTrackLabelByCode(roadmap: RoadmapResult): Map<string, string> {
@@ -586,7 +656,7 @@ function getPlannerPendingList(
   const selectedTracks = new Set(selectedTrackKeys.map((key) => normalizeTrackLabel(key)));
   const trackLabelByCode = buildTrackLabelByCode(roadmap);
   const pendingByScope = roadmap.pending.filter((item) => {
-    if (includedCategories && !includedCategories.has(item.category)) {
+    if (includedCategories && (item.category === "UNKNOWN" || !includedCategories.has(item.category as CalculationCategory))) {
       return false;
     }
     if (item.category !== "TRACK" || selectedTracks.size === 0) {
@@ -749,7 +819,8 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
   const [globalDisciplineLookupOptions, setGlobalDisciplineLookupOptions] = useState<CorrelationLookupOption[]>([]);
   const [unusedConvalidationNotice, setUnusedConvalidationNotice] = useState<string | null>(null);
   const [unusedConvalidationError, setUnusedConvalidationError] = useState<string | null>(null);
-  const [legacySnapshotMigrated, setLegacySnapshotMigrated] = useState(false);
+  const [snapshotRestoredFromLocalCache, setSnapshotRestoredFromLocalCache] = useState(false);
+  const [showLegacySnapshotWarning, setShowLegacySnapshotWarning] = useState(false);
   const [assistantInput, setAssistantInput] = useState("");
   const [assistantWidgetOpen, setAssistantWidgetOpen] = useState(false);
   const [assistantMessages, setAssistantMessages] = useState<AssistantMessage[]>([
@@ -821,6 +892,34 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     [optionalModuleDefinitions]
   );
 
+  const availableCalculationCategories = useMemo(
+    () => deriveAvailableCategoriesFromRoadmap(roadmap),
+    [roadmap]
+  );
+  const matrixPeriodCount = useMemo(
+    () => deriveMatrixPeriodCount(roadmap),
+    [roadmap]
+  );
+
+  const calculationFilterOptions = useMemo(
+    () =>
+      availableCalculationCategories.map((category) => ({
+        category,
+        label: calculationCategoryLabel(category)
+      })),
+    [availableCalculationCategories]
+  );
+
+  const correlationCategoryOptions = useMemo<CorrelationCategory[]>(
+    () => availableCalculationCategories.filter((category) => isCorrelationCalculationCategory(category)) as CorrelationCategory[],
+    [availableCalculationCategories]
+  );
+
+  const fallbackCorrelationCategory = useMemo<CorrelationCategory>(
+    () => correlationCategoryOptions[0] ?? "MANDATORY",
+    [correlationCategoryOptions]
+  );
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(ROADMAP_WORKSPACE_STORAGE_KEY);
@@ -849,8 +948,18 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
         assistantMessages?: AssistantMessage[];
       };
 
-      if (saved.parsedTranscript) setParsedTranscript(saved.parsedTranscript);
-      if (saved.roadmap) setRoadmap(ensureRoadmapShape(saved.roadmap));
+      let restoredSnapshot = false;
+      let restoredRoadmap: RoadmapResult | null = null;
+
+      if (saved.parsedTranscript) {
+        setParsedTranscript(saved.parsedTranscript);
+        restoredSnapshot = true;
+      }
+      if (saved.roadmap) {
+        restoredRoadmap = ensureRoadmapShape(saved.roadmap);
+        setRoadmap(restoredRoadmap);
+        restoredSnapshot = true;
+      }
       if (saved.gradeOptions) setGradeOptions(saved.gradeOptions);
       if (saved.activeMatrix === "" || isSupportedMatrixCode(saved.activeMatrix)) {
         setActiveMatrix(saved.activeMatrix);
@@ -883,6 +992,8 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       if (saved.assistantMessages && saved.assistantMessages.length > 0) {
         setAssistantMessages(saved.assistantMessages);
       }
+      setSnapshotRestoredFromLocalCache(restoredSnapshot);
+      setShowLegacySnapshotWarning(Boolean(restoredRoadmap && looksLikeLegacyUnusedSnapshot(restoredRoadmap)));
     } catch {
       // ignore corrupted local storage payload
     }
@@ -937,8 +1048,20 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
   ]);
 
   useEffect(() => {
-    setLegacySnapshotMigrated(false);
-  }, [parsedTranscript?.generatedAt, activeMatrix]);
+    setEnabledCalculationCategories((current) =>
+      sanitizeCalculationCategories(current, availableCalculationCategories)
+    );
+  }, [availableCalculationCategories]);
+
+  useEffect(() => {
+    setReviewCategoryBySourceCode((current) => {
+      const nextEntries = Object.entries(current).filter(([, category]) => correlationCategoryOptions.includes(category));
+      if (nextEntries.length === Object.keys(current).length) {
+        return current;
+      }
+      return Object.fromEntries(nextEntries);
+    });
+  }, [correlationCategoryOptions]);
 
   useEffect(() => {
     let canceled = false;
@@ -1201,27 +1324,39 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     [manualConvalidationMappings, manualCorrelations, reviewCategoryManualMappings]
   );
 
-  useEffect(() => {
-    if (!roadmap || !parsedTranscript || !activeMatrix || legacySnapshotMigrated || calculateMutation.isPending) {
-      return;
+  async function handleClearSnapshotAndReprocess(): Promise<void> {
+    try {
+      localStorage.removeItem(ROADMAP_WORKSPACE_STORAGE_KEY);
+    } catch {
+      // ignore local storage failures
     }
-    if (!looksLikeLegacyUnusedSnapshot(roadmap)) {
+
+    setSnapshotRestoredFromLocalCache(false);
+    setShowLegacySnapshotWarning(false);
+    setErrorMessage(null);
+
+    if (selectedFile) {
+      await handleParseAndCalculate();
       return;
     }
 
-    setLegacySnapshotMigrated(true);
-    void runCalculation(parsedTranscript, activeMatrix, combinedManualMappings).catch((error) => {
-      setErrorMessage((error as Error).message);
-    });
-  }, [
-    activeMatrix,
-    calculateMutation.isPending,
-    combinedManualMappings,
-    legacySnapshotMigrated,
-    parsedTranscript,
-    roadmap,
-    runCalculation
-  ]);
+    setParsedTranscript(null);
+    setRoadmap(null);
+    setGradeOptions(null);
+    setActiveMatrix("");
+    setManualCorrelations({});
+    setManualConvalidationMappings({});
+    setReviewCategoryBySourceCode({});
+    setUnusedInlineTargetBySource({});
+    setUnusedInlineCategoryBySource({});
+    setUnusedInlineChtBySource({});
+    setUnusedInlineManualOnlyBySource({});
+    setUnusedInlineManualNameBySource({});
+    setUnusedInlineManualCodeBySource({});
+    setUnusedConvalidationNotice(null);
+    setUnusedConvalidationError(null);
+    setErrorMessage("Snapshot local antigo removido. Reenvie o histórico para reprocessar com o parser atual.");
+  }
 
   async function handleParseAndCalculate(): Promise<void> {
     if (!selectedFile) {
@@ -1233,6 +1368,8 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       setErrorMessage(null);
       setGradeOptions(null);
       setRoadmap(null);
+      setSnapshotRestoredFromLocalCache(false);
+      setShowLegacySnapshotWarning(false);
       const parsed = await parseMutation.mutateAsync(selectedFile);
       const parseValidationError = buildParseValidationError(parsed);
       if (parseValidationError) {
@@ -1311,7 +1448,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
   }
 
   function selectAllCalculationCategories(): void {
-    setEnabledCalculationCategories(DEFAULT_CALCULATION_CATEGORIES);
+    setEnabledCalculationCategories([...availableCalculationCategories]);
   }
 
   async function handleReviewCategoryOverrideChange(
@@ -1320,6 +1457,9 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
   ): Promise<void> {
     const sourceCode = normalizeManualTargetCode(sourceCodeRaw);
     if (!sourceCode) {
+      return;
+    }
+    if (nextCategory && !correlationCategoryOptions.includes(nextCategory)) {
       return;
     }
 
@@ -1435,7 +1575,11 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     matrixToUse: MatrixCode
   ): { mapping: ManualCorrelationInput | null; target: CorrelationLookupOption | null; error?: string } {
     const manualOnly = Boolean(unusedInlineManualOnlyBySource[source.code]);
-    const fallbackCategory = unusedAutomaticSuggestionBySource[source.code]?.category ?? "UNKNOWN";
+    const suggestedCategory = unusedAutomaticSuggestionBySource[source.code]?.category;
+    const fallbackCategory =
+      suggestedCategory && correlationCategoryOptions.includes(suggestedCategory)
+        ? suggestedCategory
+        : fallbackCorrelationCategory;
     const targetCategory = (unusedInlineCategoryBySource[source.code] ?? fallbackCategory) as CorrelationCategory;
     const rawHours = Number(unusedInlineChtBySource[source.code] ?? String(source.cht));
     const creditedCHT = Number.isFinite(rawHours) ? Math.max(Math.round(rawHours), 0) : Math.max(source.cht, 0);
@@ -1499,7 +1643,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       await applyUnusedConvalidationMappings(
         { [source.code]: mapping },
         matrixToUse,
-        `${source.code} convalidada${target ? ` como ${target.code}` : " manualmente"} (${mapping.targetCategory ?? "UNKNOWN"}, ${mapping.creditedCHT ?? 0}h).`
+        `${source.code} convalidada${target ? ` como ${target.code}` : " manualmente"} (${mapping.targetCategory ?? fallbackCorrelationCategory}, ${mapping.creditedCHT ?? 0}h).`
       );
       if (target) {
         setUnusedInlineTargetBySource((current) => ({ ...current, [source.code]: target.lookupValue }));
@@ -1739,11 +1883,15 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     () => new Set<CalculationCategory>(enabledCalculationCategories),
     [enabledCalculationCategories]
   );
+  const availableCalculationCategorySet = useMemo(
+    () => new Set<CalculationCategory>(availableCalculationCategories),
+    [availableCalculationCategories]
+  );
 
   const excludedCalculationCategoryLabels = useMemo(
     () =>
-      CALCULATION_FILTER_OPTIONS.filter((option) => !enabledCalculationCategorySet.has(option.category)).map((option) => option.label),
-    [enabledCalculationCategorySet]
+      calculationFilterOptions.filter((option) => !enabledCalculationCategorySet.has(option.category)).map((option) => option.label),
+    [calculationFilterOptions, enabledCalculationCategorySet]
   );
 
   const calculationProgressBuckets = useMemo(() => {
@@ -1793,23 +1941,36 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
         return sum + node.cht;
       }, 0);
 
-    const mandatory = getOrZeroBucket("mandatory", "Obrigatórias", enabledCalculationCategorySet.has("MANDATORY"));
-    const optionalAndTrackEnabled = enabledCalculationCategorySet.has("OPTIONAL") || enabledCalculationCategorySet.has("TRACK");
+    const mandatory = getOrZeroBucket(
+      "mandatory",
+      "Obrigatórias",
+      availableCalculationCategorySet.has("MANDATORY") && enabledCalculationCategorySet.has("MANDATORY")
+    );
+    const optionalOrTrackExists = availableCalculationCategorySet.has("OPTIONAL") || availableCalculationCategorySet.has("TRACK");
+    const optionalAndTrackEnabled =
+      (availableCalculationCategorySet.has("OPTIONAL") && enabledCalculationCategorySet.has("OPTIONAL")) ||
+      (availableCalculationCategorySet.has("TRACK") && enabledCalculationCategorySet.has("TRACK"));
     const optionalAndTrackFullyEnabled = enabledCalculationCategorySet.has("OPTIONAL") && enabledCalculationCategorySet.has("TRACK");
     const optionalLabel = optionalAndTrackFullyEnabled
       ? "Optativas + Trilhas"
       : enabledCalculationCategorySet.has("TRACK")
         ? "Trilhas"
         : "Optativas";
-    const optionalFromRoadmap = getOrZeroBucket("optional", optionalLabel, optionalAndTrackEnabled);
+    const optionalFromRoadmap = getOrZeroBucket("optional", optionalLabel, optionalOrTrackExists && optionalAndTrackEnabled);
     const optionalCategories = [
-      ...(enabledCalculationCategorySet.has("OPTIONAL") ? (["OPTIONAL"] as CorrelationCategory[]) : []),
-      ...(enabledCalculationCategorySet.has("TRACK") ? (["TRACK"] as CorrelationCategory[]) : [])
+      ...(availableCalculationCategorySet.has("OPTIONAL") && enabledCalculationCategorySet.has("OPTIONAL")
+        ? (["OPTIONAL"] as CorrelationCategory[])
+        : []),
+      ...(availableCalculationCategorySet.has("TRACK") && enabledCalculationCategorySet.has("TRACK")
+        ? (["TRACK"] as CorrelationCategory[])
+        : [])
     ];
     const optionalFromNodesValidatedRaw = sumNodeCht(optionalCategories, true);
     const optionalRequiredCHT =
-      (enabledCalculationCategorySet.has("OPTIONAL") ? optionalNonTrackRequiredCHT : 0) +
-      (enabledCalculationCategorySet.has("TRACK") ? trackRequiredCHT : 0);
+      (availableCalculationCategorySet.has("OPTIONAL") && enabledCalculationCategorySet.has("OPTIONAL")
+        ? optionalNonTrackRequiredCHT
+        : 0) +
+      (availableCalculationCategorySet.has("TRACK") && enabledCalculationCategorySet.has("TRACK") ? trackRequiredCHT : 0);
     const optionalFromNodesValidated = Math.min(optionalFromNodesValidatedRaw, optionalRequiredCHT);
     const optional: RoadmapResult["progress"][number] =
       optionalAndTrackEnabled && !optionalAndTrackFullyEnabled
@@ -1826,14 +1987,33 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
             label: optionalLabel
           };
 
-    const elective = getOrZeroBucket("elective", "Eletivas", enabledCalculationCategorySet.has("ELECTIVE"));
-    const complementary = getOrZeroBucket("complementary", "Atividades Complementares", enabledCalculationCategorySet.has("COMPLEMENTARY"));
-    const internship = getOrZeroBucket("internship", "Estágio", enabledCalculationCategorySet.has("INTERNSHIP"));
-    const tcc = getOrZeroBucket("tcc", "TCC", enabledCalculationCategorySet.has("TCC"));
-    const extension = getOrZeroBucket("extension", "Extensão", enabledCalculationCategorySet.has("EXTENSION"));
+    const buckets: RoadmapResult["progress"] = [];
+    if (availableCalculationCategorySet.has("MANDATORY")) {
+      buckets.push(mandatory);
+    }
+    if (optionalOrTrackExists) {
+      buckets.push(optional);
+    }
+    if (availableCalculationCategorySet.has("ELECTIVE")) {
+      buckets.push(getOrZeroBucket("elective", "Eletivas", enabledCalculationCategorySet.has("ELECTIVE")));
+    }
+    if (availableCalculationCategorySet.has("COMPLEMENTARY")) {
+      buckets.push(
+        getOrZeroBucket("complementary", "Atividades Complementares", enabledCalculationCategorySet.has("COMPLEMENTARY"))
+      );
+    }
+    if (availableCalculationCategorySet.has("INTERNSHIP")) {
+      buckets.push(getOrZeroBucket("internship", "Estágio", enabledCalculationCategorySet.has("INTERNSHIP")));
+    }
+    if (availableCalculationCategorySet.has("TCC")) {
+      buckets.push(getOrZeroBucket("tcc", "TCC", enabledCalculationCategorySet.has("TCC")));
+    }
+    if (availableCalculationCategorySet.has("EXTENSION")) {
+      buckets.push(getOrZeroBucket("extension", "Atividades Extensionistas", enabledCalculationCategorySet.has("EXTENSION")));
+    }
 
-    return [mandatory, optional, elective, complementary, internship, tcc, extension];
-  }, [enabledCalculationCategorySet, optionalNonTrackRequiredCHT, roadmap, trackRequiredCHT]);
+    return buckets;
+  }, [availableCalculationCategorySet, enabledCalculationCategorySet, optionalNonTrackRequiredCHT, roadmap, trackRequiredCHT]);
   const chartProgressBuckets = useMemo(() => calculationProgressBuckets, [calculationProgressBuckets]);
 
   const progressChartData = useMemo<ChartData<"bar"> | null>(() => {
@@ -1979,8 +2159,21 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     const matrixToUse = (activeMatrix || roadmap.matrixCode) as MatrixCode;
     const scoped = convalidationLookupOptions.filter((item) => item.matrixCode === matrixToUse);
     const output: Record<string, CorrelationLookupOption | null> = {};
+    const suggestionBySourceCode = new Map(
+      roadmap.unmatchedApprovedAttempts.map((attempt) => [normalizeManualTargetCode(attempt.sourceCode), attempt.suggestedTargets])
+    );
 
     for (const source of unusedConvalidationSourceOptions) {
+      const officialSuggestions = suggestionBySourceCode.get(normalizeManualTargetCode(source.code)) ?? [];
+      const officialEquivalence = officialSuggestions.find((suggestion) => suggestion.strategy === "EQUIVALENCE");
+      if (officialEquivalence) {
+        const lookupByCode = scoped.find((item) => item.code === officialEquivalence.code) ?? null;
+        if (lookupByCode) {
+          output[source.code] = lookupByCode;
+          continue;
+        }
+      }
+
       const byLikelyName = scoped.filter((item) => disciplineNamesLikelyMatch(source.name, item.name));
       if (byLikelyName.length === 1) {
         output[source.code] = byLikelyName[0];
@@ -2040,8 +2233,13 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     setUnusedInlineCategoryBySource((current) => {
       const next: Record<string, CorrelationCategory> = {};
       for (const source of unusedConvalidationSourceOptions) {
-        const fallback = (unusedAutomaticSuggestionBySource[source.code]?.category ?? "UNKNOWN") as CorrelationCategory;
-        next[source.code] = current[source.code] ?? fallback;
+        const suggestedCategory = unusedAutomaticSuggestionBySource[source.code]?.category;
+        const fallback =
+          suggestedCategory && correlationCategoryOptions.includes(suggestedCategory)
+            ? suggestedCategory
+            : fallbackCorrelationCategory;
+        const existing = current[source.code];
+        next[source.code] = existing && correlationCategoryOptions.includes(existing) ? existing : fallback;
       }
       return next;
     });
@@ -2077,7 +2275,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       }
       return next;
     });
-  }, [unusedAutomaticSuggestionBySource, unusedConvalidationSourceOptions]);
+  }, [correlationCategoryOptions, fallbackCorrelationCategory, unusedAutomaticSuggestionBySource, unusedConvalidationSourceOptions]);
 
   const unusedConvalidationTargetOptions = useMemo(() => {
     return [...convalidationLookupOptions]
@@ -2116,10 +2314,14 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       return null;
     }
 
-    const filteredNodes = roadmap.prereqGraph.nodes.filter((node) => enabledCalculationCategorySet.has(node.category));
+    const filteredNodes = roadmap.prereqGraph.nodes.filter(
+      (node) => node.category !== "UNKNOWN" && enabledCalculationCategorySet.has(node.category as CalculationCategory)
+    );
     const filteredCodes = new Set(filteredNodes.map((node) => node.code));
     const filteredEdges = roadmap.prereqGraph.edges.filter((edge) => filteredCodes.has(edge.from) && filteredCodes.has(edge.to));
-    const filteredPending = roadmap.pending.filter((item) => enabledCalculationCategorySet.has(item.category));
+    const filteredPending = roadmap.pending.filter(
+      (item) => item.category !== "UNKNOWN" && enabledCalculationCategorySet.has(item.category as CalculationCategory)
+    );
     const filteredElectiveOptions = enabledCalculationCategorySet.has("ELECTIVE") ? roadmap.electiveOptions ?? [] : [];
 
     return {
@@ -2265,12 +2467,22 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     return chartProgressBuckets.reduce((sum, bucket) => sum + bucket.missingCHT, 0);
   }, [chartProgressBuckets]);
 
+  const extensionMissingCHT = useMemo(
+    () => chartProgressBuckets.find((bucket) => bucket.key === "extension")?.missingCHT ?? 0,
+    [chartProgressBuckets]
+  );
+
+  const missingCHTForCHSProjection = useMemo(
+    () => chartProgressBuckets.filter((bucket) => bucket.key !== "extension").reduce((sum, bucket) => sum + bucket.missingCHT, 0),
+    [chartProgressBuckets]
+  );
+
   const periodRoadmapData = useMemo(() => {
     if (!roadmapForCalculationView) {
       return null;
     }
 
-    const periodIndexes = Array.from({ length: 8 }, (_, idx) => idx + 1);
+    const periodIndexes = Array.from({ length: matrixPeriodCount }, (_, idx) => idx + 1);
     const categoryMap = new Map(periodCategoryDefinitions.map((category) => [category.key, category]));
 
     const periods = periodIndexes.map((periodIndex) => {
@@ -2304,8 +2516,11 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
           continue;
         }
 
-        const categoryKey = categoryMap.has(node.category) ? node.category : "UNKNOWN";
-        const sector = sectors.get(categoryKey);
+        const nodeCategory = node.category === "UNKNOWN" ? null : node.category;
+        if (!nodeCategory || !categoryMap.has(nodeCategory)) {
+          continue;
+        }
+        const sector = sectors.get(nodeCategory);
         if (!sector) {
           continue;
         }
@@ -2359,7 +2574,9 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
 
       const anchorPeriods = poolNodes
         .map((node) => node.recommendedPeriod)
-        .filter((period): period is number => typeof period === "number" && Number.isFinite(period) && period >= 1 && period <= 8);
+        .filter(
+          (period): period is number => typeof period === "number" && Number.isFinite(period) && period >= 1 && period <= matrixPeriodCount
+        );
       const anchorPeriod = anchorPeriods.length > 0 ? Math.min(...anchorPeriods) : 1;
       const doneCHT = Math.min(
         poolNodes.reduce((sum, node) => sum + (node.status === "DONE" ? node.cht : 0), 0),
@@ -2405,7 +2622,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     );
 
     return { periods, categories };
-  }, [optionalNonTrackRequiredCHT, roadmapForCalculationView, trackRequiredCHT]);
+  }, [matrixPeriodCount, optionalNonTrackRequiredCHT, roadmapForCalculationView, trackRequiredCHT]);
 
   const plannerPendingDisciplines = useMemo(() => {
     if (!roadmap) {
@@ -2445,7 +2662,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     const assignedCodes = new Set(Object.values(manualPlan).flat());
     const unassigned = plannerPending.filter((discipline) => !assignedCodes.has(discipline.code));
 
-    const basePeriodCount = Math.max(gradeOptions?.graduationPlan.periods.length ?? 0, 6);
+    const basePeriodCount = Math.max(gradeOptions?.graduationPlan.periods.length ?? 0, matrixPeriodCount, 6);
     const periodIndexes = Array.from({ length: basePeriodCount }, (_, idx) => idx + 1);
 
     const periods = periodIndexes.map((periodIndex) => {
@@ -2485,7 +2702,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     });
 
     return { periods, unassigned };
-  }, [gradeOptions, manualPlan, plannerPendingDisciplines, roadmap]);
+  }, [gradeOptions, manualPlan, matrixPeriodCount, plannerPendingDisciplines, roadmap]);
 
   const selectedManualPeriod = useMemo(() => {
     if (!manualPlannerData) {
@@ -2650,12 +2867,18 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       targetChsPerSemester: maxChsPerPeriod,
       includeCurrentSemesterIfInHistory: true,
       includeInternshipInHistory: enabledCalculationCategorySet.has("INTERNSHIP"),
-      missingChtOverride: totalMissingCHT,
-      missingChextOverride: enabledCalculationCategorySet.has("EXTENSION")
-        ? calculationProgressBuckets.find((bucket) => bucket.key === "extension")?.missingCHT ?? 0
-        : 0
+      missingChtOverride: missingCHTForCHSProjection,
+      missingChextOverride: extensionMissingCHT
     });
-  }, [enabledCalculationCategorySet, maxChsPerPeriod, parsedTranscript, roadmap, roadmapForCalculationView, totalMissingCHT, calculationProgressBuckets]);
+  }, [
+    enabledCalculationCategorySet,
+    extensionMissingCHT,
+    maxChsPerPeriod,
+    missingCHTForCHSProjection,
+    parsedTranscript,
+    roadmap,
+    roadmapForCalculationView
+  ]);
 
   const chsPaceAudit = useMemo<GraduationForecastAudit | null>(() => {
     if (!parsedTranscript || !roadmap) {
@@ -2676,13 +2899,11 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
       roadmap: roadmapForCalculationView,
       parsedTranscript,
       manualPlannerData,
-      missingCht: totalMissingCHT,
-      missingChs: totalMissingCHT > 0 ? estimateChsFromCht(totalMissingCHT) : 0,
-      missingChext: enabledCalculationCategorySet.has("EXTENSION")
-        ? calculationProgressBuckets.find((bucket) => bucket.key === "extension")?.missingCHT ?? 0
-        : 0
+      missingCht: missingCHTForCHSProjection,
+      missingChs: missingCHTForCHSProjection > 0 ? estimateChsFromCht(missingCHTForCHSProjection) : 0,
+      missingChext: extensionMissingCHT
     });
-  }, [calculationProgressBuckets, enabledCalculationCategorySet, manualPlannerData, parsedTranscript, roadmapForCalculationView, totalMissingCHT]);
+  }, [extensionMissingCHT, manualPlannerData, missingCHTForCHSProjection, parsedTranscript, roadmapForCalculationView]);
 
   useEffect(() => {
     if (!dashboardVisualModel?.focusCode) {
@@ -2781,6 +3002,11 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
     gradeMutation.isPending ||
     reportMutation.isPending ||
     assistantMutation.isPending;
+  const hasMatrixSimulationWarning =
+    Boolean(parsedTranscript?.detectedMatrixCode) &&
+    isSupportedMatrixCode(parsedTranscript?.detectedMatrixCode ?? null) &&
+    Boolean(activeMatrix) &&
+    parsedTranscript?.detectedMatrixCode !== activeMatrix;
 
   return (
     <main className="mx-auto flex w-full max-w-[1500px] flex-col gap-6 px-2 py-2 md:px-3 md:py-3">
@@ -2828,6 +3054,28 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
 
         {errorMessage ? <p className="mt-3 text-sm font-semibold text-red-700">{errorMessage}</p> : null}
 
+        {hasMatrixSimulationWarning ? (
+          <div className="mt-3 rounded-lg border border-amber-500/70 bg-amber-900/20 p-3 text-xs text-amber-200">
+            Simulação de convalidação ativa: histórico detectado na matriz <strong>{parsedTranscript?.detectedMatrixCode}</strong>, mas o
+            cálculo atual está na matriz <strong>{activeMatrix}</strong>. O resultado serve para análise de migração/convalidação.
+          </div>
+        ) : null}
+
+        {showLegacySnapshotWarning && snapshotRestoredFromLocalCache ? (
+          <div className="mt-3 rounded-lg border border-amber-500/70 bg-amber-900/20 p-3 text-xs text-amber-200">
+            Snapshot local antigo detectado. Os blocos de revisão podem estar desatualizados em relação ao parser atual.
+            <div className="mt-2">
+              <button
+                className="rounded-md border border-amber-300 px-2 py-1 font-semibold text-amber-100 hover:bg-amber-900/40"
+                onClick={() => void handleClearSnapshotAndReprocess()}
+                type="button"
+              >
+                Limpar snapshot e reprocessar
+              </button>
+            </div>
+          </div>
+        ) : null}
+
         {parsedTranscript ? (
           <div className="mt-4 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] p-3 text-sm">
             <p>
@@ -2872,10 +3120,14 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
                     <tr key={`${attempt.code}-${index}`}>
                       {(() => {
                         const normalizedSourceCode = normalizeManualTargetCode(attempt.code);
-                        const autoCategory =
+                        const inferredAutoCategory =
                           reviewAutoCategoryBySourceCode[normalizedSourceCode] ??
-                          (attempt.sourceSection === "elective" ? "ELECTIVE" : "UNKNOWN");
-                        const selectedCategory = reviewCategoryBySourceCode[normalizedSourceCode] ?? "";
+                          (attempt.sourceSection === "elective" ? "ELECTIVE" : fallbackCorrelationCategory);
+                        const autoCategory = correlationCategoryOptions.includes(inferredAutoCategory as CorrelationCategory)
+                          ? (inferredAutoCategory as CorrelationCategory)
+                          : fallbackCorrelationCategory;
+                        const savedCategory = reviewCategoryBySourceCode[normalizedSourceCode];
+                        const selectedCategory = savedCategory && correlationCategoryOptions.includes(savedCategory) ? savedCategory : "";
                         const canOverride = attempt.status === "APPROVED";
 
                         return (
@@ -2902,18 +3154,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
                               value={selectedCategory}
                             >
                               <option value="">Automático ({CORRELATION_CATEGORY_LABEL[autoCategory]})</option>
-                              {(
-                                [
-                                  "MANDATORY",
-                                  "OPTIONAL",
-                                  "TRACK",
-                                  "ELECTIVE",
-                                  "COMPLEMENTARY",
-                                  "INTERNSHIP",
-                                  "TCC",
-                                  "UNKNOWN"
-                                ] as CorrelationCategory[]
-                              ).map((category) => (
+                              {correlationCategoryOptions.map((category) => (
                                 <option key={`review-category-${attempt.code}-${category}`} value={category}>
                                   {CORRELATION_CATEGORY_LABEL[category]}
                                 </option>
@@ -3075,7 +3316,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
               </div>
 
               <div className="mt-2 flex flex-wrap gap-2">
-                {CALCULATION_FILTER_OPTIONS.map((option) => {
+                {calculationFilterOptions.map((option) => {
                   const selected = enabledCalculationCategorySet.has(option.category);
                   return (
                     <button
@@ -3484,7 +3725,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
                 </button>
               </div>
               <div className="mt-2 flex flex-wrap gap-2">
-                {CALCULATION_FILTER_OPTIONS.map((option) => {
+                {calculationFilterOptions.map((option) => {
                   const selected = enabledCalculationCategorySet.has(option.category);
                   return (
                     <button
@@ -3585,7 +3826,7 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
                   <p className="text-xs text-slate-400">
                     Categorias ativas no cálculo:{" "}
                     <strong>
-                      {CALCULATION_FILTER_OPTIONS.filter((option) => enabledCalculationCategorySet.has(option.category))
+                      {calculationFilterOptions.filter((option) => enabledCalculationCategorySet.has(option.category))
                         .map((option) => option.label)
                         .join(", ") || "nenhuma"}
                     </strong>
@@ -4121,15 +4362,16 @@ export function RoadmapWorkspace({ currentSection }: RoadmapWorkspaceProps) {
                                   [item.code]: event.target.value as CorrelationCategory
                                 }))
                               }
-                              value={unusedInlineCategoryBySource[item.code] ?? (unusedAutomaticSuggestionBySource[item.code]?.category ?? "UNKNOWN")}
+                              value={
+                                unusedInlineCategoryBySource[item.code] ??
+                                (unusedAutomaticSuggestionBySource[item.code]?.category ?? fallbackCorrelationCategory)
+                              }
                             >
-                              {(["MANDATORY", "OPTIONAL", "TRACK", "ELECTIVE", "COMPLEMENTARY", "INTERNSHIP", "TCC", "UNKNOWN"] as CorrelationCategory[]).map(
-                                (category) => (
-                                  <option key={`unused-cat-${item.code}-${category}`} value={category}>
-                                    {CORRELATION_CATEGORY_LABEL[category]}
-                                  </option>
-                                )
-                              )}
+                              {correlationCategoryOptions.map((category) => (
+                                <option key={`unused-cat-${item.code}-${category}`} value={category}>
+                                  {CORRELATION_CATEGORY_LABEL[category]}
+                                </option>
+                              ))}
                             </select>
                           )}
                         </td>

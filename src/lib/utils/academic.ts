@@ -18,7 +18,12 @@ export function parsePtNumber(value: string | undefined): number | null {
     return null;
   }
 
-  const candidate = normalized.replace(/\./g, "").replace(",", ".");
+  let candidate = normalized;
+  if (candidate.includes(",") && candidate.includes(".")) {
+    candidate = candidate.replace(/\./g, "").replace(",", ".");
+  } else if (candidate.includes(",")) {
+    candidate = candidate.replace(",", ".");
+  }
   const numeric = Number(candidate);
   return Number.isFinite(numeric) ? numeric : null;
 }

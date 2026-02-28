@@ -1,4 +1,4 @@
-export type MatrixCode = "806" | "981" | "962";
+export type MatrixCode = "806" | "981" | "844" | "962";
 
 export type DisciplineStatus =
   | "APPROVED"
@@ -243,6 +243,7 @@ export interface UnusedDiscipline {
   name: string;
   cht: number;
   reason: string;
+  reasonCode?: "NO_EQUIVALENCE_RULE" | "ELECTIVE_NO_TARGET" | "OTHER";
   relatedSubjects?: string[];
 }
 
@@ -273,7 +274,7 @@ export interface ManualCorrelationInput {
 export interface CorrelationSuggestion {
   code: string;
   name: string;
-  strategy: "CODE" | "NAME";
+  strategy: "CODE" | "NAME" | "EQUIVALENCE";
 }
 
 export interface UnmatchedApprovedAttempt {

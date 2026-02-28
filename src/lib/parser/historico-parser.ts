@@ -27,7 +27,8 @@ import { detectSections, sliceByRange } from "@/lib/parser/section-detectors";
 const execFileAsync = promisify(execFile);
 const requireFromHere = createRequire(import.meta.url);
 const MIN_TEXT_SIZE_FOR_NO_OCR = 3000;
-const PARSER_VERSION = "1.0.0";
+const MIN_PARSE_SCORE_FOR_NO_OCR = 120;
+const PARSER_VERSION = "1.1.0";
 
 interface ExtractTextResult {
   text: string;
@@ -52,13 +53,148 @@ function sanitizeName(raw: string, fallbackCode: string): string {
   return cleaned || fallbackCode;
 }
 
+const ATTEMPT_ROW_START_REGEX = /^\s*(\d+)\s+([A-Z0-9]{4,8})\b/;
+const ATTEMPT_TAIL_REGEX =
+  /(\d+)\s+(\d+)\s+(\d+)(?:\s+(\d+))?\s+([0-9*.,]+)(?:\s+([0-9*.,]+))?\s+([12])\s+(\d{4})(?:\s+(.*))?$/;
+const ELECTIVE_NUMERIC_ROW_REGEX =
+  /^\s*(\d+)\s+.*?\b([A-Z]{1,2}\d{2,3})\s+(\d+)\s+(\d+)\s+([0-9*.,]+)(?:\s+([0-9*.,]+))?\s+([12])\s+(\d{4})(?:\s+(.*))?$/;
+const ELECTIVE_DETAIL_CODE_REGEX = /([A-Z]{2,4}\d[A-Z0-9]{1,4})\s*-\s*(.+)$/i;
+const NAME_STATUS_BREAK_REGEX =
+  /(aprovad|reprovad|cancelad|credito consignado|crédito consignado|sem conclusao|sem conclusão|obs\.?|doutorado|mestrado|equivalente|disciplina\s*\(|\[\s*disciplina|gerou convalida)/i;
+
+function cleanNameFragment(raw: string): string {
+  return normalizeWhitespace(raw)
+    .replace(/^\d+\s+[A-Z0-9]{4,8}\s*/, "")
+    .replace(/\bTurmas\b/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function firstNonEmptyColumn(raw: string): string {
+  const trimmedStart = raw.trimStart();
+  if (!trimmedStart) {
+    return "";
+  }
+  const columns = trimmedStart.split(/\s{2,}/).map((part) => part.trim()).filter(Boolean);
+  return columns[0] ?? "";
+}
+
+function isLikelyNameFragment(raw: string): boolean {
+  const fragment = cleanNameFragment(raw);
+  if (!fragment || fragment.length < 3) {
+    return false;
+  }
+
+  if (NAME_STATUS_BREAK_REGEX.test(fragment)) {
+    return false;
+  }
+
+  if (!/[A-Za-zÀ-ÖØ-öø-ÿ]/.test(fragment)) {
+    return false;
+  }
+
+  if (/^\d+$/.test(fragment)) {
+    return false;
+  }
+
+  if (/^(Per\.Disc\/Matriz|C[oó]d\.|Disciplina|Turma|Tipo|Semestre|Ano|Situa[çc][aã]o|Professor)/i.test(fragment)) {
+    return false;
+  }
+
+  if (/(ministerio da educacao|universidade tecnologica federal|utfpr|detalhes das equivalentes|quadro resumo)/i.test(fragment)) {
+    return false;
+  }
+
+  const digitCount = (fragment.match(/\d/g) ?? []).length;
+  return digitCount <= 2;
+}
+
+function appendUniqueFragment(output: string[], fragment: string): void {
+  if (!fragment) {
+    return;
+  }
+  if (!output.includes(fragment)) {
+    output.push(fragment);
+  }
+}
+
+function inferNameFromContext(params: {
+  lines: string[];
+  blockLines: string[];
+  start: number;
+  previousStart: number;
+  parsedName: string;
+  fallbackCode: string;
+}): string {
+  const { lines, blockLines, start, previousStart, parsedName, fallbackCode } = params;
+
+  const leading: string[] = [];
+  for (let cursor = start - 1; cursor > previousStart; cursor -= 1) {
+    const raw = lines[cursor] ?? "";
+    if (!raw.trim()) {
+      continue;
+    }
+    if (ATTEMPT_ROW_START_REGEX.test(raw)) {
+      break;
+    }
+
+    const candidate = cleanNameFragment(firstNonEmptyColumn(raw));
+
+    if (NAME_STATUS_BREAK_REGEX.test(candidate)) {
+      if (leading.length > 0) {
+        break;
+      }
+      continue;
+    }
+
+    if (isLikelyNameFragment(candidate)) {
+      leading.unshift(candidate);
+      if (leading.length >= 2) {
+        break;
+      }
+      continue;
+    }
+
+    if (leading.length > 0) {
+      break;
+    }
+  }
+
+  const trailing: string[] = [];
+  for (const raw of blockLines.slice(1)) {
+    if (!raw.trim()) {
+      continue;
+    }
+    const candidate = cleanNameFragment(firstNonEmptyColumn(raw));
+    if (NAME_STATUS_BREAK_REGEX.test(candidate)) {
+      break;
+    }
+    if (isLikelyNameFragment(candidate)) {
+      appendUniqueFragment(trailing, candidate);
+      if (trailing.length >= 3) {
+        break;
+      }
+      continue;
+    }
+    if (trailing.length > 0) {
+      break;
+    }
+  }
+
+  const fragments: string[] = [];
+  leading.forEach((fragment) => appendUniqueFragment(fragments, fragment));
+  appendUniqueFragment(fragments, cleanNameFragment(parsedName));
+  trailing.forEach((fragment) => appendUniqueFragment(fragments, fragment));
+
+  return sanitizeName(fragments.join(" "), fallbackCode);
+}
+
 function parseAttemptBlocks(sectionText: string, sourceSection: TranscriptSection): { attempts: TranscriptAttempt[]; unparsed: string[] } {
   const lines = sectionText.split(/\r?\n/);
-  const rowStartRegex = /^\s*(\d+)\s+([A-Z0-9]{4,8})\b/;
   const starts: number[] = [];
 
   lines.forEach((line, index) => {
-    if (rowStartRegex.test(line)) {
+    if (ATTEMPT_ROW_START_REGEX.test(line)) {
       starts.push(index);
     }
   });
@@ -69,9 +205,10 @@ function parseAttemptBlocks(sectionText: string, sourceSection: TranscriptSectio
   for (let i = 0; i < starts.length; i += 1) {
     const start = starts[i];
     const end = i + 1 < starts.length ? starts[i + 1] : lines.length;
+    const previousStart = i > 0 ? starts[i - 1] : -1;
     const blockLines = lines.slice(start, end);
     const rowLine = blockLines[0] ?? "";
-    const headMatch = rowLine.match(rowStartRegex);
+    const headMatch = rowLine.match(ATTEMPT_ROW_START_REGEX);
     if (!headMatch) {
       unparsed.push(blockLines.join("\n"));
       continue;
@@ -80,9 +217,7 @@ function parseAttemptBlocks(sectionText: string, sourceSection: TranscriptSectio
     const periodInMatrix = parseIntSafe(headMatch[1]);
     const code = normalizeDisciplineCode(headMatch[2]);
 
-    const tailMatch = rowLine.match(
-      /(\d+)\s+(\d+)\s+(\d+)(?:\s+(\d+))?\s+([0-9*,]+)\s+([0-9*,]+)\s+([12])\s+(\d{4})(?:\s+(.*))?$/
-    );
+    const tailMatch = rowLine.match(ATTEMPT_TAIL_REGEX);
     if (!tailMatch) {
       unparsed.push(blockLines.join("\n"));
       continue;
@@ -95,22 +230,30 @@ function parseAttemptBlocks(sectionText: string, sourceSection: TranscriptSectio
     const prefixWithoutPeriodCode = prefix.replace(/^\d+\s+[A-Z0-9]{4,8}\s*/, "").trim();
     const tokens = prefixWithoutPeriodCode.split(/\s+/).filter(Boolean);
 
-    const classCode = tokens.find((token) => /^[A-Z]\d{2,3}$/.test(token));
-    const type = tokens.find((token) => /^[RFEDS]$/.test(token));
+    const classCode = tokens.find((token) => /^[A-Z]{1,2}\d{2,3}$/.test(token));
+    const type = tokens.find((token) => /^[RFEDSI]$/.test(token));
 
     const nameTokens = tokens.filter((token) => token !== classCode && token !== type);
-    const parsedName = nameTokens.join(" ");
+    const parsedName = cleanNameFragment(nameTokens.join(" "));
     const joinedBlock = blockLines.join("\n");
     const statusText = normalizeWhitespace([statusTailRaw ?? "", joinedBlock].join(" "));
     const average = parsePtNumber(avgRaw);
     const frequency = parsePtNumber(freqRaw);
+    const inferredName = inferNameFromContext({
+      lines,
+      blockLines,
+      start,
+      previousStart,
+      parsedName,
+      fallbackCode: code
+    });
 
     attempts.push({
       sourceSection,
       periodInMatrix,
       code,
       normalizedCode: code,
-      name: sanitizeName(parsedName, code),
+      name: inferredName,
       classCode,
       type,
       chs: parseIntSafe(chsRaw),
@@ -123,6 +266,111 @@ function parseAttemptBlocks(sectionText: string, sourceSection: TranscriptSectio
       status: normalizeStatus(statusText, { average, frequency }),
       statusText,
       rawBlock: joinedBlock
+    });
+  }
+
+  return { attempts, unparsed };
+}
+
+function parseElectiveAttempts(sectionText: string): { attempts: TranscriptAttempt[]; unparsed: string[] } {
+  const lines = sectionText.split(/\r?\n/);
+  const rowIndexes: number[] = [];
+
+  lines.forEach((line, index) => {
+    if (ELECTIVE_NUMERIC_ROW_REGEX.test(line)) {
+      rowIndexes.push(index);
+    }
+  });
+
+  const attempts: TranscriptAttempt[] = [];
+  const unparsed: string[] = [];
+
+  for (let i = 0; i < rowIndexes.length; i += 1) {
+    const rowIndex = rowIndexes[i];
+    const blockStart = i > 0 ? rowIndexes[i - 1] + 1 : 0;
+    const blockEnd = i + 1 < rowIndexes.length ? rowIndexes[i + 1] : lines.length;
+    const contextStart = Math.max(blockStart, rowIndex - 6);
+    const contextLines = lines.slice(contextStart, blockEnd);
+    const rowLine = lines[rowIndex] ?? "";
+    const rowMatch = rowLine.match(ELECTIVE_NUMERIC_ROW_REGEX);
+
+    if (!rowMatch) {
+      unparsed.push(contextLines.join("\n"));
+      continue;
+    }
+
+    const [, periodRaw, classRaw, chtRaw, chextRaw, avgRaw, freqRaw, semRaw, yearRaw, statusTailRaw] = rowMatch;
+
+    let code = "";
+    const nameFragments: string[] = [];
+    let codeLineIndex = -1;
+
+    for (let cursor = rowIndex; cursor >= contextStart; cursor -= 1) {
+      const currentLine = lines[cursor] ?? "";
+      const codeMatch = currentLine.match(ELECTIVE_DETAIL_CODE_REGEX);
+      if (!codeMatch) {
+        continue;
+      }
+
+      code = normalizeDisciplineCode(codeMatch[1]);
+      appendUniqueFragment(nameFragments, cleanNameFragment(codeMatch[2] ?? ""));
+      codeLineIndex = cursor;
+      break;
+    }
+
+    if (!code) {
+      unparsed.push(contextLines.join("\n"));
+      continue;
+    }
+
+    if (codeLineIndex !== -1) {
+      for (let cursor = codeLineIndex + 1; cursor < rowIndex; cursor += 1) {
+        const fragment = cleanNameFragment(lines[cursor] ?? "");
+        if (isLikelyNameFragment(fragment)) {
+          appendUniqueFragment(nameFragments, fragment);
+        }
+      }
+    }
+
+    for (let cursor = rowIndex + 1; cursor < blockEnd; cursor += 1) {
+      const raw = lines[cursor] ?? "";
+      if (!raw.trim()) {
+        continue;
+      }
+      if (NAME_STATUS_BREAK_REGEX.test(raw)) {
+        break;
+      }
+      const fragment = cleanNameFragment(raw);
+      if (isLikelyNameFragment(fragment)) {
+        appendUniqueFragment(nameFragments, fragment);
+        if (nameFragments.length >= 4) {
+          break;
+        }
+      }
+    }
+
+    const cht = parseIntSafe(chtRaw) ?? 0;
+    const average = parsePtNumber(avgRaw);
+    const frequency = parsePtNumber(freqRaw);
+    const statusText = normalizeWhitespace([statusTailRaw ?? "", ...contextLines].join(" "));
+
+    attempts.push({
+      sourceSection: "elective",
+      periodInMatrix: parseIntSafe(periodRaw),
+      code,
+      normalizedCode: code,
+      name: sanitizeName(nameFragments.join(" "), code),
+      classCode: classRaw,
+      chs: Math.max(1, Math.round(cht / 15)),
+      cht,
+      chext: parseIntSafe(chextRaw) ?? 0,
+      average,
+      frequency,
+      semester: parseIntSafe(semRaw) ?? null,
+      year: parseIntSafe(yearRaw) ?? null,
+      status: normalizeStatus(statusText, { average, frequency }),
+      statusText,
+      rawBlock: contextLines.join("\n")
     });
   }
 
@@ -335,6 +583,42 @@ async function runOcr(pdfPath: string): Promise<string> {
   }
 }
 
+function scoreExtractedTextQuality(text: string): number {
+  const trimmed = text.trim();
+  if (!trimmed) {
+    return Number.NEGATIVE_INFINITY;
+  }
+
+  const parsed = parseHistoricoText(trimmed);
+  const blankNames = parsed.attempts.filter((attempt) => {
+    const cleanedName = (attempt.name ?? "").trim();
+    if (!cleanedName) {
+      return true;
+    }
+    if (cleanedName === attempt.code) {
+      return true;
+    }
+    return /^\d+$/.test(cleanedName);
+  }).length;
+
+  let score = 0;
+  score += parsed.attempts.length * 6;
+  score += parsed.explicitMissing.length * 2;
+  score += parsed.summary.length * 2;
+  score += parsed.extensionSummary.length;
+  score -= parsed.unparsedBlocks.length * 8;
+  score -= blankNames * 3;
+
+  if (parsed.detectedMatrixCode) {
+    score += 15;
+  }
+  if (parsed.attempts.some((attempt) => attempt.sourceSection === "elective")) {
+    score += 12;
+  }
+
+  return score;
+}
+
 export async function extractTextFromPdfBuffer(buffer: Buffer): Promise<ExtractTextResult> {
   const warnings: string[] = [];
   const tempDir = await mkdtemp(path.join(tmpdir(), "roadmap-pdf-"));
@@ -343,12 +627,12 @@ export async function extractTextFromPdfBuffer(buffer: Buffer): Promise<ExtractT
   try {
     await writeFile(pdfPath, buffer);
 
-    let text = "";
+    let primaryText = "";
     let usedOcr = false;
 
     if (await commandExists("pdftotext")) {
       try {
-        text = await runPdftotext(pdfPath);
+        primaryText = await runPdftotext(pdfPath);
       } catch (error) {
         warnings.push(`Falha no pdftotext: ${(error as Error).message}`);
       }
@@ -356,24 +640,47 @@ export async function extractTextFromPdfBuffer(buffer: Buffer): Promise<ExtractT
       warnings.push("pdftotext indisponível. Usando fallback em biblioteca JS.");
     }
 
-    if (!text.trim()) {
-      text = await runPdfParseFallback(buffer);
-      if (!text.trim()) {
+    if (!primaryText.trim()) {
+      primaryText = await runPdfParseFallback(buffer);
+      if (!primaryText.trim()) {
         warnings.push("Fallback de leitura JS indisponível para este PDF.");
       }
     }
 
-    if (text.length < MIN_TEXT_SIZE_FOR_NO_OCR) {
-      const ocrText = await runOcr(pdfPath);
-      if (ocrText.trim().length > text.trim().length) {
-        text = ocrText;
-        usedOcr = true;
-      } else if (!ocrText.trim()) {
-        warnings.push("OCR não executado ou sem ganho de qualidade.");
+    let bestText = primaryText;
+    let bestScore = scoreExtractedTextQuality(bestText);
+
+    const shouldTryOcr =
+      bestText.trim().length === 0 || bestText.length < MIN_TEXT_SIZE_FOR_NO_OCR || bestScore < MIN_PARSE_SCORE_FOR_NO_OCR;
+
+    if (shouldTryOcr) {
+      const hasPdftoppm = await commandExists("pdftoppm");
+      const hasTesseract = await commandExists("tesseract");
+
+      if (!hasPdftoppm || !hasTesseract) {
+        warnings.push("OCR indisponível (pdftoppm/tesseract não encontrados).");
+      } else {
+        const ocrText = await runOcr(pdfPath);
+        if (!ocrText.trim()) {
+          warnings.push("OCR executado sem retorno de texto.");
+        } else {
+          const ocrScore = scoreExtractedTextQuality(ocrText);
+          if (ocrScore > bestScore + 2) {
+            bestText = ocrText;
+            bestScore = ocrScore;
+            usedOcr = true;
+          } else {
+            warnings.push("OCR executado sem ganho de qualidade no parse.");
+          }
+        }
       }
     }
 
-    return { text, usedOcr, warnings };
+    if (!bestText.trim()) {
+      warnings.push("Nenhum texto pôde ser extraído do PDF.");
+    }
+
+    return { text: bestText, usedOcr, warnings };
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
@@ -395,7 +702,7 @@ export function parseHistoricoText(rawText: string): ParsedTranscript {
 
   const mandatoryParse = parseAttemptBlocks(sliceByRange(text, sections.mandatory), "mandatory");
   const optionalParse = parseAttemptBlocks(sliceByRange(text, sections.optional), "optional");
-  const electiveParse = parseAttemptBlocks(sliceByRange(text, sections.elective), "elective");
+  const electiveParse = parseElectiveAttempts(sliceByRange(text, sections.elective));
 
   const attempts = [...mandatoryParse.attempts, ...optionalParse.attempts, ...electiveParse.attempts];
 
